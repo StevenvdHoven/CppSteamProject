@@ -1,3 +1,13 @@
-﻿  SpaceAdventure.vcxproj -> E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\SpaceGame.exe
-  E:\Projects\CppSteamProject\SpaceAdventure\\Thirdparty\steam\lib\x64\steam_api64.dll
-  1 File(s) copied
+﻿  main.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(35,3): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  (compiling source file 'main.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(37,3): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  (compiling source file 'main.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(226,2): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  (compiling source file 'main.cpp')
+  
+  SpaceAdventure.vcxproj -> E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\SpaceGame.exe
+  0 File(s) copied
+  0 File(s) copied

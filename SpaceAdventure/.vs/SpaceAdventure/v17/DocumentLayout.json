@@ -7,11 +7,19 @@
       "RelativeMoniker": "D:0:0:{4BC67F57-D21E-4CBC-AF76-3CA69A565155}|SpaceAdventure.vcxproj|solutionrelative:main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{4BC67F57-D21E-4CBC-AF76-3CA69A565155}|SpaceAdventure.vcxproj|E:\\Projects\\CppSteamProject\\SpaceAdventure\\Source\\ImGui\\imgui.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{4BC67F57-D21E-4CBC-AF76-3CA69A565155}|SpaceAdventure.vcxproj|solutionrelative:Source\\ImGui\\imgui.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4BC67F57-D21E-4CBC-AF76-3CA69A565155}|SpaceAdventure.vcxproj|E:\\Projects\\CppSteamProject\\SpaceAdventure\\Source\\ImGui\\imgui_impl_sdl2.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{4BC67F57-D21E-4CBC-AF76-3CA69A565155}|SpaceAdventure.vcxproj|solutionrelative:Source\\ImGui\\imgui_impl_sdl2.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\MSBuild\\Microsoft\\VC\\v170\\Microsoft.CppCommon.targets||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4BC67F57-D21E-4CBC-AF76-3CA69A565155}|SpaceAdventure.vcxproj|E:\\PROJECTS\\CPPSTEAMPROJECT\\SPACEADVENTURE\\LIB\\STEAM\\MATCHMAKINGTYPES.H||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{4BC67F57-D21E-4CBC-AF76-3CA69A565155}|SpaceAdventure.vcxproj|solutionrelative:LIB\\STEAM\\MATCHMAKINGTYPES.H||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Projects\\CppSteamProject\\SpaceAdventure\\lib\\steam\\matchmakingtypes.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:lib\\steam\\matchmakingtypes.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -21,7 +29,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 155,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Bookmark",
@@ -33,27 +41,51 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "imgui_impl_sdl2.cpp",
+              "DocumentMoniker": "E:\\Projects\\CppSteamProject\\SpaceAdventure\\Source\\ImGui\\imgui_impl_sdl2.cpp",
+              "RelativeDocumentMoniker": "Source\\ImGui\\imgui_impl_sdl2.cpp",
+              "ToolTip": "E:\\Projects\\CppSteamProject\\SpaceAdventure\\Source\\ImGui\\imgui_impl_sdl2.cpp",
+              "RelativeToolTip": "Source\\ImGui\\imgui_impl_sdl2.cpp",
+              "ViewState": "AgIAAGsAAAAAAAAAAAAuwHYAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2026-04-28T20:32:33.001Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "imgui.cpp",
+              "DocumentMoniker": "E:\\Projects\\CppSteamProject\\SpaceAdventure\\Source\\ImGui\\imgui.cpp",
+              "RelativeDocumentMoniker": "Source\\ImGui\\imgui.cpp",
+              "ToolTip": "E:\\Projects\\CppSteamProject\\SpaceAdventure\\Source\\ImGui\\imgui.cpp",
+              "RelativeToolTip": "Source\\ImGui\\imgui.cpp",
+              "ViewState": "AgIAAIkEAAAAAAAAAAAuwLMEAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2026-04-28T20:24:52.78Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "Microsoft.CppCommon.targets",
               "DocumentMoniker": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\MSBuild\\Microsoft\\VC\\v170\\Microsoft.CppCommon.targets",
               "ToolTip": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\MSBuild\\Microsoft\\VC\\v170\\Microsoft.CppCommon.targets",
-              "ViewState": "AgIAAI8AAAAAAAAAAAAwwJgAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAJQAAAAAAAAAAAD4v5wAAAALAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
               "WhenOpened": "2026-03-05T18:58:46.241Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "matchmakingtypes.h",
               "DocumentMoniker": "E:\\Projects\\CppSteamProject\\SpaceAdventure\\lib\\steam\\matchmakingtypes.h",
               "RelativeDocumentMoniker": "lib\\steam\\matchmakingtypes.h",
               "ToolTip": "E:\\Projects\\CppSteamProject\\SpaceAdventure\\lib\\steam\\matchmakingtypes.h",
               "RelativeToolTip": "lib\\steam\\matchmakingtypes.h",
-              "ViewState": "AgIAAA0AAAAAAAAAAAApwCIAAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2026-03-05T18:18:50.118Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-05T18:18:50.118Z"
             },
             {
               "$type": "Document",
@@ -63,7 +95,7 @@
               "RelativeDocumentMoniker": "main.cpp",
               "ToolTip": "E:\\Projects\\CppSteamProject\\SpaceAdventure\\main.cpp",
               "RelativeToolTip": "main.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAARAAAAAAAAAA==",
+              "ViewState": "AgIAABsAAAAAAAAAAAAAACUAAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2026-03-05T17:36:26.858Z",
               "EditorCaption": ""
