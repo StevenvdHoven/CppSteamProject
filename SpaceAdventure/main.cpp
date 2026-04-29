@@ -16,7 +16,7 @@ int main()
 	SteamAPI_Init();
 
 	SDL_Init(SDL_INIT_EVERYTHING);
-	SDL_Window* window = SDL_CreateWindow("CustomGame", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1000,1000, SDL_WINDOW_SHOWN);
+	SDL_Window* window = SDL_CreateWindow("CustomGame", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1800, 980, SDL_WINDOW_SHOWN);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
 
 	IMGUI_CHECKVERSION();
@@ -46,8 +46,13 @@ int main()
 
 		ImGui::NewFrame();
 
-		ImGui::Begin("Test");
+		ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize;
 
+		ImGui::SetNextWindowPos(ImVec2(0, 0));
+		ImGui::Begin("Test",0, flags);
+		int w, h;
+		SDL_GetWindowSize(window, &w, &h);
+		ImGui::SetWindowSize(ImVec2(200, h));
 		ImGui::Text("Hello, world");
 
 		ImGui::End();
