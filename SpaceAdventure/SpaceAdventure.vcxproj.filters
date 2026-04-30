@@ -5,16 +5,25 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="ImGui">
       <UniqueIdentifier>{c6c95748-a589-4f11-82ad-9bebb6c38fce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Editor">
+      <UniqueIdentifier>{ac099a0e-b2f0-48e4-a5bd-13aa12bffa8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Editor\Windows">
+      <UniqueIdentifier>{123ed6a4-ee57-49aa-a476-690f7422e138}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Editor\Windows\Layout">
+      <UniqueIdentifier>{c7099aff-5056-4aee-9e6d-c3a01c0019cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -42,5 +51,25 @@
     <ClCompile Include="Source\ImGui\imgui_widgets.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="Layout.cpp">
+      <Filter>Editor\Windows\Layout</Filter>
+    </ClCompile>
+    <ClCompile Include="LayoutWindow.cpp">
+      <Filter>Editor\Windows\Layout</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Editor\Windows</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Layout.h">
+      <Filter>Editor\Windows\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="LayoutWindow.h">
+      <Filter>Editor\Windows\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Editor\Windows</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
