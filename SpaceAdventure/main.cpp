@@ -75,14 +75,22 @@ int main()
 			ImGui::DockBuilderDockWindow("Scene", dock_id_left_bottom);
 			ImGui::DockBuilderFinish(dockspace_id);
 		}
-
+#ifdef GAME
+		SDL_RenderClear(editorRenderer);
+#else
 		SDL_SetRenderTarget(editorRenderer, gameTexture);
 		SDL_SetRenderDrawColor(editorRenderer, 0, 255, 0, 255);
 		SDL_RenderClear(editorRenderer);
+#endif
 
 		// draw your game here
 
 		SDL_SetRenderTarget(editorRenderer, NULL);
+
+#ifdef GAME
+#else
+		SDL_SetRenderTarget(editorRenderer, NULL);
+#endif
 
 		// Submit dockspace
 		ImGui::DockSpaceOverViewport(dockspace_id, viewport, ImGuiDockNodeFlags_PassthruCentralNode);

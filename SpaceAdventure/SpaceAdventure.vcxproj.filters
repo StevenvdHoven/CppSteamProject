@@ -51,25 +51,5 @@
     <ClCompile Include="Source\ImGui\imgui_widgets.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Layout.cpp">
-      <Filter>Editor\Windows\Layout</Filter>
-    </ClCompile>
-    <ClCompile Include="LayoutWindow.cpp">
-      <Filter>Editor\Windows\Layout</Filter>
-    </ClCompile>
-    <ClCompile Include="Window.cpp">
-      <Filter>Editor\Windows</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Layout.h">
-      <Filter>Editor\Windows\Layout</Filter>
-    </ClInclude>
-    <ClInclude Include="LayoutWindow.h">
-      <Filter>Editor\Windows\Layout</Filter>
-    </ClInclude>
-    <ClInclude Include="Window.h">
-      <Filter>Editor\Windows</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
