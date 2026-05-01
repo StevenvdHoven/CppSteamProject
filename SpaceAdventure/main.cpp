@@ -78,9 +78,11 @@ int main()
 #ifdef GAME
 		SDL_RenderClear(editorRenderer);
 #else
+		SDL_RenderClear(editorRenderer);
 		SDL_SetRenderTarget(editorRenderer, gameTexture);
 		SDL_SetRenderDrawColor(editorRenderer, 0, 255, 0, 255);
 		SDL_RenderClear(editorRenderer);
+		SDL_SetRenderDrawColor(editorRenderer, 0, 0, 0, 255);
 #endif
 
 		// draw your game here

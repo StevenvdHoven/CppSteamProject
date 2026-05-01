@@ -10,8 +10,9 @@ E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(2
   
 LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
   Generating code
-  Previous IPDB and IOBJ mismatch, fall back to full compilation.
-  All 2035 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  1 of 2035 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    40 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   SpaceAdventure.vcxproj -> E:\Projects\CppSteamProject\SpaceAdventure\bin\Release\x64\SpaceGame.exe
   0 File(s) copied
