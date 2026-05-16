@@ -120,11 +120,12 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Thirdparty\steam\lib\$(Platform);$(SolutionDir)Thirdparty\SDL\lib\$(Platform)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>steam_api.lib;%(AdditionalDependencies);SDL2.lib</AdditionalDependencies>
+      <AdditionalDependencies>steam_api.lib;%(AdditionalDependencies);SDL2.lib;SDL2_image.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$(OutDir)"
-xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2.dll" "$(OutDir)"</Command>
+      <Command>xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2_image.dll" "$(OutDir)"
+xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2.dll" "$(OutDir)"
+xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -145,11 +146,12 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2.dll" "$(OutDir
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Thirdparty\steam\lib\$(Platform);$(SolutionDir)Thirdparty\SDL\lib\$(Platform)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>steam_api.lib;%(AdditionalDependencies);SDL2.lib</AdditionalDependencies>
+      <AdditionalDependencies>steam_api.lib;%(AdditionalDependencies);SDL2.lib;SDL2_image.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$(OutDir)"
-xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2.dll" "$(OutDir)"</Command>
+      <Command>xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2_image.dll" "$(OutDir)"
+xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2.dll" "$(OutDir)"
+xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -166,11 +168,12 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2.dll" "$(OutDir
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Thirdparty\steam\lib\$(Platform);$(SolutionDir)Thirdparty\SDL\lib\$(Platform)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>steam_api64.lib;%(AdditionalDependencies);SDL2.lib</AdditionalDependencies>
+      <AdditionalDependencies>steam_api64.lib;%(AdditionalDependencies);SDL2.lib;SDL2_image.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api64.dll" "$(OutDir)"
-xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2.dll" "$(OutDir)"</Command>
+      <Command>xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2_image.dll" "$(OutDir)"
+xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2.dll" "$(OutDir)"
+xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api64.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -191,11 +194,12 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2.dll" "$(OutDir
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Thirdparty\steam\lib\$(Platform);$(SolutionDir)Thirdparty\SDL\lib\$(Platform)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>steam_api64.lib;%(AdditionalDependencies);SDL2.lib</AdditionalDependencies>
+      <AdditionalDependencies>steam_api64.lib;%(AdditionalDependencies);SDL2.lib;SDL2_image.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api64.dll" "$(OutDir)"
-xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2.dll" "$(OutDir)"</Command>
+      <Command>xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2_image.dll" "$(OutDir)"
+xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2.dll" "$(OutDir)"
+xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api64.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MASTER|x64'">
@@ -205,6 +209,14 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2.dll" "$(OutDir
       <ConformanceMode>true</ConformanceMode>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
     </ClCompile>
+    <PostBuildEvent>
+      <Command>xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2_image.dll" "$(OutDir)"
+xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2.dll" "$(OutDir)"
+xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api64.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL2_image.lib</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MASTER|Win32'">
     <ClCompile>
@@ -213,16 +225,49 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2.dll" "$(OutDir
       <PreprocessorDefinitions>GAME</PreprocessorDefinitions>
       <UseStandardPreprocessor>true</UseStandardPreprocessor>
     </ClCompile>
+    <PostBuildEvent>
+      <Command>xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2_image.dll" "$(OutDir)"
+xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2.dll" "$(OutDir)"
+xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+    <Link>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL2_image.lib</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Asset.cpp" />
+    <ClCompile Include="EditorWindow.cpp" />
+    <ClCompile Include="EditorWindowManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Math.cpp" />
+    <ClCompile Include="Properties.cpp" />
+    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Source\ImGui\imgui.cpp" />
+    <ClCompile Include="Source\ImGui\ImGuizmo.cpp" />
     <ClCompile Include="Source\ImGui\imgui_demo.cpp" />
     <ClCompile Include="Source\ImGui\imgui_draw.cpp" />
     <ClCompile Include="Source\ImGui\imgui_impl_sdl2.cpp" />
     <ClCompile Include="Source\ImGui\imgui_impl_sdlrenderer2.cpp" />
     <ClCompile Include="Source\ImGui\imgui_tables.cpp" />
     <ClCompile Include="Source\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="Vector2.cpp" />
+    <ClCompile Include="Viewport.cpp" />
+    <ClCompile Include="WorldView.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Asset.h" />
+    <ClInclude Include="EditorWindow.h" />
+    <ClInclude Include="EditorWindowManager.h" />
+    <ClInclude Include="Math.h" />
+    <ClInclude Include="Properties.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="Vector2.h" />
+    <ClInclude Include="Viewport.h" />
+    <ClInclude Include="WorldView.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
