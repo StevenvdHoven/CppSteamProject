@@ -37,6 +37,15 @@
     <Filter Include="Engine\Assets\Textures">
       <UniqueIdentifier>{815ca984-dcba-45cb-be2c-e304ed2a2963}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Components">
+      <UniqueIdentifier>{3d9b2607-2f29-4cec-8a47-cff08e37c073}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\GameObject">
+      <UniqueIdentifier>{dae7a269-e796-42bb-85f7-b1218822a743}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Scene">
+      <UniqueIdentifier>{d86c6df8-55ae-4f53-8ba5-6b53409afd98}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -94,10 +103,22 @@
       <Filter>Engine\Assets\Textures</Filter>
     </ClCompile>
     <ClCompile Include="Source\ImGui\ImGuizmo.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>ImGui</Filter>
     </ClCompile>
     <ClCompile Include="EditorWindow.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Editor\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Engine\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Engine\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Engine\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +154,18 @@
     </ClInclude>
     <ClInclude Include="TextureManager.h">
       <Filter>Engine\Assets\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Engine\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Engine\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Engine\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

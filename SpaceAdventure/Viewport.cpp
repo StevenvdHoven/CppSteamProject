@@ -76,13 +76,6 @@ void Viewport::ImGui_OnWindow()
         }
     }
 
-    float cameraview[3];
-    float cameraPro[3];
-    float matrix[3];
-
-    EditTransform(cameraview,cameraPro, matrix);
-    
-
     ImGui::End();
 }
 

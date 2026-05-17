@@ -236,12 +236,16 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Asset.cpp" />
+    <ClCompile Include="Component.cpp" />
     <ClCompile Include="EditorWindow.cpp" />
     <ClCompile Include="EditorWindowManager.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Properties.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Source\ImGui\imgui.cpp" />
     <ClCompile Include="Source\ImGui\ImGuizmo.cpp" />
     <ClCompile Include="Source\ImGui\imgui_demo.cpp" />
@@ -258,11 +262,15 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Asset.h" />
+    <ClInclude Include="Component.h" />
     <ClInclude Include="EditorWindow.h" />
     <ClInclude Include="EditorWindowManager.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Properties.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Vector2.h" />

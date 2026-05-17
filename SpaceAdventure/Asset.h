@@ -1,11 +1,9 @@
 #pragma once
 
-
-struct SDL_Texture;
-
 class Asset
 {
 public:
-	
+	virtual void Load() = 0;
+	virtual void Save() = 0;
 };
 
