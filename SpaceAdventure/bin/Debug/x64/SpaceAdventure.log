@@ -8,8 +8,9 @@ E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(3
 E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(226,2): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   (compiling source file 'main.cpp')
   
-E:\Projects\CppSteamProject\SpaceAdventure\main.cpp(47,14): warning C4189: 'propertiesWindow': local variable is initialized but not referenced
-E:\Projects\CppSteamProject\SpaceAdventure\main.cpp(46,13): warning C4189: 'worldView': local variable is initialized but not referenced
+E:\Projects\CppSteamProject\SpaceAdventure\main.cpp(51,17): warning C4189: 'contentWindow': local variable is initialized but not referenced
+E:\Projects\CppSteamProject\SpaceAdventure\main.cpp(50,14): warning C4189: 'propertiesWindow': local variable is initialized but not referenced
+E:\Projects\CppSteamProject\SpaceAdventure\main.cpp(49,13): warning C4189: 'worldView': local variable is initialized but not referenced
   SpaceAdventure.vcxproj -> E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\SpaceGame.exe
   0 File(s) copied
   0 File(s) copied

@@ -236,7 +236,9 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Asset.cpp" />
+    <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="ContentWindow.cpp" />
     <ClCompile Include="EditorWindow.cpp" />
     <ClCompile Include="EditorWindowManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -262,7 +264,9 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Asset.h" />
+    <ClInclude Include="AssetManager.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="ContentWindow.h" />
     <ClInclude Include="EditorWindow.h" />
     <ClInclude Include="EditorWindowManager.h" />
     <ClInclude Include="GameObject.h" />

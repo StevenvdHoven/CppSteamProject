@@ -12,7 +12,9 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #include "Renderer.h"
+#include "AssetManager.h"
 #include "EditorWindowManager.h"
+#include "ContentWindow.h"
 #include "Viewport.h"
 #include "WorldView.h"
 #include "Properties.h"
@@ -40,11 +42,13 @@ int main()
 	);
 	ImGui_ImplSDLRenderer2_Init(editorRenderer);
 
+	AssetManager::Init();
 	Renderer::Init(editorRenderer);
 #ifdef _DEBUG
 	Viewport& gameviewport = windowManager->Insert(new Viewport(editorRenderer));
 	WorldView& worldView = windowManager->Insert(new WorldView());
 	Properties& propertiesWindow = windowManager->Insert(new Properties());
+	ContentWindow& contentWindow = windowManager->Insert(new ContentWindow());
 #endif
 
 	Texture testTexture = TextureManager::LoadTexture("character2.png");
@@ -81,13 +85,17 @@ int main()
 			ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
 			ImGuiID dock_id_left = 0;
 			ImGuiID dock_id_main = dockspace_id;
+			ImGuiID dock_id_top = 0;
+			ImGuiID dock_id_bottom = 0;
 			ImGui::DockBuilderSplitNode(dock_id_main, ImGuiDir_Left, 0.20f, &dock_id_left, &dock_id_main);
+			ImGui::DockBuilderSplitNode(dock_id_main, ImGuiDir_Up, 0.10f, &dock_id_top, &dock_id_bottom);
 			ImGuiID dock_id_left_top = 0;
 			ImGuiID dock_id_left_bottom = 0;
 			ImGui::DockBuilderSplitNode(dock_id_left, ImGuiDir_Up, 0.50f, &dock_id_left_top, &dock_id_left_bottom);
 			ImGui::DockBuilderDockWindow("Viewport", dock_id_main);
 			ImGui::DockBuilderDockWindow("Properties", dock_id_left_top);
 			ImGui::DockBuilderDockWindow("World View", dock_id_left_bottom);
+			ImGui::DockBuilderDockWindow("Content", dock_id_bottom);
 			ImGui::DockBuilderFinish(dockspace_id);
 		}
 #endif
@@ -128,6 +136,7 @@ int main()
 	ImGui::DestroyContext();
 
 	TextureManager::CleanUp();
+	AssetManager::CleanUp();
 
 	SDL_DestroyRenderer(editorRenderer);
 	SDL_DestroyWindow(window);
