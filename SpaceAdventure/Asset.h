@@ -3,10 +3,13 @@
 #include <filesystem>
 #include <ostream>
 #include <istream>
+#include "AssetRegistery.h"
 
 class Asset
 {
 public:
+	Asset() = default;
+
 	virtual void Load(std::ifstream& inputstream) = 0;
 	virtual void Save(std::ofstream& outputstream) = 0;
 

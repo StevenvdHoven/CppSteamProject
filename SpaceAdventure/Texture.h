@@ -5,6 +5,7 @@ struct SDL_Texture;
 
 class Texture : public Asset
 {
+	ASSET_LOOKUP(Texture, "texture")
 public:
 	Texture(SDL_Texture* texture);
 
