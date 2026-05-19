@@ -96,13 +96,80 @@ void AssetManager::UpdateFolder(AssetFolder* folder)
 			
 		}
 		else {
-			// Add Asset;
+			folder->AddAsset(std::move(CreateAssetFromFilePath(entry.path().generic_string())));
 		}
 	}
 #ifdef _DEBUG
 	std::cout << "Done updating folder: " << path << std::endl;
 #endif
 
+}
+
+std::unique_ptr<Asset> AssetManager::CreateAssetFromFilePath(std::string filepath)
+{
+	auto pos = filepath.find_last_of(".");
+	if (pos == std::string::npos) {
+		return nullptr;
+	}
+
+	std::string extention = filepath.substr(pos);
+	if (extention.empty()) {
+		return nullptr;
+	}
+
+	if (extention != ".asset")
+	{
+		return CreateAssetFromImport(filepath);
+	}
+
+	std::ifstream inputstream;
+	inputstream.open(filepath, std::ios::binary | std::ios::in);
+	if (!inputstream.is_open() || inputstream.bad())
+	{
+		return nullptr;
+	}
+
+	int stringsize = 0;
+	inputstream.read(reinterpret_cast<char*>(&stringsize), sizeof(stringsize));
+
+	if (stringsize <= 0)
+	{
+		return nullptr;
+	}
+
+	std::string assetType(stringsize, '\0');
+	inputstream.read(assetType.data(), stringsize);
+	if (assetType.empty()) {
+		return nullptr;
+	}
+
+	auto asset = AssetRegistery::Create(assetType);
+	asset->Load(inputstream);
+
+	return std::move(asset);
+}
+
+void AssetManager::SaveAsset(std::unique_ptr<Asset>& asset)
+{
+	std::ofstream outputstream;
+	outputstream.open(asset->GetPath(), std::ios::binary | std::ios::out);
+	if (!outputstream.is_open())
+	{
+		printf("failed to save asset: %s", asset->GetPath().c_str());
+		return;
+	}
+
+	const std::string assetType = asset->GetType();
+	const size_t stringSize = assetType.size();
+	outputstream.write(reinterpret_cast<const char*>(stringSize), sizeof(stringSize));
+	outputstream.write(reinterpret_cast<const char*>(assetType.data()), stringSize);
+
+	asset->Save(outputstream);
+
+	if (!outputstream)
+	{
+		printf("failed while writing asset: %s", asset->GetPath().c_str());
+	}
 }
 
 AssetFolder* AssetManager::GetRootFolder()
@@ -112,6 +179,34 @@ AssetFolder* AssetManager::GetRootFolder()
 	}
 
 	return ContentFolder;
+}
+
+bool AssetManager::AssetImported(std::string filepath)
+{
+	auto pos = filepath.find_last_of(".");
+	if (pos == std::string::npos) {
+		return false;
+	}
+
+	std::string pathWithoutExtention = filepath.substr(0, pos);
+	return std::filesystem::exists(filepath + ".asset");
+}
+
+std::unique_ptr<Asset> AssetManager::CreateAssetFromImport(std::string filepath)
+{
+	if (AssetImported(filepath))
+	{
+		// .asset already exists lets load that instead.
+		std::string pathWithoutExtention = filepath.substr(0, filepath.find_last_of("."));
+		return CreateAssetFromFilePath(pathWithoutExtention + ".asset");
+	}
+
+	// Time to create a .asset from a import (.mp3 .png .wav etc)
+	std::string extention = filepath.substr(filepath.find_first_of("."));
+	auto asset = AssetRegistery::CreateFromExtention(extention);
+	asset->ImportFrom(filepath);
+
+	return std::move(asset);
 }
 
 

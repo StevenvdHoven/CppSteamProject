@@ -2,11 +2,18 @@
 #include "Asset.h"
 
 struct SDL_Texture;
+class TextureManager;
 
 class Texture : public Asset
 {
-	ASSET_LOOKUP(Texture, "texture")
 public:
+	ASSET_LOOKUP(Texture, "texture", ".png", ".jpeg")
+
+	Texture() :
+		sdltexture{nullptr}
+	{
+
+	}
 	Texture(SDL_Texture* texture);
 
 	SDL_Texture* Get() const { return sdltexture; }
@@ -17,7 +24,7 @@ public:
 
 private:
 	SDL_Texture* sdltexture;
-
+	friend TextureManager;
 	
 };
 

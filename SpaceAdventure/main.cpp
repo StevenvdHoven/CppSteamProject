@@ -46,9 +46,9 @@ int main()
 	Renderer::Init(editorRenderer);
 #ifdef _DEBUG
 	Viewport& gameviewport = windowManager->Insert(new Viewport(editorRenderer));
-	WorldView& worldView = windowManager->Insert(new WorldView());
-	Properties& propertiesWindow = windowManager->Insert(new Properties());
-	ContentWindow& contentWindow = windowManager->Insert(new ContentWindow());
+	windowManager->Insert(new WorldView());
+	windowManager->Insert(new Properties());
+	windowManager->Insert(new ContentWindow());
 #endif
 
 	Texture testTexture = TextureManager::LoadTexture("character2.png");

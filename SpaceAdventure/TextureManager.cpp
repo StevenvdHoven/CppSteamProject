@@ -16,18 +16,27 @@ void TextureManager::CleanUp()
 
 Texture TextureManager::LoadTexture(const char* texturepath)
 {
+	
+	Texture texture;
+	LoadTexture(texturepath, &texture);
+	return texture;
+}
+
+void TextureManager::LoadTexture(const char* texturepath, Texture* outTexture)
+{
 	std::string path = texturepath;
 	if (LoadedTextures.contains(path)) {
-		return Texture(LoadedTextures[path]);
+		outTexture->sdltexture = LoadedTextures[path];
 	}
 
 	SDL_Surface* surface = IMG_Load(path.c_str());
 	if (!surface)
 	{
 		printf("IMG_Load failed: %s\n", IMG_GetError());
+		return;
 	}
 
 	SDL_Texture* loadedTexture = SDL_CreateTextureFromSurface(Renderer::GetCurrentRenderer(), surface);
 	LoadedTextures.emplace(path, loadedTexture);
-	return Texture(loadedTexture);
+	outTexture->sdltexture = loadedTexture;
 }
