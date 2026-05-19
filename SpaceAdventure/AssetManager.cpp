@@ -45,6 +45,10 @@ void AssetFolder::RemoveFolder(AssetFolder* folder)
 
 void AssetFolder::AddAsset(std::unique_ptr<Asset>&& asset)
 {
+	if (asset == nullptr) {
+		return;
+	}
+
 	auto foundit = std::find_if(Assets.begin(), Assets.end(), [&](const std::unique_ptr<Asset>& checkAsset)
 		{
 			return asset->GetPath() == checkAsset->GetPath();
@@ -129,7 +133,7 @@ std::unique_ptr<Asset> AssetManager::CreateAssetFromFilePath(std::string filepat
 		return nullptr;
 	}
 
-	int stringsize = 0;
+	std::uint32_t stringsize = 0;
 	inputstream.read(reinterpret_cast<char*>(&stringsize), sizeof(stringsize));
 
 	if (stringsize <= 0)
@@ -143,7 +147,20 @@ std::unique_ptr<Asset> AssetManager::CreateAssetFromFilePath(std::string filepat
 		return nullptr;
 	}
 
+	std::uint32_t sourceSize = 0;
+	inputstream.read(reinterpret_cast<char*>(&sourceSize), sizeof(sourceSize));
+
+	std::string source(sourceSize, '\0');
+	if (sourceSize > 0)
+	{
+		inputstream.read(source.data(), sourceSize);
+	}
+
 	auto asset = AssetRegistery::Create(assetType);
+	asset->Source = source;
+	asset->FilePath = filepath;
+	asset->Name = filepath.substr(filepath.find_last_of("/"));
+
 	asset->Load(inputstream);
 
 	return std::move(asset);
@@ -160,9 +177,13 @@ void AssetManager::SaveAsset(std::unique_ptr<Asset>& asset)
 	}
 
 	const std::string assetType = asset->GetType();
-	const size_t stringSize = assetType.size();
-	outputstream.write(reinterpret_cast<const char*>(stringSize), sizeof(stringSize));
+	std::uint32_t stringSize = static_cast<std::uint32_t>(assetType.size());
+	outputstream.write(reinterpret_cast<const char*>(&stringSize), sizeof(stringSize));
 	outputstream.write(reinterpret_cast<const char*>(assetType.data()), stringSize);
+
+	std::uint32_t sourceSize = static_cast<std::uint32_t>(asset->Source.size());
+	outputstream.write(reinterpret_cast<const char*>(&sourceSize), sizeof(sourceSize));
+	outputstream.write(reinterpret_cast<const char*>(asset->Source.data()), sourceSize);
 
 	asset->Save(outputstream);
 
@@ -194,10 +215,10 @@ bool AssetManager::AssetImported(std::string filepath)
 
 std::unique_ptr<Asset> AssetManager::CreateAssetFromImport(std::string filepath)
 {
+	std::string pathWithoutExtention = filepath.substr(0, filepath.find_last_of("."));
 	if (AssetImported(filepath))
 	{
 		// .asset already exists lets load that instead.
-		std::string pathWithoutExtention = filepath.substr(0, filepath.find_last_of("."));
 		return CreateAssetFromFilePath(pathWithoutExtention + ".asset");
 	}
 
@@ -205,7 +226,11 @@ std::unique_ptr<Asset> AssetManager::CreateAssetFromImport(std::string filepath)
 	std::string extention = filepath.substr(filepath.find_first_of("."));
 	auto asset = AssetRegistery::CreateFromExtention(extention);
 	asset->ImportFrom(filepath);
+	asset->FilePath = pathWithoutExtention + ".asset";
+	asset->Source = filepath;
+	asset->Name = filepath.substr(filepath.find_last_of("/"));
 
+	SaveAsset(asset);
 	return std::move(asset);
 }
 

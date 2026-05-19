@@ -17,6 +17,7 @@ public:
 	void RemoveAsset(Asset* asset);
 
 	const std::set<std::unique_ptr<AssetFolder>>& GetFolders() const { return Folders;  }
+	const std::set<std::unique_ptr<Asset>>& GetAssets() const { return Assets; }
 
 	const std::string& GetName() const { return Name; }
 	const std::string& GetPath() const { return FolderPath; }

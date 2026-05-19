@@ -1,5 +1,6 @@
 #include "ContentWindow.h"
 #include "AssetManager.h"
+#include "Asset.h"
 
 ContentWindow::ContentWindow()
 {
@@ -57,21 +58,43 @@ void ContentWindow::ImGui_FolderViewHelper(AssetFolder* folder)
 {
 	ImGui::Begin("FolderView");
 
+	const float spacing = ImGui::GetStyle().ItemSpacing.x;
+	const float windowVisibleX2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
+
+	const auto& assets = folder->GetAssets();
+
+	for (const auto& asset : assets)
+	{
+		asset->ImGui_ContentHelper();
+
+		float lastButtonX2 = ImGui::GetItemRectMax().x;
+		float nextButtonX2 = lastButtonX2 + spacing + 200.0f;
+
+		if (nextButtonX2 < windowVisibleX2)
+		{
+			ImGui::SameLine();
+		}
+	}
+
 	ImGui::End();
 }
 
 void ContentWindow::ImGui_FolderTree(AssetFolder* folder)
 {
 	if (ImGui::TreeNodeEx(folder->GetName().c_str())) {
+
+		//bool justOpened = ImGui::IsItemToggledOpen();
+
+		//if (justOpened)
+		//{
+		CurrentOpenFolder = folder;
+		//}
+
 		const auto& childFolders = folder->GetFolders();
 		for (const auto& childFolder : childFolders) {
 			ImGui_FolderTree(childFolder.get());
 		}
+		
 		ImGui::TreePop();
-	}
-
-	if (ImGui::IsItemClicked())
-	{
-		CurrentOpenFolder = folder;
 	}
 }

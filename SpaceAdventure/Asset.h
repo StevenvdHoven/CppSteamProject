@@ -6,6 +6,8 @@
 #include <vector>
 #include "AssetRegistery.h"
 
+class AssetManager;
+
 class Asset
 {
 public:
@@ -16,7 +18,9 @@ public:
 
 	virtual void Load(std::ifstream& inputstream) {}
 	virtual void Save(std::ofstream& outputstream) {}
-	virtual void ImportFrom(std::string filepath) {}
+	virtual void ImportFrom(const std::string& filepath) {}
+
+	virtual void ImGui_ContentHelper();
 	
 
 	void MoveLocation(std::string filepath);
@@ -28,4 +32,6 @@ private:
 	std::string Name;
 	std::string FilePath;
 	std::string Source; // Represents imported files like .png or .mp3 or .wav
+
+	friend AssetManager;
 };

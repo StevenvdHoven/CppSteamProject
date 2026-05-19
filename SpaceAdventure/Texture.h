@@ -21,6 +21,9 @@ public:
 	// Inherited via Asset
 	void Load(std::ifstream& inputstream) override;
 	void Save(std::ofstream& ouputstream) override;
+	void ImportFrom(const std::string& filepath) override;
+
+	void ImGui_ContentHelper() override;
 
 private:
 	SDL_Texture* sdltexture;

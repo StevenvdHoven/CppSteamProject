@@ -42,8 +42,8 @@ int main()
 	);
 	ImGui_ImplSDLRenderer2_Init(editorRenderer);
 
-	AssetManager::Init();
 	Renderer::Init(editorRenderer);
+	AssetManager::Init();
 #ifdef _DEBUG
 	Viewport& gameviewport = windowManager->Insert(new Viewport(editorRenderer));
 	windowManager->Insert(new WorldView());
