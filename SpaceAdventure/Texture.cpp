@@ -38,7 +38,23 @@ void Texture::ImGui_ContentHelper()
 	float factor = IMAGEWIDTH / std::max(1.0f, static_cast<float>(width));
 	ImVec2 size(IMAGEWIDTH, height * factor);
 	
-	ImGui::Image((ImTextureID)sdltexture, size);
+	// Remember where to draw
+	ImVec2 pos = ImGui::GetCursorScreenPos();
+
+	// Create invisible button
+	ImGui::InvisibleButton(GetName().c_str(), size);
+
+	bool hovered = ImGui::IsItemHovered();
+
+	// Draw image on top of the button area
+	ImGui::SetCursorScreenPos(pos);
+
+	ImVec4 tint = hovered
+		? ImVec4(0.7f, 0.8f, 1.0f, 1.0f) // slight blue tint
+		: ImVec4(1.f, 1.f, 1.f, 1.f);
+
+	ImGui::Image((ImTextureID)sdltexture, size, ImVec2(0, 0), ImVec2(1, 1), tint, tint);
+	
 	Asset::ImGui_ContentHelper();
 	ImGui::EndGroup();
 }
