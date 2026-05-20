@@ -1,11 +1,19 @@
 #include "Texture.h"
 #include "TextureManager.h"
 #include <imgui/imgui.h>
-#include <SDL/SDL.h>
+#include "EditorWindowManager.h"
+#include "TextureEditor.h"
+
+Texture::Texture():
+	Texture(nullptr)
+{
+}
 
 Texture::Texture(SDL_Texture* texture):
-	sdltexture{texture}
+	sdltexture{texture},
+	tint{255, 255, 255, 255}
 {
+	
 }
 
 void Texture::Load(std::ifstream& inputstream)
@@ -42,7 +50,10 @@ void Texture::ImGui_ContentHelper()
 	ImVec2 pos = ImGui::GetCursorScreenPos();
 
 	// Create invisible button
-	ImGui::InvisibleButton(GetName().c_str(), size);
+	if (ImGui::InvisibleButton(GetName().c_str(), size))
+	{
+		EditorWindowManager::GetChecked().GetAssetEditor<TextureEditor>().Open(this);
+	}
 
 	bool hovered = ImGui::IsItemHovered();
 

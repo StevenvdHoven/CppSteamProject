@@ -1,4 +1,57 @@
-﻿  main.cpp
+﻿  Asset.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(19,35): warning C4100: 'inputstream': unreferenced formal parameter
+  (compiling source file 'Asset.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(20,35): warning C4100: 'outputstream': unreferenced formal parameter
+  (compiling source file 'Asset.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(21,45): warning C4100: 'filepath': unreferenced formal parameter
+  (compiling source file 'Asset.cpp')
+  
+  AssetManager.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(19,35): warning C4100: 'inputstream': unreferenced formal parameter
+  (compiling source file 'AssetManager.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(20,35): warning C4100: 'outputstream': unreferenced formal parameter
+  (compiling source file 'AssetManager.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(21,45): warning C4100: 'filepath': unreferenced formal parameter
+  (compiling source file 'AssetManager.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\AssetManager.cpp(42,45): warning C4100: 'folder': unreferenced formal parameter
+E:\Projects\CppSteamProject\SpaceAdventure\AssetManager.cpp(63,38): warning C4100: 'asset': unreferenced formal parameter
+  AssetRegistery.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(19,35): warning C4100: 'inputstream': unreferenced formal parameter
+  (compiling source file 'AssetRegistery.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(20,35): warning C4100: 'outputstream': unreferenced formal parameter
+  (compiling source file 'AssetRegistery.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(21,45): warning C4100: 'filepath': unreferenced formal parameter
+  (compiling source file 'AssetRegistery.cpp')
+  
+  Component.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Component.h(9,28): warning C4100: 'deltaTime': unreferenced formal parameter
+  (compiling source file 'Component.cpp')
+  
+  ContentWindow.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(19,35): warning C4100: 'inputstream': unreferenced formal parameter
+  (compiling source file 'ContentWindow.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(20,35): warning C4100: 'outputstream': unreferenced formal parameter
+  (compiling source file 'ContentWindow.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(21,45): warning C4100: 'filepath': unreferenced formal parameter
+  (compiling source file 'ContentWindow.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\ContentWindow.cpp(35,63): warning C5054: operator '|': deprecated between enumerations of different types
+  EditorWindow.cpp
+  EditorWindowManager.cpp
+  GameObject.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Component.h(9,28): warning C4100: 'deltaTime': unreferenced formal parameter
+  (compiling source file 'GameObject.cpp')
+  
+  main.cpp
 E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(35,3): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   (compiling source file 'main.cpp')
   
@@ -8,10 +61,96 @@ E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(3
 E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(226,2): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   (compiling source file 'main.cpp')
   
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(19,35): warning C4100: 'inputstream': unreferenced formal parameter
+  (compiling source file 'main.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(20,35): warning C4100: 'outputstream': unreferenced formal parameter
+  (compiling source file 'main.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(21,45): warning C4100: 'filepath': unreferenced formal parameter
+  (compiling source file 'main.cpp')
+  
+  Math.cpp
+  Properties.cpp
+  Renderer.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(19,35): warning C4100: 'inputstream': unreferenced formal parameter
+  (compiling source file 'Renderer.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(20,35): warning C4100: 'outputstream': unreferenced formal parameter
+  (compiling source file 'Renderer.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(21,45): warning C4100: 'filepath': unreferenced formal parameter
+  (compiling source file 'Renderer.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Renderer.cpp(14,16): warning C4244: '=': conversion from 'const float' to 'int', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\Renderer.cpp(15,16): warning C4244: '=': conversion from 'const float' to 'int', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\Renderer.cpp(23,16): warning C4244: '=': conversion from 'const float' to 'int', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\Renderer.cpp(24,16): warning C4244: '=': conversion from 'const float' to 'int', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\Renderer.cpp(25,17): warning C4244: '=': conversion from 'const float' to 'int', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\Renderer.cpp(26,17): warning C4244: '=': conversion from 'const float' to 'int', possible loss of data
+  Scene.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(19,35): warning C4100: 'inputstream': unreferenced formal parameter
+  (compiling source file 'Scene.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(20,35): warning C4100: 'outputstream': unreferenced formal parameter
+  (compiling source file 'Scene.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(21,45): warning C4100: 'filepath': unreferenced formal parameter
+  (compiling source file 'Scene.cpp')
+  
+  SceneManager.cpp
+  imgui.cpp
+  ImGuizmo.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(759,29): warning C4245: 'initializing': conversion from 'int' to 'ImGuiID', signed/unsigned mismatch
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(769,33): warning C4245: 'argument': conversion from 'int' to 'const T', signed/unsigned mismatch
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(769,33): warning C4245:         with
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(769,33): warning C4245:         [
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(769,33): warning C4245:             T=ImU32
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(769,33): warning C4245:         ]
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(1354,118): warning C4244: 'argument': conversion from 'float' to 'ImDrawFlags', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(1384,122): warning C4244: 'argument': conversion from 'float' to 'ImDrawFlags', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(1647,86): warning C4244: 'argument': conversion from 'float' to 'ImDrawFlags', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(1989,36): warning C4245: '=': conversion from 'int' to 'ImGuiID', signed/unsigned mismatch
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(2574,36): warning C4245: '=': conversion from 'int' to 'ImGuiID', signed/unsigned mismatch
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(2639,39): warning C4245: 'argument': conversion from 'int' to 'const T', signed/unsigned mismatch
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(2639,39): warning C4245:         with
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(2639,39): warning C4245:         [
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(2639,39): warning C4245:             T=ImU32
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(2639,39): warning C4245:         ]
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_impl_sdl2.cpp
+  imgui_impl_sdlrenderer2.cpp
+  Compiling...
+  imgui_tables.cpp
+  imgui_widgets.cpp
+  Texture.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(19,35): warning C4100: 'inputstream': unreferenced formal parameter
+  (compiling source file 'Texture.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(20,35): warning C4100: 'outputstream': unreferenced formal parameter
+  (compiling source file 'Texture.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(21,45): warning C4100: 'filepath': unreferenced formal parameter
+  (compiling source file 'Texture.cpp')
+  
+  TextureManager.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(19,35): warning C4100: 'inputstream': unreferenced formal parameter
+  (compiling source file 'TextureManager.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(20,35): warning C4100: 'outputstream': unreferenced formal parameter
+  (compiling source file 'TextureManager.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(21,45): warning C4100: 'filepath': unreferenced formal parameter
+  (compiling source file 'TextureManager.cpp')
+  
+  Vector2.cpp
+  Viewport.cpp
+  WorldView.cpp
 LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
   Generating code
   Previous IPDB was built with incompatible compiler, fall back to full compilation.
-  All 1942 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  All 2947 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   Finished generating code
   SpaceAdventure.vcxproj -> E:\Projects\CppSteamProject\SpaceAdventure\bin\Release\x64\SpaceGame.exe
   0 File(s) copied

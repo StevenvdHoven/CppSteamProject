@@ -1,13 +1,17 @@
-﻿  Texture.cpp
-E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(19,35): warning C4100: 'inputstream': unreferenced parameter
-  (compiling source file 'Texture.cpp')
+﻿  TextureEditor.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(19,35): warning C4100: 'inputstream': unreferenced formal parameter
+  (compiling source file 'TextureEditor.cpp')
   
-E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(20,35): warning C4100: 'outputstream': unreferenced parameter
-  (compiling source file 'Texture.cpp')
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(20,35): warning C4100: 'outputstream': unreferenced formal parameter
+  (compiling source file 'TextureEditor.cpp')
   
-E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(21,45): warning C4100: 'filepath': unreferenced parameter
-  (compiling source file 'Texture.cpp')
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(21,45): warning C4100: 'filepath': unreferenced formal parameter
+  (compiling source file 'TextureEditor.cpp')
   
+E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp(51,48): warning C4244: 'initializing': conversion from 'float' to 'Uint8', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp(51,59): warning C4244: 'initializing': conversion from 'float' to 'Uint8', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp(51,70): warning C4244: 'initializing': conversion from 'float' to 'Uint8', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp(51,81): warning C4244: 'initializing': conversion from 'float' to 'Uint8', possible loss of data
   SpaceAdventure.vcxproj -> E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\SpaceGame.exe
   0 File(s) copied
   0 File(s) copied

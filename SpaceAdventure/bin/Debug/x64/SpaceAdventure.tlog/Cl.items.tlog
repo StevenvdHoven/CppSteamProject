@@ -1,4 +1,5 @@
 E:\Projects\CppSteamProject\SpaceAdventure\Asset.cpp;E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\Asset.obj
+E:\Projects\CppSteamProject\SpaceAdventure\AssetEditor.cpp;E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\AssetEditor.obj
 E:\Projects\CppSteamProject\SpaceAdventure\AssetManager.cpp;E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\AssetManager.obj
 E:\Projects\CppSteamProject\SpaceAdventure\AssetRegistery.cpp;E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\AssetRegistery.obj
 E:\Projects\CppSteamProject\SpaceAdventure\Component.cpp;E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\Component.obj
@@ -21,6 +22,7 @@ E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\imgui_impl_sdlrenderer2.
 E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\imgui_tables.cpp;E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\imgui_tables.obj
 E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\imgui_widgets.cpp;E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\imgui_widgets.obj
 E:\Projects\CppSteamProject\SpaceAdventure\Texture.cpp;E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\Texture.obj
+E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp;E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\TextureEditor.obj
 E:\Projects\CppSteamProject\SpaceAdventure\TextureManager.cpp;E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\TextureManager.obj
 E:\Projects\CppSteamProject\SpaceAdventure\Vector2.cpp;E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\Vector2.obj
 E:\Projects\CppSteamProject\SpaceAdventure\Viewport.cpp;E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\Viewport.obj

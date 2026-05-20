@@ -46,6 +46,12 @@
     <Filter Include="Engine\Scene">
       <UniqueIdentifier>{d86c6df8-55ae-4f53-8ba5-6b53409afd98}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Editor\Windows\AssetEditors">
+      <UniqueIdentifier>{78b7e161-44da-401f-ad63-d3f3aa59cdda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Types">
+      <UniqueIdentifier>{dd90b909-b17d-464a-8e92-89855a66bc9e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -129,6 +135,12 @@
     <ClCompile Include="AssetRegistery.cpp">
       <Filter>Engine\Assets</Filter>
     </ClCompile>
+    <ClCompile Include="AssetEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureEditor.cpp">
+      <Filter>Editor\Windows\AssetEditors</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Viewport.h">
@@ -184,6 +196,12 @@
     </ClInclude>
     <ClInclude Include="AssetRegistery.h">
       <Filter>Engine\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetEditor.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureEditor.h">
+      <Filter>Editor\Windows\AssetEditors</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

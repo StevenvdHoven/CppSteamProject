@@ -1,19 +1,16 @@
 #pragma once
 #include "Asset.h"
+#include <SDL/SDL.h>
 
-struct SDL_Texture;
 class TextureManager;
+class TextureEditor;
 
 class Texture : public Asset
 {
 public:
 	ASSET_LOOKUP(Texture, "texture", ".png", ".jpeg")
 
-	Texture() :
-		sdltexture{nullptr}
-	{
-
-	}
+	Texture();
 	Texture(SDL_Texture* texture);
 
 	SDL_Texture* Get() const { return sdltexture; }
@@ -27,7 +24,8 @@ public:
 
 private:
 	SDL_Texture* sdltexture;
+	SDL_Color tint;
 	friend TextureManager;
-	
+	friend TextureEditor;
 };
 

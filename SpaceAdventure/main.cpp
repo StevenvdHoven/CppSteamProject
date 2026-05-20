@@ -19,6 +19,7 @@
 #include "WorldView.h"
 #include "Properties.h"
 #include "TextureManager.h"
+#include "TextureEditor.h"
 
 
 int main() 
@@ -49,6 +50,7 @@ int main()
 	windowManager->Insert(new WorldView());
 	windowManager->Insert(new Properties());
 	windowManager->Insert(new ContentWindow());
+	windowManager->Insert(new TextureEditor());
 #endif
 
 	Texture testTexture = TextureManager::LoadTexture("character2.png");

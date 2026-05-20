@@ -6,7 +6,15 @@
 class EditorWindowManager
 {
 public:
-	EditorWindowManager() {}
+	EditorWindowManager() 
+	{
+		if (Instance)
+		{
+			throw new std::exception("MULTIPLE EDITORWINDOWMANAGERS!!");
+		}
+
+		Instance = this;
+	}
 
 	void Render();
 public:
@@ -17,8 +25,25 @@ public:
 		return *editorWindow;
 	}
 
+	template<typename T>
+	T& GetAssetEditor()
+	{
+		for (const auto& editors : EditorWindows) {
+			T* foundEditor = dynamic_cast<T*>(editors.get());
+			if (foundEditor) {
+				return *foundEditor;
+			}
+		}
+		throw new std::exception("editor not found!");
+	}
+
+public:
+	static EditorWindowManager& GetChecked() { return *Instance; }
+	static EditorWindowManager* Get() { return Instance; }
 private:
 	using EditorWindowVector = std::vector<std::unique_ptr<EditorWindow>>;
 	EditorWindowVector EditorWindows;
+
+	static EditorWindowManager* Instance;
 };
 
