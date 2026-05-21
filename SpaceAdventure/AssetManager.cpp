@@ -84,7 +84,7 @@ void AssetManager::CleanUp()
 	bIntialised = false;
 }
 
-void AssetManager::UpdateFolder(AssetFolder* folder)
+void AssetManager::UpdateFolder(AssetFolder* folder, bool assetOnly)
 {
 	const std::string& path{ folder->GetPath() };
 #ifdef _DEBUG
@@ -92,15 +92,15 @@ void AssetManager::UpdateFolder(AssetFolder* folder)
 #endif
 	for (const auto& entry : std::filesystem::directory_iterator(path))
 	{
-		if (entry.is_directory()) {
+		if (!entry.is_directory()) {
+			folder->AddAsset(std::move(CreateAssetFromFilePath(entry.path().generic_string())));
+		}
+		else if(!assetOnly) {
 #ifdef _DEBUG
 			std::cout << "Found folder: " << entry.path().generic_string() << std::endl;
 #endif
 			folder->AddFolder(std::move(std::make_unique<AssetFolder>(entry.path().generic_string())));
-			
-		}
-		else {
-			folder->AddAsset(std::move(CreateAssetFromFilePath(entry.path().generic_string())));
+
 		}
 	}
 #ifdef _DEBUG
@@ -166,8 +166,14 @@ std::unique_ptr<Asset> AssetManager::CreateAssetFromFilePath(std::string filepat
 	return std::move(asset);
 }
 
-void AssetManager::SaveAsset(std::unique_ptr<Asset>& asset)
+void AssetManager::SaveAsset(Asset* asset, bool dup)
 {
+	if (dup)
+	{
+		std::string pathWithoutExtention = asset->FilePath.substr(0, asset->FilePath.find_first_of("."));
+		asset->FilePath = pathWithoutExtention + "_dup.asset";
+	}
+
 	std::ofstream outputstream;
 	outputstream.open(asset->GetPath(), std::ios::binary | std::ios::out);
 	if (!outputstream.is_open())
@@ -191,6 +197,31 @@ void AssetManager::SaveAsset(std::unique_ptr<Asset>& asset)
 	{
 		printf("failed while writing asset: %s", asset->GetPath().c_str());
 	}
+
+	if (dup)
+	{
+		UpdateFolder(FindFolder(asset->GetPath().substr(0,asset->FilePath.find_last_of("/"))));
+	}
+}
+
+AssetFolder* AssetManager::FindFolder(std::string path)
+{
+	return FindFolder(ContentFolder, path);
+}
+
+AssetFolder* AssetManager::FindFolder(AssetFolder* parentFolder, std::string path)
+{
+	if (parentFolder->GetPath() == path) {
+		return parentFolder;
+	}
+
+	for (const auto& folder : parentFolder->GetFolders())
+	{
+		if (AssetFolder* found = FindFolder(folder.get(), path)) {
+			return found;
+		}
+	}
+	return nullptr;
 }
 
 AssetFolder* AssetManager::GetRootFolder()
@@ -230,7 +261,7 @@ std::unique_ptr<Asset> AssetManager::CreateAssetFromImport(std::string filepath)
 	asset->Source = filepath;
 	asset->Name = filepath.substr(filepath.find_last_of("/"));
 
-	SaveAsset(asset);
+	SaveAsset(asset.get());
 	return std::move(asset);
 }
 

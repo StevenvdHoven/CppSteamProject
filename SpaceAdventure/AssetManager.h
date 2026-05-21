@@ -35,10 +35,12 @@ public:
 	static void Init();
 	static void CleanUp();
 
-	static void UpdateFolder(AssetFolder* folder);
+	static void UpdateFolder(AssetFolder* folder, bool assetOnly = false);
 	static std::unique_ptr<Asset> CreateAssetFromFilePath(std::string filepath);
-	static void SaveAsset(std::unique_ptr<Asset>& asset);
+	static void SaveAsset(Asset* asset, bool dup = false);
 
+	static AssetFolder* FindFolder(std::string path);
+	static AssetFolder* FindFolder(AssetFolder* parentFolder, std::string path);
 	static AssetFolder* GetRootFolder();
 
 	static bool AssetImported(std::string filepath);

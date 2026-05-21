@@ -1,5 +1,6 @@
 #pragma once
 #include "EditorWindow.h"
+#include "Texture.h"
 
 class Texture;
 
@@ -19,7 +20,14 @@ public:
 
 	// Editor window overrides
 	void ImGui_OnWindow() override;
+
+	void Helper_CropImage(bool hovered, bool clicked, const ImVec2& imageMin,const ImVec2& imageMax, const ImVec2& size, bool& isSelecting, ImVec2& start, ImVec2& end);
+	void Save(bool isDuplicate = false);
+
 private:
-	Texture* CurrentLoadedTexture = nullptr;
+	Texture* LoadedTexture;
+	Texture EditTexture;
+
+	bool bIsSelecting = false;
 };
 

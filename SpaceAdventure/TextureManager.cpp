@@ -39,4 +39,5 @@ void TextureManager::LoadTexture(const char* texturepath, Texture* outTexture)
 	SDL_Texture* loadedTexture = SDL_CreateTextureFromSurface(Renderer::GetCurrentRenderer(), surface);
 	LoadedTextures.emplace(path, loadedTexture);
 	outTexture->sdltexture = loadedTexture;
+	outTexture->Refresh();
 }

@@ -1,4 +1,38 @@
-﻿  TextureEditor.cpp
+﻿  Renderer.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(19,35): warning C4100: 'inputstream': unreferenced formal parameter
+  (compiling source file 'Renderer.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(20,35): warning C4100: 'outputstream': unreferenced formal parameter
+  (compiling source file 'Renderer.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(21,45): warning C4100: 'filepath': unreferenced formal parameter
+  (compiling source file 'Renderer.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Renderer.cpp(14,16): warning C4244: '=': conversion from 'const float' to 'int', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\Renderer.cpp(15,16): warning C4244: '=': conversion from 'const float' to 'int', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\Renderer.cpp(23,16): warning C4244: '=': conversion from 'const float' to 'int', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\Renderer.cpp(24,16): warning C4244: '=': conversion from 'const float' to 'int', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\Renderer.cpp(25,17): warning C4244: '=': conversion from 'const float' to 'int', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\Renderer.cpp(26,17): warning C4244: '=': conversion from 'const float' to 'int', possible loss of data
+  Texture.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(19,35): warning C4100: 'inputstream': unreferenced formal parameter
+  (compiling source file 'Texture.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(20,35): warning C4100: 'outputstream': unreferenced formal parameter
+  (compiling source file 'Texture.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(21,45): warning C4100: 'filepath': unreferenced formal parameter
+  (compiling source file 'Texture.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Texture.cpp(53,9): warning C4458: declaration of 'size' hides class member
+      E:\Projects\CppSteamProject\SpaceAdventure\Texture.h(32,10):
+      see declaration of 'Texture::size'
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Texture.cpp(82,9): warning C4458: declaration of 'tint' hides class member
+      E:\Projects\CppSteamProject\SpaceAdventure\Texture.h(30,12):
+      see declaration of 'Texture::tint'
+  
+  TextureEditor.cpp
 E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(19,35): warning C4100: 'inputstream': unreferenced formal parameter
   (compiling source file 'TextureEditor.cpp')
   
@@ -8,10 +42,44 @@ E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(20,35): warning C4100: 'outpu
 E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(21,45): warning C4100: 'filepath': unreferenced formal parameter
   (compiling source file 'TextureEditor.cpp')
   
-E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp(51,48): warning C4244: 'initializing': conversion from 'float' to 'Uint8', possible loss of data
-E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp(51,59): warning C4244: 'initializing': conversion from 'float' to 'Uint8', possible loss of data
-E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp(51,70): warning C4244: 'initializing': conversion from 'float' to 'Uint8', possible loss of data
-E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp(51,81): warning C4244: 'initializing': conversion from 'float' to 'Uint8', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp(99,41): warning C4244: 'initializing': conversion from 'float' to 'Uint8', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp(99,60): warning C4244: 'initializing': conversion from 'float' to 'Uint8', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp(99,79): warning C4244: 'initializing': conversion from 'float' to 'Uint8', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp(99,98): warning C4244: 'initializing': conversion from 'float' to 'Uint8', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp(164,10): warning C4456: declaration of 'localStart' hides previous local declaration
+      E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp(146,16):
+      see declaration of 'localStart'
+  
+  TextureManager.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(19,35): warning C4100: 'inputstream': unreferenced formal parameter
+  (compiling source file 'TextureManager.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(20,35): warning C4100: 'outputstream': unreferenced formal parameter
+  (compiling source file 'TextureManager.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(21,45): warning C4100: 'filepath': unreferenced formal parameter
+  (compiling source file 'TextureManager.cpp')
+  
+  main.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(35,3): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  (compiling source file 'main.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(37,3): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  (compiling source file 'main.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(226,2): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  (compiling source file 'main.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(19,35): warning C4100: 'inputstream': unreferenced formal parameter
+  (compiling source file 'main.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(20,35): warning C4100: 'outputstream': unreferenced formal parameter
+  (compiling source file 'main.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(21,45): warning C4100: 'filepath': unreferenced formal parameter
+  (compiling source file 'main.cpp')
+  
+  Generating Code...
   SpaceAdventure.vcxproj -> E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\SpaceGame.exe
   0 File(s) copied
   0 File(s) copied

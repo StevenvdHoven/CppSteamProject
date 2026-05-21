@@ -1,6 +1,7 @@
 #pragma once
 #include "Asset.h"
 #include <SDL/SDL.h>
+#include <imgui/imgui_internal.h>
 
 class TextureManager;
 class TextureEditor;
@@ -22,9 +23,13 @@ public:
 
 	void ImGui_ContentHelper() override;
 
+	void Refresh();
+
 private:
 	SDL_Texture* sdltexture;
 	SDL_Color tint;
+	SDL_Rect crop;
+	ImVec2i size;
 	friend TextureManager;
 	friend TextureEditor;
 };
