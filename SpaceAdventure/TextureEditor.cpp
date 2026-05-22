@@ -213,5 +213,7 @@ void TextureEditor::Save(bool isDuplicate)
 		return;
 	}
 
-	AssetManager::SaveAsset(&EditTexture, true);
+	Texture temp = EditTexture;
+	AssetManager::SaveAsset(&temp, true);
+	
 }

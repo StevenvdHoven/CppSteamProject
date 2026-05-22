@@ -159,19 +159,40 @@ std::unique_ptr<Asset> AssetManager::CreateAssetFromFilePath(std::string filepat
 	auto asset = AssetRegistery::Create(assetType);
 	asset->Source = source;
 	asset->FilePath = filepath;
-	asset->Name = filepath.substr(filepath.find_last_of("/"));
+
+	auto start = filepath.find_last_of("/") + 1;
+	auto end = filepath.find_first_of(".");
+	asset->Name = filepath.substr(start, end - start);
 
 	asset->Load(inputstream);
 
 	return std::move(asset);
 }
 
-void AssetManager::SaveAsset(Asset* asset, bool dup)
+void AssetManager::SaveAsset(Asset* asset, bool dup, bool rename)
 {
+	if (rename)
+	{
+		std::string newpath = asset->FilePath.substr(0 ,asset->FilePath.find_last_of("/") + 1) + asset->Name + ".asset";
+		if (asset->Source.substr(0, asset->Source.find_last_of(".")) == asset->FilePath.substr(0, asset->FilePath.find_last_of("."))) {
+			std::string newsourcepath = asset->Source.substr(asset->Source.find_last_of("."));
+			newsourcepath = newpath.substr(0, newpath.find_last_of(".")) + newsourcepath;
+			std::filesystem::rename(asset->Source, newsourcepath);
+			asset->Source = newsourcepath;
+		}
+		std::filesystem::rename(asset->FilePath, newpath);
+		asset->FilePath = newpath;
+	}
+
 	if (dup)
 	{
 		std::string pathWithoutExtention = asset->FilePath.substr(0, asset->FilePath.find_first_of("."));
-		asset->FilePath = pathWithoutExtention + "_dup.asset";
+		asset->FilePath = pathWithoutExtention + "_dup";
+		while (std::filesystem::exists(asset->FilePath + ".asset"))
+		{
+			asset->FilePath += "_dup";
+		}
+		asset->FilePath += ".asset";
 	}
 
 	std::ofstream outputstream;
@@ -198,9 +219,11 @@ void AssetManager::SaveAsset(Asset* asset, bool dup)
 		printf("failed while writing asset: %s", asset->GetPath().c_str());
 	}
 
-	if (dup)
+	outputstream.close();
+
+	if (dup || rename)
 	{
-		UpdateFolder(FindFolder(asset->GetPath().substr(0,asset->FilePath.find_last_of("/"))));
+		UpdateFolder(FindFolder(asset->GetPath().substr(0, asset->FilePath.find_last_of("/"))));
 	}
 }
 

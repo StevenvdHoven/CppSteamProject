@@ -69,10 +69,12 @@ void Texture::ImGui_ContentHelper()
 	ImVec2 pos = ImGui::GetCursorScreenPos();
 
 	// Create invisible button
-	if (ImGui::InvisibleButton(GetName().c_str(), size))
+	ImGui::PushID(this);
+	if (ImGui::InvisibleButton("##InvisibleButton", size))
 	{
 		EditorWindowManager::GetChecked().GetAssetEditor<TextureEditor>().Open(this);
 	}
+	ImGui::PopID();
 
 	bool hovered = ImGui::IsItemHovered();
 

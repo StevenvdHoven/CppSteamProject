@@ -37,7 +37,7 @@ public:
 
 	static void UpdateFolder(AssetFolder* folder, bool assetOnly = false);
 	static std::unique_ptr<Asset> CreateAssetFromFilePath(std::string filepath);
-	static void SaveAsset(Asset* asset, bool dup = false);
+	static void SaveAsset(Asset* asset, bool dup = false, bool rename = false);
 
 	static AssetFolder* FindFolder(std::string path);
 	static AssetFolder* FindFolder(AssetFolder* parentFolder, std::string path);
