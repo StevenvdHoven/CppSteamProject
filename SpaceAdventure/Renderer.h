@@ -1,13 +1,17 @@
 #pragma once
 #include <SDL/SDL.h>
+#include <set>
+#include <mutex>
 #include "Math.h"
 
 class Texture;
+class RenderComponent;
 
 class Renderer
 {
 public:
 	Renderer();
+	~Renderer();
 
 	Renderer(const Renderer& other) = delete;
 	Renderer& operator=(const Renderer& other) = delete;
@@ -15,7 +19,19 @@ public:
 	Renderer(Renderer&& other) = delete;
 	Renderer& operator=(Renderer&& other) = delete;
 
+	void RenderLoop();
+
+private:
+	using RenderComponentSet = std::set<RenderComponent*>;
+	RenderComponentSet RenderComponents;
+
+	std::jthread RenderThread;
+
+public:
 	static void Init(SDL_Renderer* renderer);
+
+	static void Register(RenderComponent* renderComponent);
+	static void UnRegister(RenderComponent* renderComponent);
 
 	static void RenderTexture(const Texture& texture, const Math::Vector2& pos);
 	static void RenderTexture(const Texture& texture, const Math::Vector2& pos, const Math::Vector2& size);
@@ -24,6 +40,8 @@ public:
 
 private:
 	static SDL_Renderer* RenderTarget;
+	static Renderer* Instance;
+	static std::mutex RenderLock;
 
 };
 

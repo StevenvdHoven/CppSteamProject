@@ -141,6 +141,12 @@
     <ClCompile Include="TextureEditor.cpp">
       <Filter>Editor\Windows\AssetEditors</Filter>
     </ClCompile>
+    <ClCompile Include="RenderComponent.cpp">
+      <Filter>Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Engine\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Viewport.h">
@@ -202,6 +208,12 @@
     </ClInclude>
     <ClInclude Include="TextureEditor.h">
       <Filter>Editor\Windows\AssetEditors</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderComponent.h">
+      <Filter>Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Engine\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

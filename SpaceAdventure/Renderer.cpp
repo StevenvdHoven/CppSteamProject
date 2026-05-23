@@ -1,11 +1,47 @@
 #include "Renderer.h"
 #include "Texture.h"
+#include "RenderComponent.h"
+#include <iostream>
+#include <thread>
 
+Renderer* Renderer::Instance = nullptr;
 SDL_Renderer* Renderer::RenderTarget = nullptr;
+
+Renderer::Renderer()
+{
+	RenderThread = std::jthread(RenderLoop);
+}
+
+Renderer::~Renderer()
+{
+	RenderThread.join();
+}
+
+void Renderer::RenderLoop()
+{
+	std::lock_guard<std::mutex> lock(RenderLock);
+
+	std::for_each(RenderComponents.begin(), RenderComponents.end(), [](const RenderComponent* renderComp)
+		{
+			renderComp->Render();
+		});
+	
+}
 
 void Renderer::Init(SDL_Renderer* renderer)
 {
+	Instance = new Renderer();
 	RenderTarget = renderer;
+}
+
+void Renderer::Register(RenderComponent* renderComponent)
+{
+	Instance->RenderComponents.insert(renderComponent);
+}
+
+void Renderer::UnRegister(RenderComponent* renderComponent)
+{
+	Instance->RenderComponents.erase(renderComponent);
 }
 
 void Renderer::RenderTexture(const Texture& texture, const Math::Vector2& pos)
