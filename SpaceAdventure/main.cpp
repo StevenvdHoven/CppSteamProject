@@ -12,6 +12,7 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #include "Renderer.h"
+#include "SceneManager.h"
 #include "AssetManager.h"
 #include "EditorWindowManager.h"
 #include "ContentWindow.h"
@@ -43,6 +44,7 @@ int main()
 	);
 	ImGui_ImplSDLRenderer2_Init(editorRenderer);
 
+	SceneManager::Init();
 	Renderer::Init(editorRenderer);
 	AssetManager::Init();
 #ifdef _DEBUG
@@ -52,9 +54,6 @@ int main()
 	windowManager->Insert(new ContentWindow());
 	windowManager->Insert(new TextureEditor());
 #endif
-
-	Texture testTexture = TextureManager::LoadTexture("character2.png");
-	Texture copiedTexture = TextureManager::LoadTexture("character2.png");
 
 	bool isRunning = true;
 	while (isRunning)
@@ -107,9 +106,9 @@ int main()
 #ifdef _DEBUG
 		gameviewport.BeginFrame();
 
-		Renderer::RenderTexture(testTexture, { 0, 0 });
-
-		Renderer::RenderTexture(copiedTexture, { 128, 0 });
+		SceneManager::UpdateScene(0.0f);
+		Renderer::RenderAll();
+		
 		gameviewport.EndFrame();
 #endif
 
@@ -119,6 +118,12 @@ int main()
 
 		SDL_SetRenderDrawColor(editorRenderer, 0, 0, 0, 255);
 		SDL_RenderClear(editorRenderer);
+
+#ifndef _DEBUG
+		SceneManager::UpdateScene(0.0f);
+		Renderer::RenderAll();
+#endif
+
 
 #ifdef _DEBUG
 		ImGui::DockSpaceOverViewport(dockspace_id, viewport, ImGuiDockNodeFlags_PassthruCentralNode);
@@ -137,8 +142,10 @@ int main()
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
 
+	SceneManager::CleanUp();
 	TextureManager::CleanUp();
 	AssetManager::CleanUp();
+	Renderer::CleanUp();
 
 	SDL_DestroyRenderer(editorRenderer);
 	SDL_DestroyWindow(window);

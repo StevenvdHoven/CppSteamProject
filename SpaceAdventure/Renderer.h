@@ -20,6 +20,7 @@ public:
 	Renderer& operator=(Renderer&& other) = delete;
 
 	void RenderLoop();
+	void Render();
 
 private:
 	using RenderComponentSet = std::set<RenderComponent*>;
@@ -29,6 +30,9 @@ private:
 
 public:
 	static void Init(SDL_Renderer* renderer);
+	static void CleanUp();
+
+	static void RenderAll();
 
 	static void Register(RenderComponent* renderComponent);
 	static void UnRegister(RenderComponent* renderComponent);
@@ -42,6 +46,7 @@ private:
 	static SDL_Renderer* RenderTarget;
 	static Renderer* Instance;
 	static std::mutex RenderLock;
+	
 
 };
 

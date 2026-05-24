@@ -7,6 +7,7 @@
 #include "AssetRegistery.h"
 
 class AssetManager;
+class SceneManager;
 
 class Asset
 {
@@ -34,4 +35,5 @@ private:
 	std::string Source; // Represents imported files like .png or .mp3 or .wav
 
 	friend AssetManager;
+	friend SceneManager;
 };

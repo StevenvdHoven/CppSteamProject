@@ -1,15 +1,17 @@
-﻿  AssetManager.cpp
-E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(19,35): warning C4100: 'inputstream': unreferenced formal parameter
-  (compiling source file 'AssetManager.cpp')
+﻿  WorldView.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Component.h(14,28): warning C4100: 'deltaTime': unreferenced parameter
+  (compiling source file 'WorldView.cpp')
   
-E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(20,35): warning C4100: 'outputstream': unreferenced formal parameter
-  (compiling source file 'AssetManager.cpp')
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(20,35): warning C4100: 'inputstream': unreferenced parameter
+  (compiling source file 'WorldView.cpp')
   
-E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(21,45): warning C4100: 'filepath': unreferenced formal parameter
-  (compiling source file 'AssetManager.cpp')
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(21,35): warning C4100: 'outputstream': unreferenced parameter
+  (compiling source file 'WorldView.cpp')
   
-E:\Projects\CppSteamProject\SpaceAdventure\AssetManager.cpp(42,45): warning C4100: 'folder': unreferenced formal parameter
-E:\Projects\CppSteamProject\SpaceAdventure\AssetManager.cpp(63,38): warning C4100: 'asset': unreferenced formal parameter
+E:\Projects\CppSteamProject\SpaceAdventure\Asset.h(22,45): warning C4100: 'filepath': unreferenced parameter
+  (compiling source file 'WorldView.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\SceneManager.h(28,1): warning C4715: 'SceneManager::GetCurrentScene': not all control paths return a value
   SpaceAdventure.vcxproj -> E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\SpaceGame.exe
   0 File(s) copied
   0 File(s) copied

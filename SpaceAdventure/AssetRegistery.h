@@ -44,8 +44,8 @@ public:
     }
 
 private:
-    static std::unordered_map<std::string, std::unique_ptr<Asset>(*)()> factories;
-    static std::unordered_map<std::string, std::unique_ptr<Asset>(*)()> extentionFactories;
+    static std::unordered_map<std::string, AssetFactoryFn> factories;
+    static std::unordered_map<std::string, AssetFactoryFn> extentionFactories;
 };
 
 template<typename T>

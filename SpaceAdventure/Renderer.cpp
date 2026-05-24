@@ -3,21 +3,42 @@
 #include "RenderComponent.h"
 #include <iostream>
 #include <thread>
+#include <chrono>
 
 Renderer* Renderer::Instance = nullptr;
 SDL_Renderer* Renderer::RenderTarget = nullptr;
+std::mutex Renderer::RenderLock;
 
 Renderer::Renderer()
 {
-	RenderThread = std::jthread(RenderLoop);
+	RenderThread = std::jthread(&Renderer::RenderLoop, this);
 }
 
 Renderer::~Renderer()
 {
+	RenderThread.request_stop();
 	RenderThread.join();
 }
 
 void Renderer::RenderLoop()
+{
+	while (Instance != nullptr)
+	{
+		if (!RenderComponents.size()) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(0));
+			continue;
+		}
+
+		std::lock_guard<std::mutex> lock(RenderLock);
+
+		std::for_each(RenderComponents.begin(), RenderComponents.end(), [](const RenderComponent* renderComp)
+			{
+				renderComp->Render();
+			});
+	}
+}
+
+void Renderer::Render()
 {
 	std::lock_guard<std::mutex> lock(RenderLock);
 
@@ -25,7 +46,6 @@ void Renderer::RenderLoop()
 		{
 			renderComp->Render();
 		});
-	
 }
 
 void Renderer::Init(SDL_Renderer* renderer)
@@ -34,13 +54,32 @@ void Renderer::Init(SDL_Renderer* renderer)
 	RenderTarget = renderer;
 }
 
+void Renderer::CleanUp()
+{
+	if (Instance) {
+		Renderer* temp = Instance;
+		Instance = nullptr;
+		delete temp;
+	}
+}
+
+void Renderer::RenderAll()
+{
+	if (Instance)
+	{
+		Instance->Render();
+	}
+}
+
 void Renderer::Register(RenderComponent* renderComponent)
 {
+	std::lock_guard<std::mutex> lock(RenderLock);
 	Instance->RenderComponents.insert(renderComponent);
 }
 
 void Renderer::UnRegister(RenderComponent* renderComponent)
 {
+	std::lock_guard<std::mutex> lock(RenderLock);
 	Instance->RenderComponents.erase(renderComponent);
 }
 

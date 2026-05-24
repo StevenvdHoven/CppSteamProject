@@ -240,6 +240,7 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="AssetRegistery.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="ComponentRegistery.cpp" />
     <ClCompile Include="ContentWindow.cpp" />
     <ClCompile Include="EditorWindow.cpp" />
     <ClCompile Include="EditorWindowManager.cpp" />
@@ -259,6 +260,7 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$
     <ClCompile Include="Source\ImGui\imgui_impl_sdlrenderer2.cpp" />
     <ClCompile Include="Source\ImGui\imgui_tables.cpp" />
     <ClCompile Include="Source\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="SpriteRenderer.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureEditor.cpp" />
     <ClCompile Include="TextureManager.cpp" />
@@ -273,6 +275,7 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AssetRegistery.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="ComponentRegistery.h" />
     <ClInclude Include="ContentWindow.h" />
     <ClInclude Include="EditorWindow.h" />
     <ClInclude Include="EditorWindowManager.h" />
@@ -283,6 +286,7 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="SpriteRenderer.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureEditor.h" />
     <ClInclude Include="TextureManager.h" />
