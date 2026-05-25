@@ -52,6 +52,9 @@
     <Filter Include="Engine\Types">
       <UniqueIdentifier>{dd90b909-b17d-464a-8e92-89855a66bc9e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Helper">
+      <UniqueIdentifier>{ed9bef46-2b91-43b3-aa35-70ed5d891265}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -150,6 +153,9 @@
     <ClCompile Include="SpriteRenderer.cpp">
       <Filter>Engine\Components</Filter>
     </ClCompile>
+    <ClCompile Include="BinarySaving.cpp">
+      <Filter>Engine\Helper</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Viewport.h">
@@ -220,6 +226,9 @@
     </ClInclude>
     <ClInclude Include="SpriteRenderer.h">
       <Filter>Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="BinarySaving.h">
+      <Filter>Engine\Helper</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

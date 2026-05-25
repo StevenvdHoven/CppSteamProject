@@ -15,6 +15,9 @@ public:
 	Texture(SDL_Texture* texture);
 
 	SDL_Texture* Get() const { return sdltexture; }
+	SDL_Color GetColor() const { return tint; }
+	SDL_Rect GetCropRect() const { return crop; }
+	ImVec2i GetSize() const { return size; }
 
 	// Inherited via Asset
 	void Load(std::ifstream& inputstream) override;

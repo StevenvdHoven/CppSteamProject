@@ -8,6 +8,7 @@
 
 class AssetManager;
 class SceneManager;
+class ContentWindow;
 
 class Asset
 {
@@ -36,4 +37,5 @@ private:
 
 	friend AssetManager;
 	friend SceneManager;
+	friend ContentWindow;
 };

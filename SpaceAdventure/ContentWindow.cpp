@@ -58,6 +58,44 @@ void ContentWindow::ImGui_FolderViewHelper(AssetFolder* folder)
 {
 	ImGui::Begin("FolderView");
 
+	if (ImGui::BeginPopupContextWindow("Asset Creation",ImGuiPopupFlags_NoOpenOverItems)) {
+		auto assetTypes = AssetRegistery::GetAvailableAssetTypes();
+		static std::string popupname = "Create Assets";
+		if (ImGui::Button("Create Asset"))
+		{
+			ImGui::OpenPopup(popupname.c_str());
+		}
+
+		if (ImGui::BeginPopup(popupname.c_str(), ImGuiWindowFlags_Popup))
+		{
+			static int item_selected_idx = 0;
+			for (int n = 0; n < assetTypes.size(); n++)
+			{
+				const bool is_selected = (item_selected_idx == n);
+				if (ImGui::Selectable(assetTypes[n].c_str(), is_selected)) {
+					item_selected_idx = n;
+
+					auto asset = AssetRegistery::Create(assetTypes[n]);
+					if (asset) {
+						asset->Name = "NewScene";
+						asset->FilePath = CurrentOpenFolder->GetPath() + "/" + asset->Name + ".asset";
+						AssetManager::SaveAsset(asset.get());
+						folder->AddAsset(std::move(asset));
+					}
+
+					ImGui::CloseCurrentPopup();
+				}
+
+				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+				if (is_selected) {
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndPopup();
+		}
+		ImGui::EndPopup();
+	}
+
 	const float spacing = ImGui::GetStyle().ItemSpacing.x;
 	const float windowVisibleX2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
 

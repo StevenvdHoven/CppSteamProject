@@ -11,7 +11,7 @@ std::mutex Renderer::RenderLock;
 
 Renderer::Renderer()
 {
-	RenderThread = std::jthread(&Renderer::RenderLoop, this);
+	//RenderThread = std::jthread(&Renderer::RenderLoop, this);
 }
 
 Renderer::~Renderer()
@@ -31,7 +31,7 @@ void Renderer::RenderLoop()
 
 		std::lock_guard<std::mutex> lock(RenderLock);
 
-		std::for_each(RenderComponents.begin(), RenderComponents.end(), [](const RenderComponent* renderComp)
+		std::for_each(RenderComponents.begin(), RenderComponents.end(), [](RenderComponent* renderComp)
 			{
 				renderComp->Render();
 			});
@@ -42,10 +42,9 @@ void Renderer::Render()
 {
 	std::lock_guard<std::mutex> lock(RenderLock);
 
-	std::for_each(RenderComponents.begin(), RenderComponents.end(), [](const RenderComponent* renderComp)
-		{
-			renderComp->Render();
-		});
+	for (auto renderComp : RenderComponents) {
+		renderComp->Render();
+	}
 }
 
 void Renderer::Init(SDL_Renderer* renderer)
@@ -85,20 +84,23 @@ void Renderer::UnRegister(RenderComponent* renderComponent)
 
 void Renderer::RenderTexture(const Texture& texture, const Math::Vector2& pos)
 { 
+	SDL_Rect srect = texture.GetCropRect();
 	SDL_Rect dsrect{};
 	dsrect.x = pos.x;
 	dsrect.y = pos.y;
-	SDL_QueryTexture(texture.Get(), nullptr, nullptr, &dsrect.w, &dsrect.h);
-	SDL_RenderCopy(RenderTarget, texture.Get(), nullptr, &dsrect);
+	dsrect.w = static_cast<int>(srect.w);
+	dsrect.h = static_cast<int>(srect.h);
+	SDL_RenderCopy(RenderTarget, texture.Get(), &srect, &dsrect);
 }
 
 void Renderer::RenderTexture(const Texture& texture, const Math::Vector2& pos, const Math::Vector2& size)
 {
+	SDL_Rect srect = texture.GetCropRect();
 	SDL_Rect dsrect{};
 	dsrect.x = pos.x;
 	dsrect.y = pos.y;
-	dsrect.w = size.x;	
-	dsrect.h = size.y;
-	SDL_RenderCopy(RenderTarget, texture.Get(), nullptr, &dsrect);
+	dsrect.w = static_cast<int>(srect.w);
+	dsrect.h = static_cast<int>(srect.h);
+	SDL_RenderCopy(RenderTarget, texture.Get(), &srect, &dsrect);
 }
 

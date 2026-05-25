@@ -1,5 +1,12 @@
 #include "SceneManager.h"
 #include "Scene.h"
+#include "AssetManager.h"
+
+#ifdef _DEBUG
+#include "EditorWindowManager.h"
+#include "WorldView.h"
+#endif // _DEBUG
+
 
 SceneManager* SceneManager::Instance = nullptr;
 
@@ -15,6 +22,19 @@ SceneManager::SceneManager()
 void SceneManager::LoadScene(Scene& scene)
 {
 	CurrentScene = std::move(scene);
+	std::ifstream inputstream;
+	inputstream.open(CurrentScene.GetPath(), std::ios::binary | std::ios::in);
+	if (!inputstream.is_open() || inputstream.bad())
+	{
+		return;
+	}
+	CurrentScene.Load(inputstream);
+	inputstream.close();
+
+#ifdef _DEBUG
+	EditorWindowManager::GetChecked().GetAssetEditor<WorldView>().UnSelect();
+#endif // _DEBUG
+
 }
 
 void SceneManager::Update(float deltaTime)
@@ -37,10 +57,22 @@ void SceneManager::CleanUp()
 	}
 }
 
+void SceneManager::SaveCurrentScene()
+{
+	AssetManager::SaveAsset(&Instance->CurrentScene);
+}
+
 void SceneManager::UpdateScene(float deltaTime)
 {
 	if (Instance) {
 		Instance->Update(deltaTime);
+	}
+}
+
+void SceneManager::OpenScene(Scene& scene)
+{
+	if (Instance) {
+		Instance->LoadScene(scene);
 	}
 }
 

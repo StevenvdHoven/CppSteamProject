@@ -1,10 +1,18 @@
 #include "WorldView.h"
 
-
 void WorldView::ImGui_OnWindow()
 {
 	ImGui::Begin("World View");
 	const Scene& scene = SceneManager::GetCurrentScene();
+
+	if (ImGui::BeginPopupContextItem("WorldView Popup",ImGuiPopupFlags_NoOpenOverItems)) {
+		// None
+	}
+
+	if (ImGui::IsKeyDown(ImGuiKey_S) && ImGui::IsKeyDown(ImGuiKey_LeftCtrl)) {
+		SceneManager::SaveCurrentScene();
+	}
+
 
 	bool opened = ImGui::TreeNode(scene.GetName().c_str());
 

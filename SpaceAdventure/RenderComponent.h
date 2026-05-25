@@ -16,7 +16,14 @@ public:
 		return Order < other.Order;
 	}
 
-	virtual void Render() const {};
+	virtual void Load(std::ifstream& inputstream) override;
+	virtual void Save(std::ofstream& outputstream) override;
+
+	virtual void Render() {};
+
+#ifdef _DEBUG
+	virtual void ImGui_OnWindow() override;
+#endif // _DEBUG
 
 public:
 	int Order;

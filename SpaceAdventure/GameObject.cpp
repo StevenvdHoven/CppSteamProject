@@ -1,10 +1,51 @@
 #include "GameObject.h"
 #include "Component.h"
 #include "SceneManager.h"
+#include "BinarySaving.h"
 #include <imgui/imgui.h>
+#include "Transform.h"
 
-GameObject::GameObject()
+GameObject::GameObject():
+	Name{"GameObject"},
+	Id{0}
 {
+	TransformPtr = AddComponent<Transform>();
+}
+
+void GameObject::Load(std::ifstream& inputstream)
+{
+	Components.clear();
+	Name = BinarySaving::ReadString(inputstream);
+
+	std::uint32_t componentsSize = 0;
+	inputstream.read(reinterpret_cast<char*>(&componentsSize), sizeof(componentsSize));
+	for (int compIndex{ 0 }; compIndex < componentsSize; ++compIndex)
+	{
+		std::string compName = BinarySaving::ReadString(inputstream);
+		auto comp = ComponentRegistery::Create(compName);
+		comp->Load(inputstream);
+
+		if (compName == Transform::CompType) {
+			TransformPtr = dynamic_cast<Transform*>(comp.get());
+		}
+		AddComponent(std::move(comp));
+	}
+}
+
+void GameObject::Save(std::ofstream& outputstream)
+{
+	BinarySaving::Write(outputstream, Name);
+
+	std::uint32_t componentsSize = static_cast<std::uint32_t>(Components.size());
+	outputstream.write(reinterpret_cast<const char*>(&componentsSize), sizeof(componentsSize));
+	for (int compIndex{ 0 }; compIndex < componentsSize; ++compIndex)
+	{
+		if (!Components[compIndex]->GetName().size()) {
+			continue;
+		}
+		BinarySaving::Write(outputstream, Components[compIndex]->GetName());
+		Components[compIndex]->Save(outputstream);
+	}
 }
 
 void GameObject::Start()

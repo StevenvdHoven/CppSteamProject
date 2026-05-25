@@ -2,8 +2,40 @@
 #include "Asset.h"
 #include <iostream>
 #include <filesystem>
+#include <windows.h>
+#include <commdlg.h>
 
+#pragma comment(lib, "Comdlg32.lib")
 
+std::string SaveFileDialog(const char* defaultName = "NewAsset.asset")
+{
+	char filename[MAX_PATH] = "";
+
+	strcpy_s(filename, defaultName);
+
+	OPENFILENAMEA ofn = {};
+	ofn.lStructSize = sizeof(OPENFILENAMEA);
+	ofn.hwndOwner = nullptr;
+	ofn.lpstrFile = filename;
+	ofn.nMaxFile = MAX_PATH;
+
+	ofn.lpstrFilter =
+		"Asset Files\0*.asset\0"
+		"All Files\0*.*\0";
+
+	ofn.nFilterIndex = 1;
+
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
+
+	ofn.lpstrDefExt = "asset";
+
+	if (GetSaveFileNameA(&ofn))
+	{
+		return filename;
+	}
+
+	return "";
+}
 
 AssetFolder::AssetFolder(std::string folderPath, bool force):
 	FolderPath{folderPath}
@@ -133,27 +165,11 @@ std::unique_ptr<Asset> AssetManager::CreateAssetFromFilePath(std::string filepat
 		return nullptr;
 	}
 
-	std::uint32_t stringsize = 0;
-	inputstream.read(reinterpret_cast<char*>(&stringsize), sizeof(stringsize));
-
-	if (stringsize <= 0)
-	{
-		return nullptr;
-	}
-
-	std::string assetType(stringsize, '\0');
-	inputstream.read(assetType.data(), stringsize);
+	std::string assetType;
+	std::string source;
+	BinarySaving::ReadAsset(inputstream, assetType, source);
 	if (assetType.empty()) {
 		return nullptr;
-	}
-
-	std::uint32_t sourceSize = 0;
-	inputstream.read(reinterpret_cast<char*>(&sourceSize), sizeof(sourceSize));
-
-	std::string source(sourceSize, '\0');
-	if (sourceSize > 0)
-	{
-		inputstream.read(source.data(), sourceSize);
 	}
 
 	auto asset = AssetRegistery::Create(assetType);
@@ -171,6 +187,14 @@ std::unique_ptr<Asset> AssetManager::CreateAssetFromFilePath(std::string filepat
 
 void AssetManager::SaveAsset(Asset* asset, bool dup, bool rename)
 {
+	if (asset->FilePath.empty())
+	{
+		asset->FilePath = SaveFileDialog((asset->Name + ".asset").c_str());
+
+		if (asset->FilePath.empty())
+			return;
+	}
+
 	if (rename)
 	{
 		std::string newpath = asset->FilePath.substr(0 ,asset->FilePath.find_last_of("/") + 1) + asset->Name + ".asset";
@@ -223,7 +247,8 @@ void AssetManager::SaveAsset(Asset* asset, bool dup, bool rename)
 
 	if (dup || rename)
 	{
-		UpdateFolder(FindFolder(asset->GetPath().substr(0, asset->FilePath.find_last_of("/"))));
+		std::string folderPath = asset->GetPath().substr(0, asset->FilePath.find_last_of("/"));
+		UpdateFolder(FindFolder(folderPath));
 	}
 }
 
@@ -245,6 +270,52 @@ AssetFolder* AssetManager::FindFolder(AssetFolder* parentFolder, std::string pat
 		}
 	}
 	return nullptr;
+}
+
+Asset* AssetManager::FindAsset(const std::string& filepath)
+{
+	return FindAsset(ContentFolder, filepath);
+}
+
+Asset* AssetManager::FindAsset(AssetFolder* parentFolder, const std::string& filepath)
+{
+	for (const auto& asset : parentFolder->GetAssets())
+	{
+		if (asset->GetPath() == filepath) {
+			return asset.get();
+		}
+	}
+
+	for (const auto& folder : parentFolder->GetFolders())
+	{
+		if (Asset* found = FindAsset(folder.get(), filepath)) {
+			return found;
+		}
+	}
+	return nullptr;
+}
+
+std::vector<Asset*> AssetManager::GetAssets(std::set<std::string> filter)
+{
+	std::vector<Asset*> foundAssets;
+	GetAssets(ContentFolder, foundAssets, filter);
+	return foundAssets;
+}
+
+void AssetManager::GetAssets(AssetFolder* parentFolder, std::vector<Asset*>& foundassets, std::set<std::string> filter)
+{
+	for (const auto& asset : parentFolder->GetAssets())
+	{
+		if (filter.size() && !filter.contains(asset->GetType())) {
+			continue;
+		}
+		foundassets.emplace_back(asset.get());
+	}
+
+	for (const auto& folder : parentFolder->GetFolders())
+	{
+		GetAssets(folder.get(), foundassets, filter);
+	}
 }
 
 AssetFolder* AssetManager::GetRootFolder()
@@ -279,6 +350,10 @@ std::unique_ptr<Asset> AssetManager::CreateAssetFromImport(std::string filepath)
 	// Time to create a .asset from a import (.mp3 .png .wav etc)
 	std::string extention = filepath.substr(filepath.find_first_of("."));
 	auto asset = AssetRegistery::CreateFromExtention(extention);
+	if (asset == nullptr) {
+		return nullptr;
+	}
+
 	asset->ImportFrom(filepath);
 	asset->FilePath = pathWithoutExtention + ".asset";
 	asset->Source = filepath;

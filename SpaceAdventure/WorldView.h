@@ -12,6 +12,8 @@ public:
 	GameObject* GetSelectGameObject() { return SelectedGameObject; }
 
 	void ImGui_OnWindow() override;
+
+	void UnSelect() { SelectedGameObject = nullptr; }
 private:
 	void ImGui_GameObjectHelper(const std::unique_ptr<GameObject>& gameObject);
 	

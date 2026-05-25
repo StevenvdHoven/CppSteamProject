@@ -115,6 +115,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty;$(SolutionDir)Thirdparty/imgui;$(SolutionDir)Thirdparty/SDL</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,6 +140,7 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$
       <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty;$(SolutionDir)Thirdparty/imgui;$(SolutionDir)Thirdparty/SDL</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -163,6 +165,7 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$
       <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty;$(SolutionDir)Thirdparty/imgui;$(SolutionDir)Thirdparty/SDL</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -187,6 +190,7 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api64.dll" 
       <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty;$(SolutionDir)Thirdparty/imgui;$(SolutionDir)Thirdparty/SDL</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -238,6 +242,7 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$
     <ClCompile Include="Asset.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="AssetRegistery.cpp" />
+    <ClCompile Include="BinarySaving.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentRegistery.cpp" />
     <ClCompile Include="ContentWindow.cpp" />
@@ -272,6 +277,7 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$
     <ClInclude Include="Asset.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AssetRegistery.h" />
+    <ClInclude Include="BinarySaving.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentRegistery.h" />
     <ClInclude Include="ContentWindow.h" />

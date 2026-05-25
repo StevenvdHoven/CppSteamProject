@@ -61,4 +61,5 @@ public:
 
 #define DECLARE_COMPONENT(Type, Name) \
     static inline ComponentRegister<Type> component_registrar{Name}; \
+    static inline std::string CompType = Name; \
 	virtual const std::string GetName() const { return Name; }

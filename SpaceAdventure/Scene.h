@@ -13,9 +13,16 @@ class Scene : public Asset
 public:
 	ASSET_LOOKUP(Scene, "scene")
 
+	virtual void Load(std::ifstream& inputstream) override;
+	virtual void Save(std::ofstream& outputstream) override;
+
 	void Start();
 	void Update(float deltaTime);
 	void OnDestroy();
+
+#ifdef _DEBUG
+	void ImGui_ContentHelper() override;
+#endif // _DEBUG
 
 	const GameObjectVector& GetGameObjects() const { return GameObjects; }
 

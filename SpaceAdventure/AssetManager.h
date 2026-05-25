@@ -4,6 +4,9 @@
 #include <iostream>
 #include <set>
 #include <type_traits>
+#include "Asset.h"
+#include <imgui/imgui.h>
+#include "BinarySaving.h"
 
 class Asset;
 
@@ -29,21 +32,6 @@ private:
 	std::set<std::unique_ptr<AssetFolder>> Folders;
 	std::set<std::unique_ptr<Asset>> Assets;
 };
-
-template<typename AssetType>
-requires std::is_base_of_v<Asset, AssetType>
-class AssetProperty
-{
-	static_assert(std::is_base_of_v<Asset, AssetType>,
-		"AssetType must derive from Asset");
-
-	void Load(std::ifstream& inputstream);
-	void Save(std::ofstream& outputstream);
-
-private:
-	AssetType* AssetRef;
-};
-
 class AssetManager
 {
 public:
@@ -56,6 +44,10 @@ public:
 
 	static AssetFolder* FindFolder(std::string path);
 	static AssetFolder* FindFolder(AssetFolder* parentFolder, std::string path);
+	static Asset* FindAsset(const std::string& filepath);
+	static Asset* FindAsset(AssetFolder* parentFolder, const std::string& filepath);
+	static std::vector<Asset*> GetAssets(std::set<std::string> filter = std::set<std::string>());
+	static void GetAssets(AssetFolder* parentFolder, std::vector<Asset*>& foundassets, std::set<std::string> filter = std::set<std::string>());
 	static AssetFolder* GetRootFolder();
 
 	static bool AssetImported(std::string filepath);
@@ -68,3 +60,66 @@ private:
 	static AssetFolder* ContentFolder;
 };
 
+template<typename AssetType>
+	requires std::is_base_of_v<Asset, AssetType>
+class AssetProperty
+{
+	static_assert(std::is_base_of_v<Asset, AssetType>,
+		"AssetType must derive from Asset");
+public:
+
+	AssetType* Get() { return AssetRef; }
+
+
+	void Load(std::ifstream& inputstream) {
+
+		std::string path = BinarySaving::ReadString(inputstream);
+		if (!path.empty())
+		{
+			if (AssetType* foundAsset = dynamic_cast<AssetType*>(AssetManager::FindAsset(path))) {
+				AssetRef = foundAsset;
+			}
+			else {
+				printf("failed to load asset in AssetProperty: %s", path.c_str());
+			}
+		}
+	}
+
+	void Save(std::ofstream& outputstream) {
+
+		Asset* asset = AssetRef;
+		BinarySaving::Write(outputstream, asset->GetPath());
+	}
+
+	void ImGui_OnDrawProperty(const char* label) {
+		AssetType temp{};
+		Asset* tempPtr = (Asset*)&temp;
+
+		std::set<std::string> filter;
+		filter.insert(tempPtr->GetType());
+
+		std::vector<Asset*> foundAssets = AssetManager::GetAssets(filter);
+
+		std::string selectedAsset = "None";
+		if (AssetRef) {
+			Asset* assetPtr = (Asset*)AssetRef;
+			selectedAsset = assetPtr->GetName();
+		}
+
+		
+		if (ImGui::BeginCombo("Assets", selectedAsset.c_str()))
+		{
+			for (int n = 0; n < foundAssets.size(); n++)
+			{
+				if (ImGui::Selectable(foundAssets[n]->GetName().c_str())) {
+					AssetRef = dynamic_cast<AssetType*>(foundAssets[n]);
+				}
+			}
+			ImGui::EndCombo();
+		}
+	}
+
+	AssetType* operator->() const { return AssetRef; }
+private:
+	AssetType* AssetRef = nullptr;
+};

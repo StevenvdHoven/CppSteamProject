@@ -19,7 +19,9 @@ public:
 	static void Init();
 	static void CleanUp();
 
+	static void SaveCurrentScene();
 	static void UpdateScene(float deltaTime);
+	static void OpenScene(Scene& scene);
 	
 	static const Scene& GetCurrentScene() {
 		if (Instance) {

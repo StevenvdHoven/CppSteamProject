@@ -8,6 +8,20 @@ Transform::Transform() :
 {
 }
 
+void Transform::Load(std::ifstream& inputstream)
+{
+	inputstream.read(reinterpret_cast<char*>(&LocalPosition), sizeof(LocalPosition));
+	inputstream.read(reinterpret_cast<char*>(&LocalRotation), sizeof(LocalRotation));
+	inputstream.read(reinterpret_cast<char*>(&LocalScale), sizeof(LocalScale));
+}
+
+void Transform::Save(std::ofstream& outputstream)
+{
+	outputstream.write(reinterpret_cast<const char*>(&LocalPosition), sizeof(LocalPosition));
+	outputstream.write(reinterpret_cast<const char*>(&LocalRotation), sizeof(LocalRotation));
+	outputstream.write(reinterpret_cast<const char*>(&LocalScale), sizeof(LocalScale));
+}
+
 void Transform::Update(float deltaTime)
 {
 }

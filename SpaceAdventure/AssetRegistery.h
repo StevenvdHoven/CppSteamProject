@@ -6,6 +6,7 @@
 #include <memory>
 #include <functional>
 #include <fstream>
+#include <vector>
 
 class Asset;
 
@@ -41,6 +42,16 @@ public:
             return nullptr;
         }
         return it->second();
+    }
+
+    static std::vector<std::string> GetAvailableAssetTypes() 
+    {
+        std::vector<std::string> types;
+        for (auto& entry : factories)
+        {
+            types.emplace_back(entry.first);
+        }
+        return types;
     }
 
 private:
