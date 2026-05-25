@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <set>
+#include <type_traits>
 
 class Asset;
 
@@ -27,6 +28,20 @@ private:
 	std::string FolderPath;
 	std::set<std::unique_ptr<AssetFolder>> Folders;
 	std::set<std::unique_ptr<Asset>> Assets;
+};
+
+template<typename AssetType>
+requires std::is_base_of_v<Asset, AssetType>
+class AssetProperty
+{
+	static_assert(std::is_base_of_v<Asset, AssetType>,
+		"AssetType must derive from Asset");
+
+	void Load(std::ifstream& inputstream);
+	void Save(std::ofstream& outputstream);
+
+private:
+	AssetType* AssetRef;
 };
 
 class AssetManager

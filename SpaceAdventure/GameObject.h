@@ -6,6 +6,7 @@
 class GameObject
 {
 public:
+	GameObject();
 	virtual ~GameObject() = default;
 
 	void Start();
@@ -15,9 +16,17 @@ public:
 	template<typename T, typename... Args>
 	T& AddComponent(Args&& ... args) {
 		auto uniqueComp = std::make_unique<T>(std::forward<Args>(args)...);
-		T& refComp = *uniqueComp.Get();
+		T& refComp = *uniqueComp.get();
 		Components.emplace_back(std::move(uniqueComp));
 		return refComp;
+	}
+
+	template<typename T>
+	T& AddComponent(std::unique_ptr<T>&& component)
+	{
+		T* ptr = component.get();
+		Components.emplace_back(std::move(component));
+		return *ptr;
 	}
 
 #ifdef _DEBUG

@@ -49,8 +49,8 @@ int main()
 	AssetManager::Init();
 #ifdef _DEBUG
 	Viewport& gameviewport = windowManager->Insert(new Viewport(editorRenderer));
-	windowManager->Insert(new WorldView());
-	windowManager->Insert(new Properties());
+	WorldView& worldView = windowManager->Insert(new WorldView());
+	windowManager->Insert(new Properties(&worldView));
 	windowManager->Insert(new ContentWindow());
 	windowManager->Insert(new TextureEditor());
 #endif

@@ -8,9 +8,16 @@ class WorldView final : public EditorWindow
 {
 public:
 	WorldView() {}
+	 
+	GameObject* GetSelectGameObject() { return SelectedGameObject; }
 
 	void ImGui_OnWindow() override;
 private:
 	void ImGui_GameObjectHelper(const std::unique_ptr<GameObject>& gameObject);
+	
+	void OnSelect(GameObject* gameObject);
+
+private:
+	GameObject* SelectedGameObject = nullptr;
 };
 

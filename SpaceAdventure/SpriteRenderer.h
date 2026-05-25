@@ -11,6 +11,10 @@ public:
 
 	void Render() const override;
 
+#ifdef _DEBUG
+	virtual void ImGui_OnWindow();
+#endif // _DEBUG
+
 public:
 	Texture Sprite;
 };

@@ -135,9 +135,6 @@
     <ClCompile Include="AssetRegistery.cpp">
       <Filter>Engine\Assets</Filter>
     </ClCompile>
-    <ClCompile Include="AssetEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TextureEditor.cpp">
       <Filter>Editor\Windows\AssetEditors</Filter>
     </ClCompile>
@@ -208,9 +205,6 @@
     </ClInclude>
     <ClInclude Include="AssetRegistery.h">
       <Filter>Engine\Assets</Filter>
-    </ClInclude>
-    <ClInclude Include="AssetEditor.h">
-      <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="TextureEditor.h">
       <Filter>Editor\Windows\AssetEditors</Filter>

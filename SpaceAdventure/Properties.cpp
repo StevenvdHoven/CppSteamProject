@@ -1,8 +1,10 @@
 #include "Properties.h"
-
+#include "WorldView.h"
 void Properties::ImGui_OnWindow()
 {
 	ImGui::Begin("Properties");
-	ImGui::Text("Hello");
+	if (GameObject* selected = WorldViewPtr->GetSelectGameObject()) {
+		selected->ImGui_OnInpect();
+	}
 	ImGui::End();
 }

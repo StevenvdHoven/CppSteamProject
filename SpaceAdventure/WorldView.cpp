@@ -40,6 +40,10 @@ void WorldView::ImGui_GameObjectHelper(const std::unique_ptr<GameObject>& gameOb
 {
 	ImGui::PushID(gameObject.get());
 	bool opened = ImGui::TreeNodeEx(gameObject->Name.c_str());
+	bool selected = ImGui::IsItemClicked();
+	if (selected) {
+		OnSelect(gameObject.get());
+	}
 
 	// GameObject popup
 	if (ImGui::BeginPopupContextItem("GameObjectPopup"))
@@ -61,4 +65,9 @@ void WorldView::ImGui_GameObjectHelper(const std::unique_ptr<GameObject>& gameOb
 
 
 	ImGui::PopID();
+}
+
+void WorldView::OnSelect(GameObject* gameObject)
+{
+	SelectedGameObject = gameObject;
 }

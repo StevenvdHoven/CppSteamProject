@@ -10,3 +10,7 @@ SpriteRenderer::SpriteRenderer():
 void SpriteRenderer::Render() const
 {
 }
+
+void SpriteRenderer::ImGui_OnWindow()
+{
+}

@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include "Component.h"
+#include <vector>
 #include <unordered_map>
 #include <string>
 #include <memory>
@@ -27,6 +28,18 @@ public:
             return nullptr;
 
         return it->second();
+    }
+
+    static std::vector<std::string> GetAvailableComponentTypes()
+    {
+        std::vector<std::string> keys;
+        keys.reserve(factories.size());
+
+        for (auto entry : factories)
+        {
+            keys.emplace_back(entry.first);
+        }
+        return keys;
     }
 
 private:

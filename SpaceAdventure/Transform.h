@@ -22,7 +22,7 @@ public:
 	void SetLocalScale(float localScale);
 
 #ifdef _DEBUG
-	virtual void ImGui_OnWindow() {}
+	virtual void ImGui_OnWindow();
 #endif // _DEBUG
 
 private:
