@@ -1,3 +1,4 @@
+#ifdef _DEBUG
 #include "Viewport.h"
 #include <SDL/SDL.h>
 #include <iostream>
@@ -55,6 +56,17 @@ void Viewport::ImGui_OnWindow()
     ImGui::Begin("Viewport");
     ImGuizmo::BeginFrame();
 
+    ImGui::BeginGroup();
+    if (ImGui::Button("Start Game")) {
+
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("End Game")) {
+
+    }
+    ImGui::EndGroup();
+
+    ImGui::BeginGroup();
     ImVec2 avail = ImGui::GetContentRegionAvail();
 
     if (avail.x > 1 && avail.y > 1)
@@ -75,7 +87,7 @@ void Viewport::ImGui_OnWindow()
             );
         }
     }
-
+    ImGui::EndGroup();
     ImGui::End();
 }
 
@@ -118,3 +130,4 @@ void Viewport::EditTransform(float* cameraView, float* cameraProjection, float* 
     ImGuizmo::Manipulate(cameraView, cameraProjection, mCurrentGizmoOperation,
         mCurrentGizmoMode, matrix, NULL, NULL);
 }
+#endif

@@ -1,4 +1,5 @@
-﻿#include "TextureEditor.h"
+﻿#ifdef _DEBUG
+#include "TextureEditor.h"
 #include "AssetManager.h"
 #include "Texture.h"
 #include <SDL/SDL.h>
@@ -217,3 +218,4 @@ void TextureEditor::Save(bool isDuplicate)
 	AssetManager::SaveAsset(&temp, true);
 	
 }
+#endif

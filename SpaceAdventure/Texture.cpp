@@ -41,6 +41,7 @@ void Texture::ImportFrom(const std::string& filepath)
 	TextureManager::LoadTexture(filepath.c_str(), this);
 }
 
+#ifdef _DEBUG
 void Texture::ImGui_ContentHelper()
 {
 	ImGui::BeginGroup();
@@ -90,6 +91,7 @@ void Texture::ImGui_ContentHelper()
 	Asset::ImGui_ContentHelper();
 	ImGui::EndGroup();
 }
+#endif
 
 void Texture::Refresh()
 {

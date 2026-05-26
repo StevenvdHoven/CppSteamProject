@@ -1,3 +1,4 @@
+#ifdef _DEBUG
 #pragma once
 #include "EditorWindow.h"
 
@@ -20,4 +21,4 @@ private:
 	AssetFolder* RootFolder;
 	AssetFolder* CurrentOpenFolder;
 };
-
+#endif // _DEBUG

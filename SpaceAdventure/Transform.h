@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "Math.h"
+#include <bitset>
 
 class Transform : public Component
 {
@@ -29,10 +30,17 @@ public:
 #endif // _DEBUG
 
 private:
+	bool IsWorldPositionDirty() const { return DirtyFlags.test(0); }
+	bool IsWorldRotationDirty() const { return DirtyFlags.test(1); }
+	bool IsWorldScaleDirty() const { return DirtyFlags.test(2); }
+
+private:
+	std::bitset<3> DirtyFlags;
+
 	Math::Vector2 LocalPosition;
 	float LocalRotation;
 	float LocalScale;
 
-	GameObject* Parent;
+	friend GameObject;
 };
 

@@ -1,5 +1,8 @@
+#ifdef _DEBUG
 #include "Properties.h"
 #include "WorldView.h"
+
+
 void Properties::ImGui_OnWindow()
 {
 	ImGui::Begin("Properties");
@@ -8,3 +11,4 @@ void Properties::ImGui_OnWindow()
 	}
 	ImGui::End();
 }
+#endif // _DEBUG

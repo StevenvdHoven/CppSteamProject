@@ -156,6 +156,9 @@
     <ClCompile Include="BinarySaving.cpp">
       <Filter>Engine\Helper</Filter>
     </ClCompile>
+    <ClCompile Include="GameEngine.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Viewport.h">
@@ -229,6 +232,9 @@
     </ClInclude>
     <ClInclude Include="BinarySaving.h">
       <Filter>Engine\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngine.h">
+      <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

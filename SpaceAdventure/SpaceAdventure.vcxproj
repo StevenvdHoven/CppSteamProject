@@ -126,7 +126,8 @@
     <PostBuildEvent>
       <Command>xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2_image.dll" "$(OutDir)"
 xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2.dll" "$(OutDir)"
-xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$(OutDir)"</Command>
+xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$(OutDir)"
+xcopy "$(SolutionDir)Content\*" "$(OutDir)Content\" /E /I /Y /D</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -153,7 +154,8 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$
     <PostBuildEvent>
       <Command>xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2_image.dll" "$(OutDir)"
 xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2.dll" "$(OutDir)"
-xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$(OutDir)"</Command>
+xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$(OutDir)"
+xcopy "$(SolutionDir)Content\*" "$(OutDir)Content\" /E /I /Y /D</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -176,7 +178,8 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$
     <PostBuildEvent>
       <Command>xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2_image.dll" "$(OutDir)"
 xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2.dll" "$(OutDir)"
-xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api64.dll" "$(OutDir)"</Command>
+xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api64.dll" "$(OutDir)"
+xcopy "$(SolutionDir)Content\*" "$(OutDir)Content\" /E /I /Y /D</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -203,7 +206,8 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api64.dll" 
     <PostBuildEvent>
       <Command>xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2_image.dll" "$(OutDir)"
 xcopy /Y /D /I "$(SolutionDir)Thirdparty\SDL\lib\$(Platform)\SDL2.dll" "$(OutDir)"
-xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api64.dll" "$(OutDir)"</Command>
+xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api64.dll" "$(OutDir)"
+xcopy "$(SolutionDir)Content\*" "$(OutDir)Content\" /E /I /Y /D</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MASTER|x64'">
@@ -248,6 +252,7 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$
     <ClCompile Include="ContentWindow.cpp" />
     <ClCompile Include="EditorWindow.cpp" />
     <ClCompile Include="EditorWindowManager.cpp" />
+    <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math.cpp" />
@@ -283,6 +288,7 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$
     <ClInclude Include="ContentWindow.h" />
     <ClInclude Include="EditorWindow.h" />
     <ClInclude Include="EditorWindowManager.h" />
+    <ClInclude Include="GameEngine.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Properties.h" />

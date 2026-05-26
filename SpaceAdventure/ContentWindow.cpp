@@ -1,3 +1,4 @@
+#ifdef _DEBUG
 #include "ContentWindow.h"
 #include "AssetManager.h"
 #include "Asset.h"
@@ -136,3 +137,4 @@ void ContentWindow::ImGui_FolderTree(AssetFolder* folder)
 		ImGui::TreePop();
 	}
 }
+#endif

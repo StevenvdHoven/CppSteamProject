@@ -30,7 +30,16 @@ void GameObject::Load(std::ifstream& inputstream)
 		}
 		AddComponent(std::move(comp));
 	}
+
+	std::uint32_t childerenSize = 0;
+	inputstream.read(reinterpret_cast<char*>(&childerenSize), sizeof(childerenSize));
+	for (int childIndex{ 0 }; childIndex < childerenSize; ++childIndex) {
+		GameObject* gameObject = GameObject::Instantiate();
+		gameObject->Load(inputstream);
+		gameObject->SetParent(this);
+	}
 }
+
 
 void GameObject::Save(std::ofstream& outputstream)
 {
@@ -45,6 +54,12 @@ void GameObject::Save(std::ofstream& outputstream)
 		}
 		BinarySaving::Write(outputstream, Components[compIndex]->GetName());
 		Components[compIndex]->Save(outputstream);
+	}
+
+	std::uint32_t childerenSize = static_cast<std::uint32_t>(Childeren.size());
+	outputstream.write(reinterpret_cast<const char*>(&childerenSize), sizeof(childerenSize));
+	for (int childIndex{ 0 }; childIndex < childerenSize; ++childIndex) {
+		Childeren[childIndex]->Save(outputstream);
 	}
 }
 
@@ -64,7 +79,22 @@ void GameObject::OnDestroy()
 {
 }
 
+void GameObject::SetParent(GameObject* parent)
+{
+	Parent = parent;
+	parent->AddChild(this);
+	GetTransform()->DirtyFlags.set();
+	GetTransform()->DirtyFlags.flip();
+
+}
+
+void GameObject::AddChild(GameObject* child)
+{
+	Childeren.emplace_back(child);
+}
+
 #ifdef _DEBUG
+
 void GameObject::ImGui_OnInpect()
 {
 	char buffer[256]{};
@@ -77,11 +107,28 @@ void GameObject::ImGui_OnInpect()
 	}
 	ImGui::Text("ID: %i", Id);
 
+	std::vector<Component*> compsToRemove;
+
 	for (auto& component : Components)
 	{
-		if(ImGui::CollapsingHeader(component->GetName().c_str(),ImGuiTreeNodeFlags_DefaultOpen)) {
+		bool isOpened = ImGui::CollapsingHeader(component->GetName().c_str(), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanTextWidth);
+		
+		if (component->GetName() != Transform::CompType) {
+			ImGui::SameLine();
+			ImGui::PushID(component.get());
+			if (ImGui::Button("X")) {
+				compsToRemove.emplace_back(component.get());
+			}
+			ImGui::PopID();
+		}
+
+		if(isOpened) {
 			component->ImGui_OnWindow();
 		}
+	}
+
+	for (auto component : compsToRemove) {
+		RemoveComponent(component);
 	}
 
 	ImGui::Separator();

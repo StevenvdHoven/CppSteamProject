@@ -1,3 +1,4 @@
+#ifdef _DEBUG
 #pragma once
 #include "EditorWindow.h"
 #include <imgui/ImGuizmo.h>
@@ -33,4 +34,4 @@ private:
 	int Width = 0;
 	int Height = 0;
 };
-
+#endif

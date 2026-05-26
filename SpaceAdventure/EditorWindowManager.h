@@ -1,3 +1,4 @@
+#ifdef _DEBUG
 #pragma once
 #include "EditorWindow.h"
 #include <iostream>
@@ -46,4 +47,4 @@ private:
 
 	static EditorWindowManager* Instance;
 };
-
+#endif

@@ -1,3 +1,4 @@
+#ifdef _DEBUG
 #pragma once
 #include "EditorWindow.h"
 #include "Texture.h"
@@ -30,4 +31,4 @@ private:
 
 	bool bIsSelecting = false;
 };
-
+#endif

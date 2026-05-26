@@ -27,6 +27,7 @@ public:
 		if (Instance) {
 			return Instance->CurrentScene;
 		}
+		return Scene{};
 	}
 	static void AddGameObject(std::unique_ptr<GameObject>&& gameObject);
 	static void DeleteGameObject(GameObject* gameObject);

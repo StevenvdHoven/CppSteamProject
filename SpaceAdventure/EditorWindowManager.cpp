@@ -1,3 +1,4 @@
+#ifdef _DEBUG
 #include "EditorWindowManager.h"
 
 EditorWindowManager* EditorWindowManager::Instance = nullptr;
@@ -11,3 +12,4 @@ void EditorWindowManager::Render()
 		editorWindow->ImGui_OnWindow();
 	}
 }
+#endif

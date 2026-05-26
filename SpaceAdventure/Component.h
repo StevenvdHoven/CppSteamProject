@@ -12,12 +12,14 @@ public:
 	Component() : Owner{ nullptr } {}
 	virtual ~Component() = default;
 
-	virtual void Load(std::ifstream& inputstream) {}
-	virtual void Save(std::ofstream& outputstream) {}
+	virtual void Load(std::ifstream&) {}
+	virtual void Save(std::ofstream&) {}
 
 	virtual void Start() {}
-	virtual void Update(float deltaTime) {}
+	virtual void Update(float) {}
 	virtual void OnDestroy() {}
+
+	void Destroy(GameObject* gameObject);
 
 	Transform* GetTransform();
 

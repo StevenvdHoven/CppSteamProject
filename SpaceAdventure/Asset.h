@@ -18,12 +18,13 @@ public:
 	virtual const std::string GetType() { return "asset"; }
 	virtual const std::vector<std::string> GetExtentions() { return std::vector<std::string>(); }
 
-	virtual void Load(std::ifstream& inputstream) {}
-	virtual void Save(std::ofstream& outputstream) {}
-	virtual void ImportFrom(const std::string& filepath) {}
+	virtual void Load(std::ifstream&) {}
+	virtual void Save(std::ofstream&) {}
+	virtual void ImportFrom(const std::string&) {}
 
+#ifdef _DEBUG
 	virtual void ImGui_ContentHelper();
-	
+#endif
 
 	void MoveLocation(std::string filepath);
 

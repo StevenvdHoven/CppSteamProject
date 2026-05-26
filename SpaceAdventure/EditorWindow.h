@@ -1,3 +1,4 @@
+#ifdef _DEBUG
 #pragma once
 #include <string>
 #include <imgui/imgui.h>
@@ -27,10 +28,12 @@ protected:
 	bool bIsHidden;
 };
 
+
 #define ASSET_EDITOR(AssetType) \
 	bool IsAssetEditor() const override { return true; } \
 	std::string GetAssetType() const override { return AssetType; } 
+#endif
 	
 	
- 	
+
 

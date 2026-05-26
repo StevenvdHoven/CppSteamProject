@@ -28,10 +28,11 @@ void SpriteRenderer::Render()
 	}
 	
 }
-
+#ifdef _DEBUG
 void SpriteRenderer::ImGui_OnWindow()
 {
 	RenderComponent::ImGui_OnWindow();
 
 	Sprite.ImGui_OnDrawProperty("Sprite");
 }
+#endif

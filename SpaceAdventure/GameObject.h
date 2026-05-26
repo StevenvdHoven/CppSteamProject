@@ -9,6 +9,8 @@ class Transform;
 
 class GameObject
 {
+	using ComponentVector = std::vector<std::unique_ptr<Component>>;
+	using GameObjectVector = std::vector<GameObject*>;
 public:
 	GameObject();
 	virtual ~GameObject() = default;
@@ -55,7 +57,23 @@ public:
 		return nullptr;
 	}
 
+	void RemoveComponent(Component* component) {
+		auto compIt = std::find_if(Components.begin(), Components.end(), [component](std::unique_ptr<Component>& other) {
+			return other.get() == component;
+		});
+
+		if (compIt != Components.end()) {
+			Components.erase(compIt);
+		}
+	}
+
+	void SetParent(GameObject* parent);
+	GameObject* GetParent() { return Parent; }
+	
 	Transform* GetTransform() { return TransformPtr; }
+
+	
+	const GameObjectVector GetChilderen() const { return Childeren; }
 
 #ifdef _DEBUG
 	virtual void ImGui_OnInpect();
@@ -63,14 +81,18 @@ public:
 
 	static GameObject* Instantiate();
 
+private:
+	void AddChild(GameObject* child);
+
 public:
 	std::string Name;
 
 private:
 	uint32_t Id;
+	
+	GameObject* Parent = nullptr;
+	Transform* TransformPtr = nullptr;
 
-	Transform* TransformPtr;
-
-	using ComponentVector = std::vector<std::unique_ptr<Component>>;
 	ComponentVector Components;
+	GameObjectVector Childeren;
 };

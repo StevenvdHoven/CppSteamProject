@@ -1,3 +1,4 @@
+#ifdef _DEBUG
 #pragma once
 #include "EditorWindow.h"
 
@@ -12,4 +13,4 @@ public:
 private:
 	WorldView* WorldViewPtr;
 };
-
+#endif

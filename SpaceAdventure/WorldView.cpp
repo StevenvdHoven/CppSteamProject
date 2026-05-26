@@ -1,3 +1,4 @@
+#ifdef _DEBUG
 #include "WorldView.h"
 
 void WorldView::ImGui_OnWindow()
@@ -29,11 +30,20 @@ void WorldView::ImGui_OnWindow()
 
 	if (opened)
 	{
-		const auto& gameObjects = scene.GetGameObjects();
+		auto& gameObjects = scene.GetGameObjects();
+		size_t sizeOfGameObjects = gameObjects.size();
 
-		for (const auto& gameObject : gameObjects)
+		for (int index{0}; index < sizeOfGameObjects; ++index)
 		{
-			ImGui_GameObjectHelper(gameObject);
+			const auto& gameObject = gameObjects[index];
+
+			if (gameObject == nullptr) {
+				continue;
+			}
+
+			if (gameObject->GetParent() == nullptr) {
+				ImGui_GameObjectHelper(gameObject.get());
+			}
 		}
 
 		ImGui::TreePop();
@@ -44,13 +54,13 @@ void WorldView::ImGui_OnWindow()
 	ImGui::End();
 }
 
-void WorldView::ImGui_GameObjectHelper(const std::unique_ptr<GameObject>& gameObject)
+void WorldView::ImGui_GameObjectHelper(GameObject* gameObject)
 {
-	ImGui::PushID(gameObject.get());
+	ImGui::PushID(gameObject);
 	bool opened = ImGui::TreeNodeEx(gameObject->Name.c_str());
 	bool selected = ImGui::IsItemClicked();
 	if (selected) {
-		OnSelect(gameObject.get());
+		OnSelect(gameObject);
 	}
 
 	// GameObject popup
@@ -58,7 +68,8 @@ void WorldView::ImGui_GameObjectHelper(const std::unique_ptr<GameObject>& gameOb
 	{
 		if (ImGui::MenuItem("Add Child"))
 		{
-			GameObject::Instantiate();
+			GameObject* child = GameObject::Instantiate();
+			child->SetParent(gameObject);
 		}
 
 		ImGui::EndPopup();
@@ -66,8 +77,12 @@ void WorldView::ImGui_GameObjectHelper(const std::unique_ptr<GameObject>& gameOb
 
 	if (opened)
 	{
-		// Render children here
+		auto gameObjects = gameObject->GetChilderen();
 
+		for (GameObject* child : gameObjects)
+		{
+			ImGui_GameObjectHelper(child);
+		}
 		ImGui::TreePop();
 	}
 
@@ -79,3 +94,4 @@ void WorldView::OnSelect(GameObject* gameObject)
 {
 	SelectedGameObject = gameObject;
 }
+#endif

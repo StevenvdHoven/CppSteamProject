@@ -6,6 +6,7 @@ Transform::Transform() :
 	LocalRotation{ 0.0f },
 	LocalScale{1.0f}
 {
+	DirtyFlags.set();
 }
 
 void Transform::Load(std::ifstream& inputstream)
@@ -24,6 +25,18 @@ void Transform::Save(std::ofstream& outputstream)
 
 void Transform::Update(float deltaTime)
 {
+	if (IsWorldPositionDirty()) {
+
+	}
+
+	if (IsWorldRotationDirty()) {
+
+	}
+
+	if (IsWorldScaleDirty()) {
+
+	}
+
 }
 
 #ifdef _DEBUG

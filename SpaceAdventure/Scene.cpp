@@ -37,7 +37,7 @@ void Scene::Update(float deltaTime)
 		gameObject->Update(deltaTime);
 	}
 }
-
+#ifdef _DEBUG
 void Scene::ImGui_ContentHelper()
 {
 	static Texture SCENEICON;
@@ -72,3 +72,4 @@ void Scene::ImGui_ContentHelper()
 	Asset::ImGui_ContentHelper();
 	ImGui::EndGroup();
 }
+#endif

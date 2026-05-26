@@ -86,8 +86,8 @@ void Renderer::RenderTexture(const Texture& texture, const Math::Vector2& pos)
 { 
 	SDL_Rect srect = texture.GetCropRect();
 	SDL_Rect dsrect{};
-	dsrect.x = pos.x;
-	dsrect.y = pos.y;
+	dsrect.x = static_cast<int>(pos.x);
+	dsrect.y = static_cast<int>(pos.y);
 	dsrect.w = static_cast<int>(srect.w);
 	dsrect.h = static_cast<int>(srect.h);
 	SDL_RenderCopy(RenderTarget, texture.Get(), &srect, &dsrect);
@@ -97,8 +97,8 @@ void Renderer::RenderTexture(const Texture& texture, const Math::Vector2& pos, c
 {
 	SDL_Rect srect = texture.GetCropRect();
 	SDL_Rect dsrect{};
-	dsrect.x = pos.x;
-	dsrect.y = pos.y;
+	dsrect.x = static_cast<int>(pos.x);
+	dsrect.y = static_cast<int>(pos.y);
 	dsrect.w = static_cast<int>(srect.w);
 	dsrect.h = static_cast<int>(srect.h);
 	SDL_RenderCopy(RenderTarget, texture.Get(), &srect, &dsrect);

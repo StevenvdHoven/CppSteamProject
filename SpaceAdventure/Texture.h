@@ -24,8 +24,9 @@ public:
 	void Save(std::ofstream& ouputstream) override;
 	void ImportFrom(const std::string& filepath) override;
 
+#ifdef _DEBUG
 	void ImGui_ContentHelper() override;
-
+#endif
 	void Refresh();
 
 private:

@@ -1,3 +1,4 @@
+#ifdef _DEBUG
 #pragma once
 #include "EditorWindow.h"
 #include "SceneManager.h"
@@ -15,11 +16,11 @@ public:
 
 	void UnSelect() { SelectedGameObject = nullptr; }
 private:
-	void ImGui_GameObjectHelper(const std::unique_ptr<GameObject>& gameObject);
+	void ImGui_GameObjectHelper(GameObject* gameObject);
 	
 	void OnSelect(GameObject* gameObject);
 
 private:
 	GameObject* SelectedGameObject = nullptr;
 };
-
+#endif // _DEBUG
