@@ -1,5 +1,6 @@
 #ifdef _DEBUG
 #include "WorldView.h"
+#include "Asset.h"
 
 void WorldView::ImGui_OnWindow()
 {
@@ -16,6 +17,15 @@ void WorldView::ImGui_OnWindow()
 
 
 	bool opened = ImGui::TreeNode(scene.GetName().c_str());
+	if (ImGui::BeginDragDropTarget()) {
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("asset")) {
+			if (Asset* draggedAsset = *static_cast<Asset**>(payload->Data)) {
+				printf("Asset has been dragged into viewport: %s", draggedAsset->GetName().c_str());
+				draggedAsset->CreateGameObject();
+			}
+		}
+		ImGui::EndDragDropTarget();
+	}
 
 	// Scene node popup
 	if (ImGui::BeginPopupContextItem("ScenePopup"))
@@ -58,6 +68,19 @@ void WorldView::ImGui_GameObjectHelper(GameObject* gameObject)
 {
 	ImGui::PushID(gameObject);
 	bool opened = ImGui::TreeNodeEx(gameObject->Name.c_str());
+	if (ImGui::BeginDragDropTarget()) {
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("asset")) {
+			if (Asset* draggedAsset = *static_cast<Asset**>(payload->Data)) {
+				printf("Asset has been dragged into viewport: %s", draggedAsset->GetName().c_str());
+				if (GameObject* newObject = draggedAsset->CreateGameObject()) {
+					newObject->SetParent(gameObject);
+				}
+				
+			}
+		}
+		ImGui::EndDragDropTarget();
+	}
+
 	bool selected = ImGui::IsItemClicked();
 	if (selected) {
 		OnSelect(gameObject);

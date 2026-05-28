@@ -3,6 +3,8 @@
 #include <imgui/imgui.h>
 #include "EditorWindowManager.h"
 #include "TextureEditor.h"
+#include "GameObject.h"
+#include "SpriteRenderer.h"
 
 Texture::Texture():
 	Texture(nullptr)
@@ -70,12 +72,7 @@ void Texture::ImGui_ContentHelper()
 	ImVec2 pos = ImGui::GetCursorScreenPos();
 
 	// Create invisible button
-	ImGui::PushID(this);
-	if (ImGui::InvisibleButton("##InvisibleButton", size))
-	{
-		EditorWindowManager::GetChecked().GetEditorWindow<TextureEditor>().Open(this);
-	}
-	ImGui::PopID();
+	ImGui_BeginInteraction(size);
 
 	bool hovered = ImGui::IsItemHovered();
 
@@ -89,8 +86,19 @@ void Texture::ImGui_ContentHelper()
 	ImGui::ImageWithBg((ImTextureID)sdltexture, size, uv0, uv1, ImVec4{255,255,255,255}, tint);
 	
 	Asset::ImGui_ContentHelper();
+	ImGui_EndInteraction();
 	ImGui::EndGroup();
 }
+
+GameObject* Texture::CreateGameObject()
+{
+	GameObject* gameObject = GameObject::Instantiate();
+	gameObject->Name = GetName();
+	SpriteRenderer* spriteRender = gameObject->AddComponent<SpriteRenderer>();
+	spriteRender->Sprite.Set(this);
+	return gameObject;
+}
+
 #endif
 
 void Texture::Refresh()

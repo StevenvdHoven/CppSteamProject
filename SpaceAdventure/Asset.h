@@ -6,9 +6,11 @@
 #include <vector>
 #include "AssetRegistery.h"
 
+class GameObject;
 class AssetManager;
 class SceneManager;
 class ContentWindow;
+struct ImVec2;	
 
 class Asset
 {
@@ -32,6 +34,11 @@ public:
 
 #ifdef _DEBUG
 	virtual void ImGui_ContentHelper();
+	virtual void ImGui_OnOpen() {}
+	void ImGui_BeginInteraction(const ImVec2& size);
+	void ImGui_EndInteraction();
+
+	virtual GameObject* CreateGameObject() { return nullptr; }
 #endif
 
 	void MoveLocation(std::string filepath);

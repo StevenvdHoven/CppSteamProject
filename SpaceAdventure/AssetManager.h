@@ -69,6 +69,7 @@ class AssetProperty
 public:
 
 	AssetType* Get() { return AssetRef; }
+	void Set(AssetType* newRef) { AssetRef = newRef; }
 
 
 	void Load(std::ifstream& inputstream) {

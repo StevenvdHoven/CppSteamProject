@@ -105,7 +105,6 @@ void ContentWindow::ImGui_FolderViewHelper(AssetFolder* folder)
 	for (const auto& asset : assets)
 	{
 		asset->ImGui_ContentHelper();
-
 		float lastButtonX2 = ImGui::GetItemRectMax().x;
 		float nextButtonX2 = lastButtonX2 + spacing + 200.0f;
 

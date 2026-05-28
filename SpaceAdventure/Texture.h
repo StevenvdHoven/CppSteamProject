@@ -26,6 +26,8 @@ public:
 
 #ifdef _DEBUG
 	void ImGui_ContentHelper() override;
+	virtual  GameObject* CreateGameObject() override;
+	
 #endif
 	void Refresh();
 

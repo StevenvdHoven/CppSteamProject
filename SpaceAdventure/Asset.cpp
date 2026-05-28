@@ -23,4 +23,33 @@ void Asset::ImGui_ContentHelper()
     ImGui::PopID();
     ImGui::PopItemWidth();
 }
+
+void Asset::ImGui_BeginInteraction(const ImVec2& size)
+{
+    ImGui::PushID(this);
+
+    if (ImGui::InvisibleButton("##asset_btn", size))
+    {
+        ImGui_OnOpen();
+    }
+
+    if (ImGui::BeginDragDropSource())
+    {
+        Asset* ptr = this;
+
+        ImGui::SetDragDropPayload(
+            "asset",
+            &ptr,
+            sizeof(ptr)
+        );
+
+        ImGui::Text(GetName().c_str());
+
+        ImGui::EndDragDropSource();
+    }
+}
+void Asset::ImGui_EndInteraction()
+{
+    ImGui::PopID();
+}
 #endif
