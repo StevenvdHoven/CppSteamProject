@@ -24,7 +24,7 @@ void SpriteRenderer::Save(std::ofstream& outputstream)
 void SpriteRenderer::Render()
 {
 	if (Texture* tex = Sprite.Get()) {
-		Renderer::RenderTexture(*tex, GetTransform()->GetLocalPosition());
+		Renderer::RenderTexture(*tex, GetTransform());
 	}
 	
 }

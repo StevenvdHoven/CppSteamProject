@@ -24,10 +24,17 @@ void Scene::Load(std::ifstream& inputstream)
 
 void Scene::Save(std::ofstream& outputstream)
 {
-	std::uint32_t gameobjectsSize = static_cast<std::uint32_t>(GameObjects.size());
+	std::uint32_t gameobjectsSize = 0;
+	for (const auto& gameObject : GameObjects) {
+		if (!gameObject->GetParent()) {
+			++gameobjectsSize;
+		}
+	}
 	outputstream.write(reinterpret_cast<const char*>(&gameobjectsSize), sizeof(gameobjectsSize));
-	for (int gameObjectIndex{ 0 }; gameObjectIndex < gameobjectsSize; ++gameObjectIndex) {
-		GameObjects[gameObjectIndex]->Save(outputstream);
+	for (const auto& gameObject : GameObjects) {
+		if (!gameObject->GetParent()) {
+			gameObject->Save(outputstream);
+		}
 	}
 }
 

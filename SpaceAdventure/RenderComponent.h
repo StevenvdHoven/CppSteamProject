@@ -3,8 +3,6 @@
 class RenderComponent : public Component
 {
 public:
-	DECLARE_COMPONENT(RenderComponent, "Render Component")
-
 	RenderComponent();
 	virtual ~RenderComponent();
 

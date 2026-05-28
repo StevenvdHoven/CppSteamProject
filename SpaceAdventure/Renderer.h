@@ -5,6 +5,7 @@
 #include "Math.h"
 
 class Texture;
+class Transform;
 class RenderComponent;
 
 class Renderer
@@ -39,6 +40,7 @@ public:
 
 	static void RenderTexture(const Texture& texture, const Math::Vector2& pos);
 	static void RenderTexture(const Texture& texture, const Math::Vector2& pos, const Math::Vector2& size);
+	static void RenderTexture(const Texture& texture, Transform* transform);
 
 	static SDL_Renderer* GetCurrentRenderer() { return RenderTarget; }
 

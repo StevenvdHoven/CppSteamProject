@@ -13,16 +13,18 @@ namespace Math
 		Vector2(Vector2&& other) noexcept;
 		Vector2& operator=(Vector2&& other) noexcept;
 
-		Vector2 operator+(const Vector2& other);
+		bool operator==(const Vector2& other) const;
+
+		Vector2 operator+(const Vector2& other) const;
 		Vector2& operator+=(const Vector2& other);
 
-		Vector2 operator-(const Vector2& other);
+		Vector2 operator-(const Vector2& other) const;
 		Vector2& operator-=(const Vector2& other);
 
-		Vector2 operator*(float scalar);
+		Vector2 operator*(float scalar) const;
 		Vector2& operator*=(float scalar);
 
-		Vector2 operator/(float devide);
+		Vector2 operator/(float devide) const;
 		Vector2& operator/=(float devide);
 
 		static float Dot(const Vector2& first, const Vector2& second);
@@ -33,5 +35,8 @@ namespace Math
 		float x;
 		float y;
 	};
+
+	
 }
 
+Math::Vector2 operator*(float scalar, const Math::Vector2& right);

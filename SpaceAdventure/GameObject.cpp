@@ -84,8 +84,6 @@ void GameObject::SetParent(GameObject* parent)
 	Parent = parent;
 	parent->AddChild(this);
 	GetTransform()->DirtyFlags.set();
-	GetTransform()->DirtyFlags.flip();
-
 }
 
 void GameObject::AddChild(GameObject* child)

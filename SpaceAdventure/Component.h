@@ -21,6 +21,9 @@ public:
 
 	void Destroy(GameObject* gameObject);
 
+	GameObject* GetOwner() { return Owner; }
+
+	GameObject* GetParent();
 	Transform* GetTransform();
 
 #ifdef _DEBUG

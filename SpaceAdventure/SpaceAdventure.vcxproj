@@ -247,6 +247,7 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="AssetRegistery.cpp" />
     <ClCompile Include="BinarySaving.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentRegistery.cpp" />
     <ClCompile Include="ContentWindow.cpp" />
@@ -256,6 +257,7 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math.cpp" />
+    <ClCompile Include="Matrix2x3.cpp" />
     <ClCompile Include="Properties.cpp" />
     <ClCompile Include="RenderComponent.cpp" />
     <ClCompile Include="Renderer.cpp" />
@@ -283,6 +285,7 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AssetRegistery.h" />
     <ClInclude Include="BinarySaving.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentRegistery.h" />
     <ClInclude Include="ContentWindow.h" />
@@ -291,6 +294,7 @@ xcopy /Y /D /I "$(SolutionDir)Thirdparty\steam\lib\$(Platform)\steam_api.dll" "$
     <ClInclude Include="GameEngine.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Math.h" />
+    <ClInclude Include="Matrix2x3.h" />
     <ClInclude Include="Properties.h" />
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="Renderer.h" />

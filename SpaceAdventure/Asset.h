@@ -15,6 +15,14 @@ class Asset
 public:
 	virtual ~Asset() = default;
 
+	virtual int operator<(Asset* right) {
+		return Name < right->Name;
+	}
+
+	virtual int operator>(Asset* right) {
+		return Name > right->Name;
+	}
+
 	virtual const std::string GetType() { return "asset"; }
 	virtual const std::vector<std::string> GetExtentions() { return std::vector<std::string>(); }
 

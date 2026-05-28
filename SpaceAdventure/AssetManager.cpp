@@ -94,6 +94,15 @@ void AssetFolder::AddAsset(std::unique_ptr<Asset>&& asset)
 
 void AssetFolder::RemoveAsset(Asset* asset)
 {
+	auto foundit = std::find_if(Assets.begin(), Assets.end(), [&](const std::unique_ptr<Asset>& checkAsset)
+		{
+			return asset == checkAsset.get();
+		});
+
+	if (foundit == Assets.end())
+	{
+		Assets.erase(foundit);
+	}
 }
 
 AssetFolder* AssetManager::ContentFolder = nullptr;
@@ -299,6 +308,11 @@ std::vector<Asset*> AssetManager::GetAssets(std::set<std::string> filter)
 {
 	std::vector<Asset*> foundAssets;
 	GetAssets(ContentFolder, foundAssets, filter);
+
+	std::sort(foundAssets.begin(), foundAssets.end(), [](Asset* first, Asset* second) {
+		return first < second;
+	});
+
 	return foundAssets;
 }
 

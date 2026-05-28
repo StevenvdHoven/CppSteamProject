@@ -5,6 +5,11 @@
 
 class Transform : public Component
 {
+	enum struct DirtyFlag : uint8_t {
+		POSITION,
+		ROTATION,
+		SCALE
+	};
 public:
 	DECLARE_COMPONENT(Transform, "Transform")
 
@@ -25,21 +30,43 @@ public:
 	float GetLocalScale() const { return LocalScale; }
 	void SetLocalScale(float localScale);
 
+	Math::Vector2 GetWorldLocation();
+	void SetWorldLocation(const Math::Vector2& worldPos);
+
+	float GetWorldRotation();
+	void SetWorldRotation(float degrees);
+
+	float GetWorldScale();
+	void SetWorldScale(float scale);
+
+	void SetDirty(DirtyFlag flag, bool childOnly = false);
+	bool IsDirty(DirtyFlag flag) const;
+
+	Math::Matrix2x3 GetMatrix() const {
+		return  Math::Matrix2x3::FromTranslation(LocalPosition) * Math::Matrix2x3::FromScale(LocalScale) * Math::Matrix2x3::FromRotation(LocalRotation);
+	}
+
+private:
+	void ClearDirty(DirtyFlag flag);
+	void CalculateWorldPosition();
+	void CalculateWorldRotation();
+	void CalculateWorldScale();
+
+
+public:
 #ifdef _DEBUG
 	virtual void ImGui_OnWindow();
 #endif // _DEBUG
 
 private:
-	bool IsWorldPositionDirty() const { return DirtyFlags.test(0); }
-	bool IsWorldRotationDirty() const { return DirtyFlags.test(1); }
-	bool IsWorldScaleDirty() const { return DirtyFlags.test(2); }
-
-private:
 	std::bitset<3> DirtyFlags;
 
 	Math::Vector2 LocalPosition;
+	Math::Vector2 WorldPosition;
 	float LocalRotation;
+	float WorldRotation;
 	float LocalScale;
+	float WorldScale;
 
 	friend GameObject;
 };

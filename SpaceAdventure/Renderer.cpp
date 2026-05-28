@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include "Texture.h"
 #include "RenderComponent.h"
+#include "Transform.h"
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -102,5 +103,27 @@ void Renderer::RenderTexture(const Texture& texture, const Math::Vector2& pos, c
 	dsrect.w = static_cast<int>(srect.w);
 	dsrect.h = static_cast<int>(srect.h);
 	SDL_RenderCopy(RenderTarget, texture.Get(), &srect, &dsrect);
+}
+
+void Renderer::RenderTexture(const Texture& texture, Transform* transform)
+{
+	const auto pos = transform->GetWorldLocation();
+	const float scale = transform->GetWorldScale();
+	const float rot = transform->GetWorldRotation();
+
+	SDL_Rect src = texture.GetCropRect();
+
+	SDL_Rect dst;
+	dst.w = static_cast<int>(src.w * scale);
+	dst.h = static_cast<int>(src.h * scale);
+
+	dst.x = static_cast<int>(pos.x - dst.w * 0.5f);
+	dst.y = static_cast<int>(pos.y - dst.h * 0.5f);
+
+	SDL_Point center;
+	center.x = dst.w / 2;
+	center.y = dst.h / 2;
+
+	SDL_RenderCopyEx(RenderTarget, texture.Get(), &src, &dst, rot, &center, SDL_FLIP_NONE);
 }
 

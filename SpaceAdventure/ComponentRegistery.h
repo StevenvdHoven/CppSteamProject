@@ -17,14 +17,14 @@ class ComponentRegistery
 public:
     static void Register(const std::string& name, ComponentFactoryFn fn)
     {
-        factories[name] = fn;
+        GetFactories().emplace(name, fn);
     }
 
     static std::unique_ptr<Component> Create(const std::string& name)
     {
-        auto it = factories.find(name);
+        auto it = GetFactories().find(name);
 
-        if (it == factories.end())
+        if (it == GetFactories().end())
             return nullptr;
 
         return it->second();
@@ -33,9 +33,9 @@ public:
     static std::vector<std::string> GetAvailableComponentTypes()
     {
         std::vector<std::string> keys;
-        keys.reserve(factories.size());
+        keys.reserve(GetFactories().size());
 
-        for (auto entry : factories)
+        for (auto entry : GetFactories())
         {
             keys.emplace_back(entry.first);
         }
@@ -43,7 +43,11 @@ public:
     }
 
 private:
-    static std::unordered_map<std::string, ComponentFactoryFn> factories;
+    static std::unordered_map<std::string, ComponentFactoryFn>& GetFactories()
+    {
+        static std::unordered_map<std::string, ComponentFactoryFn> factories;
+        return factories;
+    }
 };
 
 template<typename T>

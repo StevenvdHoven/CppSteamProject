@@ -41,7 +41,13 @@ Vector2& Vector2::operator=(Vector2&& other) noexcept
 	return *this;
 }
 
-Vector2 Vector2::operator+(const Vector2& other)
+bool Math::Vector2::operator==(const Vector2& other) const
+{
+	constexpr float EPSILON = 0.001f;
+	return std::fabs(x - other.x) < EPSILON && std::fabs(y - other.y) < EPSILON;
+}
+
+Vector2 Vector2::operator+(const Vector2& other) const
 {
 	return Vector2(x + other.x, y + other.y);
 }
@@ -53,7 +59,7 @@ Vector2& Vector2::operator+=(const Vector2& other)
 	return *this;
 }
 
-Vector2 Vector2::operator-(const Vector2& other)
+Vector2 Vector2::operator-(const Vector2& other) const
 {
 	return Vector2(x - other.x, y - other.y);
 }
@@ -65,7 +71,7 @@ Vector2& Vector2::operator-=(const Vector2& other)
 	return *this;
 }
 
-Vector2 Vector2::operator*(float scalar)
+Vector2 Vector2::operator*(float scalar) const
 {
 	return Vector2(x * scalar, y * scalar);
 }
@@ -77,7 +83,7 @@ Vector2& Vector2::operator*=(float scalar)
 	return *this;
 }
 
-Vector2 Vector2::operator/(float devide)
+Vector2 Vector2::operator/(float devide) const
 {
 	return Vector2(x / devide, y / devide);
 }
@@ -107,4 +113,9 @@ float Vector2::DistanceSq(const Vector2& first, const Vector2& second)
 float Vector2::Distance(const Vector2& first, const Vector2& second)
 {
 	return sqrtf(DistanceSq(first, second));
+}
+
+Math::Vector2 operator*(float scalar, const Math::Vector2& right)
+{
+	return right * scalar;
 }

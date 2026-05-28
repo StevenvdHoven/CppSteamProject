@@ -1,0 +1,24 @@
+﻿  Transform.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Transform.cpp(30,30): warning C4100: 'deltaTime': unreferenced formal parameter
+  SpaceAdventure.vcxproj -> E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\SpaceGame.exe
+  0 File(s) copied
+  0 File(s) copied
+  0 File(s) copied
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Attack01.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Attack02.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Death.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Hurt.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Idle.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Walk.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\character.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\character2.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Attack01.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Attack02.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Attack03.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Death.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Hurt.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Idle.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Walk.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton.asset
+  17 File(s) copied

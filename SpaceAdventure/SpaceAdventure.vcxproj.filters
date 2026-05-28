@@ -159,6 +159,12 @@
     <ClCompile Include="GameEngine.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Matrix2x3.cpp">
+      <Filter>Engine\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Viewport.h">
@@ -234,6 +240,12 @@
       <Filter>Engine\Helper</Filter>
     </ClInclude>
     <ClInclude Include="GameEngine.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix2x3.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
       <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
