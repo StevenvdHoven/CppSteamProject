@@ -25,8 +25,10 @@ public:
 	int GetWidth() const { return Width; }
 	int GetHeight() const { return Height; }
 
+	Math::Vector2 ViewportToWorld(const Math::Vector2& vec);
+
 	Math::Matrix2x3 GetViewportMatrix() const {
-		return Math::Matrix2x3::FromTranslation(Offset + Math::Vector2(Width * 0.5f, Height * 0.5f)) * Math::Matrix2x3::FromScale(Scale);
+		return ViewMatrix;
 	}
 
 private:
@@ -39,6 +41,9 @@ private:
 
 	Math::Vector2 Offset;
 	float Scale = 1.0f;
+
+	Math::Matrix2x3 ViewMatrix;
+	Math::Matrix2x3 ViewMatrixInverse;
 
 	SDL_Renderer* Renderer = nullptr;
 	SDL_Texture* ViewportTexture = nullptr;

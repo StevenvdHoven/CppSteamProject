@@ -6,14 +6,6 @@ public:
 	RenderComponent();
 	virtual ~RenderComponent();
 
-	bool operator>(const RenderComponent& other) {
-		return Order > other.Order;
-	}
-
-	bool operator<(const RenderComponent& other) {
-		return Order < other.Order;
-	}
-
 	virtual void Load(std::ifstream& inputstream) override;
 	virtual void Save(std::ofstream& outputstream) override;
 
@@ -26,4 +18,3 @@ public:
 public:
 	int Order;
 };
-

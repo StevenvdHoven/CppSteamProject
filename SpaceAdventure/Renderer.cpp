@@ -45,6 +45,10 @@ void Renderer::Render()
 {
 	std::lock_guard<std::mutex> lock(RenderLock);
 
+	std::sort(RenderComponents.begin(), RenderComponents.end(), [](RenderComponent* left, RenderComponent* right) {
+		return left->Order < right->Order;
+	});
+
 	for (auto renderComp : RenderComponents) {
 		renderComp->Render();
 	}
@@ -76,13 +80,25 @@ void Renderer::RenderAll()
 void Renderer::Register(RenderComponent* renderComponent)
 {
 	std::lock_guard<std::mutex> lock(RenderLock);
-	Instance->RenderComponents.insert(renderComponent);
+	auto pos = std::find_if(Instance->RenderComponents.begin(), Instance->RenderComponents.end(), [&renderComponent](RenderComponent* other) {
+		return other == renderComponent;
+	});
+
+	if (pos == Instance->RenderComponents.end()) {
+		Instance->RenderComponents.emplace_back(renderComponent);
+	}
 }
 
 void Renderer::UnRegister(RenderComponent* renderComponent)
 {
 	std::lock_guard<std::mutex> lock(RenderLock);
-	Instance->RenderComponents.erase(renderComponent);
+	auto pos = std::find_if(Instance->RenderComponents.begin(), Instance->RenderComponents.end(), [&renderComponent](RenderComponent* other) {
+		return other == renderComponent;
+	});
+	if (pos != Instance->RenderComponents.end()) {
+		Instance->RenderComponents.erase(pos);
+	}
+	
 }
 
 void Renderer::RenderTexture(const Texture& texture, const Math::Vector2& pos)

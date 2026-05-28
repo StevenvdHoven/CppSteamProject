@@ -1,6 +1,6 @@
 #pragma once
 #include <SDL/SDL.h>
-#include <set>
+#include <vector>
 #include <mutex>
 #include "Math.h"
 
@@ -24,8 +24,8 @@ public:
 	void Render();
 
 private:
-	using RenderComponentSet = std::set<RenderComponent*>;
-	RenderComponentSet RenderComponents;
+	using RenderComponentVector = std::vector<RenderComponent*>;
+	RenderComponentVector RenderComponents;
 
 	std::jthread RenderThread;
 

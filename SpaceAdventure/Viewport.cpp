@@ -5,6 +5,8 @@
 #include <iostream>
 #include "Asset.h"
 #include "Time.h"
+#include "GameObject.h"
+#include "Transform.h"
 #include <imgui/imgui_internal.h>
 
 Viewport::Viewport(SDL_Renderer* renderer, int width, int height) :
@@ -18,6 +20,11 @@ Viewport::~Viewport()
 {
 	if (ViewportTexture)
 		SDL_DestroyTexture(ViewportTexture);
+}
+
+Math::Vector2 Viewport::ViewportToWorld(const Math::Vector2& vec)
+{
+	return ViewMatrixInverse.Transform(vec);
 }
 
 void Viewport::Resize(int width, int height)
@@ -42,6 +49,9 @@ void Viewport::Resize(int width, int height)
 
 void Viewport::HandleInput()
 {
+	ViewMatrix = Math::Matrix2x3::FromTranslation(Offset + Math::Vector2(Width * 0.5f, Height * 0.5f)) * Math::Matrix2x3::FromScale(Scale);
+	ViewMatrixInverse = ViewMatrix.Inverse();
+
 	ImGuiIO& io = ImGui::GetIO();
 
 	Math::Vector2 dir{};
@@ -122,7 +132,16 @@ void Viewport::ImGui_OnWindow()
 		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("asset")) {
 			if (Asset* draggedAsset = *static_cast<Asset**>(payload->Data)) {
 				printf("Asset has been dragged into viewport: %s", draggedAsset->GetName().c_str());
-				draggedAsset->CreateGameObject();
+				if (GameObject* newObject = draggedAsset->CreateGameObject()) {
+					ImVec2 mouse = ImGui::GetMousePos();
+					ImVec2 vpMin = ImGui::GetItemRectMin();
+					Math::Vector2 viewportMouse(
+						mouse.x - vpMin.x,
+						mouse.y - vpMin.y
+					);
+
+					newObject->GetTransform()->SetWorldLocation(ViewportToWorld(viewportMouse));
+				}
 			}
 		}
 		ImGui::EndDragDropTarget();
