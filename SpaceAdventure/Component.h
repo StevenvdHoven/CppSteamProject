@@ -23,7 +23,7 @@ public:
 
 	GameObject* GetOwner() { return Owner; }
 
-	GameObject* GetParent();
+	GameObject* GetParent() const;
 	Transform* GetTransform();
 
 #ifdef _DEBUG

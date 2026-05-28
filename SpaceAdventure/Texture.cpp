@@ -73,7 +73,7 @@ void Texture::ImGui_ContentHelper()
 	ImGui::PushID(this);
 	if (ImGui::InvisibleButton("##InvisibleButton", size))
 	{
-		EditorWindowManager::GetChecked().GetAssetEditor<TextureEditor>().Open(this);
+		EditorWindowManager::GetChecked().GetEditorWindow<TextureEditor>().Open(this);
 	}
 	ImGui::PopID();
 

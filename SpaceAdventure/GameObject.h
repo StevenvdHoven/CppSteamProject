@@ -68,7 +68,7 @@ public:
 	}
 
 	void SetParent(GameObject* parent);
-	GameObject* GetParent() { return Parent; }
+	GameObject* GetParent() const { return Parent; }
 	
 	Transform* GetTransform() { return TransformPtr; }
 

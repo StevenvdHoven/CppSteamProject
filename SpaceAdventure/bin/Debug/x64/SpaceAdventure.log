@@ -1,5 +1,4 @@
-﻿  Transform.cpp
-E:\Projects\CppSteamProject\SpaceAdventure\Transform.cpp(30,30): warning C4100: 'deltaTime': unreferenced formal parameter
+﻿  Viewport.cpp
   SpaceAdventure.vcxproj -> E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\SpaceGame.exe
   0 File(s) copied
   0 File(s) copied

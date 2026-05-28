@@ -41,7 +41,9 @@ void Scene::Save(std::ofstream& outputstream)
 void Scene::Update(float deltaTime)
 {
 	for (auto& gameObject : GameObjects) {
-		gameObject->Update(deltaTime);
+		if (!gameObject->GetParent()) {
+			gameObject->Update(deltaTime);
+		}
 	}
 }
 #ifdef _DEBUG

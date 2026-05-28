@@ -163,7 +163,10 @@
       <Filter>Engine\Math</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -246,6 +249,9 @@
       <Filter>Engine\Math</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
+      <Filter>Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
       <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>

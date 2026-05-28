@@ -162,6 +162,15 @@ bool Transform::IsDirty(DirtyFlag flag) const
 	return DirtyFlags.test(static_cast<int>(flag));
 }
 
+Math::Matrix2x3 Transform::GetMatrix() const
+{
+	auto localMatrix = Math::Matrix2x3::FromTranslation(LocalPosition) * Math::Matrix2x3::FromScale(LocalScale) * Math::Matrix2x3::FromRotation(LocalRotation);
+	if (GameObject* parent = GetParent()) {
+		return parent->GetTransform()->GetMatrix() * localMatrix;
+	}
+	return localMatrix;
+}
+
 void Transform::ClearDirty(DirtyFlag flag)
 {
 	DirtyFlags.set(static_cast<int>(flag), false);

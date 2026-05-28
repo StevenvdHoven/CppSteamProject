@@ -42,9 +42,7 @@ public:
 	void SetDirty(DirtyFlag flag, bool childOnly = false);
 	bool IsDirty(DirtyFlag flag) const;
 
-	Math::Matrix2x3 GetMatrix() const {
-		return  Math::Matrix2x3::FromTranslation(LocalPosition) * Math::Matrix2x3::FromScale(LocalScale) * Math::Matrix2x3::FromRotation(LocalRotation);
-	}
+	Math::Matrix2x3 GetMatrix() const;
 
 private:
 	void ClearDirty(DirtyFlag flag);

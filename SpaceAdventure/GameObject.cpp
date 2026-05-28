@@ -73,6 +73,10 @@ void GameObject::Update(float deltaTime)
 	{
 		component->Update(deltaTime);
 	}
+
+	for (auto child : Childeren) {
+		child->Update(deltaTime);
+	}
 }
 
 void GameObject::OnDestroy()

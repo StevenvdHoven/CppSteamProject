@@ -27,6 +27,8 @@ namespace Math
 		Vector2 operator/(float devide) const;
 		Vector2& operator/=(float devide);
 
+		float Length() const;
+
 		static float Dot(const Vector2& first, const Vector2& second);
 		static float Angle(const Vector2& first, const Vector2& second);
 		static float DistanceSq(const Vector2& first, const Vector2& second);

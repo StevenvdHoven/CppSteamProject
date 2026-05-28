@@ -95,6 +95,11 @@ Vector2& Vector2::operator/=(float devide)
 	return *this;
 }
 
+float Math::Vector2::Length() const
+{
+	return sqrtf(x * x + y * y);
+}
+
 float Vector2::Dot(const Vector2& first, const Vector2& second)
 {
 	return first.x * second.x + first.y * second.y;

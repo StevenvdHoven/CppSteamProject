@@ -27,7 +27,7 @@ public:
 	}
 
 	template<typename T>
-	T& GetAssetEditor()
+	T& GetEditorWindow()
 	{
 		for (const auto& editors : EditorWindows) {
 			T* foundEditor = dynamic_cast<T*>(editors.get());

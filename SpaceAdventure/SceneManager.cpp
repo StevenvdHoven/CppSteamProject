@@ -32,7 +32,7 @@ void SceneManager::LoadScene(Scene& scene)
 	inputstream.close();
 
 #ifdef _DEBUG
-	EditorWindowManager::GetChecked().GetAssetEditor<WorldView>().UnSelect();
+	EditorWindowManager::GetChecked().GetEditorWindow<WorldView>().UnSelect();
 #endif // _DEBUG
 
 }

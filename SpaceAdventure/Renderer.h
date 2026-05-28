@@ -45,6 +45,13 @@ public:
 	static SDL_Renderer* GetCurrentRenderer() { return RenderTarget; }
 
 private:
+	static void ApplyCamera(Transform* transform, Math::Vector2& pos, float& rot, float& scale);
+
+#ifdef _DEBUG
+	static void ApplyViewport(Transform* transform, Math::Vector2& pos, float& rot, float& scale);
+#endif
+
+private:
 	static SDL_Renderer* RenderTarget;
 	static Renderer* Instance;
 	static std::mutex RenderLock;

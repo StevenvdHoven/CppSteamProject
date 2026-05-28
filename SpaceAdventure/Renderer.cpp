@@ -1,5 +1,7 @@
 #include "Renderer.h"
 #include "Texture.h"
+#include "EditorWindowManager.h"
+#include "Viewport.h"
 #include "RenderComponent.h"
 #include "Transform.h"
 #include <iostream>
@@ -107,9 +109,15 @@ void Renderer::RenderTexture(const Texture& texture, const Math::Vector2& pos, c
 
 void Renderer::RenderTexture(const Texture& texture, Transform* transform)
 {
-	const auto pos = transform->GetWorldLocation();
-	const float scale = transform->GetWorldScale();
-	const float rot = transform->GetWorldRotation();
+	Math::Vector2 pos;
+	float rot;
+	float scale;
+
+#ifndef _DEBUG
+	ApplyCamera(transform, pos, rot, scale)
+#else
+	ApplyViewport(transform, pos, rot, scale);
+#endif
 
 	SDL_Rect src = texture.GetCropRect();
 
@@ -126,4 +134,20 @@ void Renderer::RenderTexture(const Texture& texture, Transform* transform)
 
 	SDL_RenderCopyEx(RenderTarget, texture.Get(), &src, &dst, rot, &center, SDL_FLIP_NONE);
 }
+
+void Renderer::ApplyCamera(Transform* transform, Math::Vector2& pos, float& rot, float& scale)
+{
+}
+
+#ifdef _DEBUG
+void Renderer::ApplyViewport(Transform* transform, Math::Vector2& pos, float& rot, float& scale)
+{
+	Viewport& viewport = EditorWindowManager::GetChecked().GetEditorWindow<Viewport>();
+	Math::Matrix2x3 viewportMatrix = viewport.GetViewportMatrix();
+
+	pos = viewportMatrix.Transform(transform->GetWorldLocation());
+	rot = transform->GetWorldRotation();
+	scale = transform->GetWorldScale() * viewportMatrix.ExtractScale();
+}
+#endif
 

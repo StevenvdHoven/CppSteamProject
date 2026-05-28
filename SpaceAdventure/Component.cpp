@@ -7,7 +7,7 @@ void Component::Destroy(GameObject* gameObject)
 	SceneManager::DeleteGameObject(gameObject);
 }
 
-GameObject* Component::GetParent()
+GameObject* Component::GetParent() const
 {
 	return Owner->GetParent();
 }

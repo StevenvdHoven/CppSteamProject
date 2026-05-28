@@ -1,4 +1,5 @@
 #include "GameEngine.h"
+#include "Time.h"
 
 GameEngine::GameEngine()
 {
@@ -53,9 +54,29 @@ GameEngine::~GameEngine()
 
 void GameEngine::Run()
 {
+	constexpr int MSPREFRAME{ 1000 / 144 };
+	constexpr float FIXEDTIMESTEP{ .02f };
+
+	auto lastTime = std::chrono::high_resolution_clock::now();
+	float lag = 0.0f;
+
 	bool isRunning = true;
 	while (isRunning)
 	{
+		const auto currentTime = std::chrono::high_resolution_clock::now();
+		const float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
+
+		Time::DeltaTime = deltaTime;
+		lastTime = currentTime;
+		lag += deltaTime;
+
+		while (lag >= FIXEDTIMESTEP)
+		{
+			// fixed update
+			lag -= FIXEDTIMESTEP;
+
+		}
+
 		SDL_Event e;
 		while (SDL_PollEvent(&e))
 		{
@@ -104,7 +125,7 @@ void GameEngine::Run()
 #ifdef _DEBUG
 		GameViewport->BeginFrame();
 
-		SceneManager::UpdateScene(0.0f);
+		SceneManager::UpdateScene(deltaTime);
 		Renderer::RenderAll();
 
 		GameViewport->EndFrame();
@@ -118,7 +139,7 @@ void GameEngine::Run()
 		SDL_RenderClear(MainRenderer);
 
 #ifndef _DEBUG
-		SceneManager::UpdateScene(0.0f);
+		SceneManager::UpdateScene(delta_time);
 		Renderer::RenderAll();
 #endif
 
@@ -134,5 +155,8 @@ void GameEngine::Run()
 #endif
 
 		SDL_RenderPresent(MainRenderer);
+
+		const auto sleep_time = currentTime + std::chrono::milliseconds(MSPREFRAME) - std::chrono::high_resolution_clock::now();
+		std::this_thread::sleep_for(sleep_time);
 	}
 }

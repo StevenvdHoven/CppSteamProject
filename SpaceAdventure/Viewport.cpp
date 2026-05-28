@@ -1,7 +1,9 @@
 #ifdef _DEBUG
+#include <algorithm>
 #include "Viewport.h"
 #include <SDL/SDL.h>
 #include <iostream>
+#include "Time.h"
 
 Viewport::Viewport(SDL_Renderer* renderer, int width, int height) : 
     EditorWindow(),
@@ -36,6 +38,31 @@ void Viewport::Resize(int width, int height)
     Height = height;
 }
 
+void Viewport::HandleInput()
+{
+    ImGuiIO& io = ImGui::GetIO();
+
+    Math::Vector2 dir{};
+    if (ImGui::IsKeyDown(ImGuiKey_D)) {
+        dir.x -= 1.0f;
+    }
+    if (ImGui::IsKeyDown(ImGuiKey_A)) {
+        dir.x += 1.0f;
+    }
+    if (ImGui::IsKeyDown(ImGuiKey_W)) {
+        dir.y += 1.0f;
+    }
+    if (ImGui::IsKeyDown(ImGuiKey_S)) {
+        dir.y -= 1.0f;
+    }
+
+    constexpr float flightSpeed = 200.f;
+    Offset += dir * flightSpeed * Time::GetDeltaTime();
+
+    Scale += io.MouseWheel;
+    Scale = std::clamp(Scale, 0.1f, 20.0f);
+}
+
 void Viewport::BeginFrame()
 {
     if (!ViewportTexture)
@@ -53,6 +80,7 @@ void Viewport::EndFrame()
 
 void Viewport::ImGui_OnWindow()
 {
+    HandleInput();
     ImGui::Begin("Viewport");
     ImGuizmo::BeginFrame();
 

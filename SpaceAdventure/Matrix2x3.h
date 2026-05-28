@@ -16,6 +16,8 @@ namespace Math {
 		static Matrix2x3 FromScale(const Vector2& scale);
 		static Matrix2x3 FromScale(float scalex, float scaley);
 
+		float ExtractScale() const { return dirX.Length(); }
+
 		float Determinant() const;
 		Matrix2x3 Inverse() const;
 		
