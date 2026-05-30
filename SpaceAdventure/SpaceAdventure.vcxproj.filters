@@ -55,6 +55,9 @@
     <Filter Include="Engine\Helper">
       <UniqueIdentifier>{ed9bef46-2b91-43b3-aa35-70ed5d891265}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Systems">
+      <UniqueIdentifier>{49503578-2a26-4c4e-881f-ca8e851b4680}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -168,6 +171,15 @@
     <ClCompile Include="Time.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="GameEngineSettings.cpp">
+      <Filter>Editor\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraManager.cpp">
+      <Filter>Engine\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemRegistery.cpp">
+      <Filter>Engine\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Viewport.h">
@@ -253,6 +265,15 @@
     </ClInclude>
     <ClInclude Include="Time.h">
       <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEngineSettings.h">
+      <Filter>Editor\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraManager.h">
+      <Filter>Engine\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemRegistery.h">
+      <Filter>Engine\Systems</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

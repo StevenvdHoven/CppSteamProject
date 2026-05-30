@@ -147,6 +147,13 @@ void Transform::SetWorldScale(float scale)
 
 void Transform::SetDirty(DirtyFlag flag, bool childOnly)
 {
+	if (flag == DirtyFlag::ALL) {
+		SetDirty(DirtyFlag::POSITION, childOnly);
+		SetDirty(DirtyFlag::ROTATION, childOnly);
+		SetDirty(DirtyFlag::SCALE, childOnly);
+		return;
+	}
+
 	if (!childOnly) {
 		DirtyFlags.set(static_cast<int>(flag), true);
 	}

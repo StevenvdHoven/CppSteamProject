@@ -87,9 +87,13 @@ public:
 	}
 
 	void Save(std::ofstream& outputstream) {
-
 		Asset* asset = AssetRef;
-		BinarySaving::Write(outputstream, asset->GetPath());
+		if (asset) {
+			BinarySaving::Write(outputstream, asset->GetPath());
+		}
+		else {
+			BinarySaving::Write(outputstream, "");
+		}
 	}
 
 	void ImGui_OnDrawProperty(const char* label) {
@@ -106,10 +110,12 @@ public:
 			Asset* assetPtr = (Asset*)AssetRef;
 			selectedAsset = assetPtr->GetName();
 		}
-
 		
-		if (ImGui::BeginCombo("Assets", selectedAsset.c_str()))
+		if (ImGui::BeginCombo(label, selectedAsset.c_str()))
 		{
+			if (ImGui::Selectable("None")) {
+				AssetRef = nullptr;
+			}
 			for (int n = 0; n < foundAssets.size(); n++)
 			{
 				if (ImGui::Selectable(foundAssets[n]->GetName().c_str())) {

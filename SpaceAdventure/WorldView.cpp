@@ -23,6 +23,9 @@ void WorldView::ImGui_OnWindow()
 				printf("Asset has been dragged into viewport: %s", draggedAsset->GetName().c_str());
 				draggedAsset->CreateGameObject();
 			}
+			else if(GameObject* gameObject = *static_cast<GameObject**>(payload->Data)) {
+				gameObject->SetParent(nullptr);
+			}
 		}
 		ImGui::EndDragDropTarget();
 	}
@@ -68,6 +71,21 @@ void WorldView::ImGui_GameObjectHelper(GameObject* gameObject)
 {
 	ImGui::PushID(gameObject);
 	bool opened = ImGui::TreeNodeEx(gameObject->Name.c_str());
+	if (ImGui::BeginDragDropSource())
+	{
+		GameObject* ptr = gameObject;
+
+		ImGui::SetDragDropPayload(
+			"gameobject",
+			&ptr,
+			sizeof(ptr)
+		);
+
+		ImGui::Text(ptr->Name.c_str());
+
+		ImGui::EndDragDropSource();
+	}
+
 	if (ImGui::BeginDragDropTarget()) {
 		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("asset")) {
 			if (Asset* draggedAsset = *static_cast<Asset**>(payload->Data)) {
@@ -75,7 +93,11 @@ void WorldView::ImGui_GameObjectHelper(GameObject* gameObject)
 				if (GameObject* newObject = draggedAsset->CreateGameObject()) {
 					newObject->SetParent(gameObject);
 				}
-				
+			}
+		}
+		else if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("gameobject")) {
+			if (GameObject* dragObject = *static_cast<GameObject**>(payload->Data)) {
+				dragObject->SetParent(gameObject, true);
 			}
 		}
 		ImGui::EndDragDropTarget();
@@ -85,8 +107,6 @@ void WorldView::ImGui_GameObjectHelper(GameObject* gameObject)
 	if (selected) {
 		OnSelect(gameObject);
 	}
-
-	// GameObject popup
 	if (ImGui::BeginPopupContextItem("GameObjectPopup"))
 	{
 		if (ImGui::MenuItem("Add Child"))

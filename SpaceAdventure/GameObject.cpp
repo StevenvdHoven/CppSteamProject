@@ -65,6 +65,14 @@ void GameObject::Save(std::ofstream& outputstream)
 
 void GameObject::Start()
 {
+	for (auto& component : Components)
+	{
+		component->Start();
+	}
+
+	for (auto child : Childeren) {
+		child->Start();
+	}
 }
 
 void GameObject::Update(float deltaTime)
@@ -83,16 +91,37 @@ void GameObject::OnDestroy()
 {
 }
 
-void GameObject::SetParent(GameObject* parent)
+void GameObject::SetParent(GameObject* parent, bool keepWorldPos)
 {
+	if (Parent) {
+		Parent->RemoveChild(this);
+	}
+
 	Parent = parent;
-	parent->AddChild(this);
-	GetTransform()->DirtyFlags.set();
+	if (Parent) {
+		Parent->AddChild(this);
+	}
+	if (keepWorldPos) {
+		Math::Vector2 worldpos = GetTransform()->GetWorldLocation();
+		GetTransform()->SetLocalPosition(worldpos - parent->GetTransform()->GetWorldLocation());
+	}
+	GetTransform()->SetDirty(Transform::DirtyFlag::ALL);
 }
 
 void GameObject::AddChild(GameObject* child)
 {
 	Childeren.emplace_back(child);
+}
+
+void GameObject::RemoveChild(GameObject* child)
+{
+	auto pos = std::find_if(Childeren.begin(), Childeren.end(), [&child](GameObject* gameObject) {
+		return child == gameObject;
+	});
+
+	if (pos != Childeren.end()) {
+		Childeren.erase(pos);
+	}
 }
 
 #ifdef _DEBUG
@@ -101,7 +130,7 @@ void GameObject::ImGui_OnInpect()
 {
 	char buffer[256]{};
 
-	strncpy(buffer, Name.c_str(), sizeof(buffer) - 1);
+	strncpy_s(buffer, Name.c_str(), sizeof(buffer) - 1);
 
 	if (ImGui::InputText("##Name", buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue))
 	{
@@ -113,16 +142,17 @@ void GameObject::ImGui_OnInpect()
 
 	for (auto& component : Components)
 	{
-		bool isOpened = ImGui::CollapsingHeader(component->GetName().c_str(), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanTextWidth);
-		
 		if (component->GetName() != Transform::CompType) {
-			ImGui::SameLine();
+			
 			ImGui::PushID(component.get());
 			if (ImGui::Button("X")) {
 				compsToRemove.emplace_back(component.get());
 			}
+			ImGui::SameLine();
 			ImGui::PopID();
 		}
+		
+		bool isOpened = ImGui::CollapsingHeader(component->GetName().c_str(), ImGuiTreeNodeFlags_DefaultOpen);
 
 		if(isOpened) {
 			component->ImGui_OnWindow();
@@ -153,7 +183,6 @@ void GameObject::ImGui_OnInpect()
 				AddComponent(std::move(ComponentRegistery::Create(componentTypes[n])));
 				ImGui::CloseCurrentPopup();
 			}
-
 			// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
 			if (is_selected) {
 				ImGui::SetItemDefaultFocus();

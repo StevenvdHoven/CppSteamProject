@@ -1,6 +1,7 @@
 #include "SceneManager.h"
 #include "Scene.h"
 #include "AssetManager.h"
+#include "Camera.h"
 
 #ifdef _DEBUG
 #include "EditorWindowManager.h"
@@ -17,6 +18,12 @@ SceneManager::SceneManager()
 	assetScene->Name = "Untitled";
 	
 	LoadScene(untitledScene);
+
+	auto camera = std::make_unique<GameObject>();
+	camera->Name = "Camera";
+	camera->AddComponent<Camera>();
+
+	CurrentScene.GameObjects.emplace_back(std::move(camera));
 }
 
 void SceneManager::LoadScene(Scene& scene)
@@ -35,6 +42,11 @@ void SceneManager::LoadScene(Scene& scene)
 	EditorWindowManager::GetChecked().GetEditorWindow<WorldView>().UnSelect();
 #endif // _DEBUG
 
+}
+
+void SceneManager::Start()
+{
+	CurrentScene.Start();
 }
 
 void SceneManager::Update(float deltaTime)
@@ -84,4 +96,9 @@ void SceneManager::AddGameObject(std::unique_ptr<GameObject>&& gameObject)
 void SceneManager::DeleteGameObject(GameObject* gameObject)
 {
 	Instance->CurrentScene.Delete(gameObject);
+}
+
+void SceneManager::StartScene()
+{
+	Instance->Start();
 }

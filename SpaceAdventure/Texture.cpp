@@ -90,6 +90,11 @@ void Texture::ImGui_ContentHelper()
 	ImGui::EndGroup();
 }
 
+void Texture::ImGui_OnOpen()
+{
+	EditorWindowManager::GetChecked().GetEditorWindow<TextureEditor>().Open(this);
+}
+
 GameObject* Texture::CreateGameObject()
 {
 	GameObject* gameObject = GameObject::Instantiate();

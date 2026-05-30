@@ -67,7 +67,7 @@ public:
 		}
 	}
 
-	void SetParent(GameObject* parent);
+	void SetParent(GameObject* parent, bool keepWorldPos = true);
 	GameObject* GetParent() const { return Parent; }
 	
 	Transform* GetTransform() { return TransformPtr; }
@@ -83,6 +83,7 @@ public:
 
 private:
 	void AddChild(GameObject* child);
+	void RemoveChild(GameObject* child);
 
 public:
 	std::string Name;

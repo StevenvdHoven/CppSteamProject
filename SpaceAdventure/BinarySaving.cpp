@@ -10,11 +10,8 @@ void BinarySaving::Write(std::ofstream& outstream, Math::Vector2 vec2)
 void BinarySaving::Write(std::ofstream& outstream, const std::string& string)
 {
 	std::uint32_t stringSize = static_cast<std::uint32_t>(string.size());
-	if (stringSize > 0)
-	{
-		outstream.write(reinterpret_cast<const char*>(&stringSize), sizeof(stringSize));
-		outstream.write(string.data(), stringSize);
-	}
+	outstream.write(reinterpret_cast<const char*>(&stringSize), sizeof(stringSize));
+	outstream.write(string.data(), stringSize);
 }
 
 std::string BinarySaving::ReadString(std::ifstream& inputstream)

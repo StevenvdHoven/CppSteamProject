@@ -14,6 +14,7 @@
 #include "SceneManager.h"
 #include "AssetManager.h"
 #include "TextureManager.h"
+#include "AssetManager.h"
 
 #ifdef _DEBUG
 #include "EditorWindowManager.h"
@@ -24,6 +25,7 @@
 #include "TextureEditor.h"
 #endif 
 
+class GameEngineSettings;
 
 class GameEngine
 {
@@ -31,9 +33,15 @@ public:
 	GameEngine();
 	~GameEngine();
 
+	void Load();
+	void Save();
 	void Run();
 
 	void SimulateGame();
+	void StopGame();
+
+	bool GameIsRunning() const { return RunningGame; }
+	static GameEngine* GetEngine() { return Instance; }
 
 private:
 	SDL_Window* MainWindow;
@@ -44,5 +52,15 @@ private:
 	Viewport* GameViewport;
 	WorldView* WorldViewWindow;
 #endif
+
+private:
+	AssetProperty<Scene> StartScene;
+	Math::Vector2 WindowSize;
+
+private:
+	bool RunningGame = false;
+
+	static GameEngine* Instance;
+	friend GameEngineSettings;
 };
 

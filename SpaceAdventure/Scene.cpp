@@ -38,6 +38,15 @@ void Scene::Save(std::ofstream& outputstream)
 	}
 }
 
+void Scene::Start()
+{
+	for (auto& gameObject : GameObjects) {
+		if (!gameObject->GetParent()) {
+			gameObject->Start();
+		}
+	}
+}
+
 void Scene::Update(float deltaTime)
 {
 	for (auto& gameObject : GameObjects) {

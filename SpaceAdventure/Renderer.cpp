@@ -1,6 +1,8 @@
 #include "Renderer.h"
 #include "Texture.h"
 #include "EditorWindowManager.h"
+#include "CameraManager.h"
+#include "Camera.h"
 #include "Viewport.h"
 #include "RenderComponent.h"
 #include "Transform.h"
@@ -14,7 +16,6 @@ std::mutex Renderer::RenderLock;
 
 Renderer::Renderer()
 {
-	//RenderThread = std::jthread(&Renderer::RenderLoop, this);
 }
 
 Renderer::~Renderer()
@@ -130,7 +131,7 @@ void Renderer::RenderTexture(const Texture& texture, Transform* transform)
 	float scale;
 
 #ifndef _DEBUG
-	ApplyCamera(transform, pos, rot, scale)
+	ApplyCamera(transform, pos, rot, scale);
 #else
 	ApplyViewport(transform, pos, rot, scale);
 #endif
@@ -153,6 +154,19 @@ void Renderer::RenderTexture(const Texture& texture, Transform* transform)
 
 void Renderer::ApplyCamera(Transform* transform, Math::Vector2& pos, float& rot, float& scale)
 {
+	CameraManager* cameraManager = SystemLocator::GetSystem<CameraManager>();
+	if (Camera* mainCamera = cameraManager->GetMainCamera()) {
+		Math::Matrix2x3 cameraMatrix = mainCamera->GetTransform()->GetMatrix().Inverse();
+		pos = cameraMatrix.Transform(transform->GetWorldLocation());
+		rot = transform->GetWorldRotation();
+		scale = transform->GetWorldScale();
+
+		return;
+	}
+
+	pos = transform->GetWorldLocation();
+	rot = transform->GetWorldRotation();
+	scale = transform->GetWorldScale();
 }
 
 #ifdef _DEBUG

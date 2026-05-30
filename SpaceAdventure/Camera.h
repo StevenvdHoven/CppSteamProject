@@ -1,4 +1,5 @@
 #pragma once
+#include "Matrix2x3.h"
 #include "Component.h"
 #include <SDL/SDL.h>
 
@@ -9,6 +10,8 @@ public:
 
 	Camera();
 	virtual ~Camera() = default;
+
+	void PromoteToMainCamera();
 
 private:
 	SDL_Color BackgroundColor;

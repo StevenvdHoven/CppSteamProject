@@ -8,7 +8,8 @@ class Transform : public Component
 	enum struct DirtyFlag : uint8_t {
 		POSITION,
 		ROTATION,
-		SCALE
+		SCALE,
+		ALL
 	};
 public:
 	DECLARE_COMPONENT(Transform, "Transform")

@@ -2,6 +2,8 @@
 #include <iostream>
 #include "Scene.h"
 
+class GameEngine;
+
 class SceneManager
 {
 public:
@@ -33,6 +35,8 @@ public:
 	static void DeleteGameObject(GameObject* gameObject);
 
 private:
+	static void StartScene();
 	static SceneManager* Instance;
+	friend GameEngine;
 };
 

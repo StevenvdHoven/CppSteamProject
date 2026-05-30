@@ -1,17 +1,40 @@
 #include "GameEngine.h"
 #include "Time.h"
+#include "GameEngineSettings.h"
+#include <fstream>
+#include <filesystem>
 
-GameEngine::GameEngine()
+GameEngine* GameEngine::Instance = nullptr;
+
+GameEngine::GameEngine():
+	WindowSize(1800, 900)
 {
+	Instance = this;
 	SteamAPI_Init();
 
-	SDL_Init(SDL_INIT_EVERYTHING);
-	MainWindow = SDL_CreateWindow("CustomGame", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1800, 980, SDL_WINDOW_SHOWN);
-	MainRenderer = SDL_CreateRenderer(MainWindow, -1, 0);
 #ifdef _DEBUG
 	WindowManager = new EditorWindowManager();
 #endif
+
+	
+
+	SDL_Init(SDL_INIT_EVERYTHING);
+#ifdef _DEBUG
+	MainWindow = SDL_CreateWindow("Editor", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1800, 900, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN);
+
+#else
+	MainWindow = SDL_CreateWindow("CustomGame", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, static_cast<int>(WindowSize.x), static_cast<int>(WindowSize.y), SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN | SDL_WINDOW_VULKAN);
+
+#endif
+
+	MainRenderer = SDL_CreateRenderer(MainWindow, -1, 0);
+	Renderer::Init(MainRenderer);
+	SceneManager::Init();
+	AssetManager::Init();
+
+	Load();
 	IMGUI_CHECKVERSION();
+	
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
@@ -22,15 +45,14 @@ GameEngine::GameEngine()
 	);
 	ImGui_ImplSDLRenderer2_Init(MainRenderer);
 
-	SceneManager::Init();
-	Renderer::Init(MainRenderer);
-	AssetManager::Init();
+	
 #ifdef _DEBUG
 	GameViewport = &WindowManager->Insert(new Viewport(MainRenderer));
 	WorldViewWindow = &WindowManager->Insert(new WorldView());
 	WindowManager->Insert(new Properties(WorldViewWindow));
 	WindowManager->Insert(new ContentWindow());
 	WindowManager->Insert(new TextureEditor());
+	WindowManager->Insert(new GameEngineSettings(this));
 #endif
 }
 
@@ -52,8 +74,41 @@ GameEngine::~GameEngine()
 	SDL_Quit();
 }
 
-void GameEngine::Run()
+void GameEngine::Load()
 {
+	static std::string FILEPATH = "settings.GAMESETTINGS";
+	if (!std::filesystem::exists(FILEPATH)) {
+		return;
+	}
+
+	std::ifstream inputstream;
+	inputstream.open(FILEPATH, std::ios_base::in | std::ios_base::binary);
+	if (!inputstream.is_open()) {
+		return;
+	}
+	
+	StartScene.Load(inputstream);
+}
+
+void GameEngine::Save()
+{
+	static std::string FILEPATH = "settings.GAMESETTINGS";
+
+	std::ofstream outputstream;
+	outputstream.open(FILEPATH, std::ios_base::out | std::ios_base::binary);
+	if(!outputstream.is_open()) {
+		return;
+	}
+
+	StartScene.Save(outputstream);
+}
+
+void GameEngine::Run()
+{	
+	if (StartScene.Get()) {
+		SceneManager::OpenScene(*StartScene.Get());
+	}
+
 	constexpr int MSPREFRAME{ 1000 / 144 };
 	constexpr float FIXEDTIMESTEP{ .02f };
 
@@ -139,7 +194,7 @@ void GameEngine::Run()
 		SDL_RenderClear(MainRenderer);
 
 #ifndef _DEBUG
-		SceneManager::UpdateScene(delta_time);
+		SceneManager::UpdateScene(deltaTime);
 		Renderer::RenderAll();
 #endif
 
@@ -158,5 +213,29 @@ void GameEngine::Run()
 
 		const auto sleep_time = currentTime + std::chrono::milliseconds(MSPREFRAME) - std::chrono::high_resolution_clock::now();
 		std::this_thread::sleep_for(sleep_time);
+	}
+}
+
+void GameEngine::SimulateGame()
+{
+	if (RunningGame) {
+		return;
+	}
+
+	RunningGame = true;
+
+	SceneManager::StartScene();
+}
+
+void GameEngine::StopGame()
+{
+	if (!RunningGame) {
+		return;
+	}
+
+	RunningGame = false;
+
+	if (StartScene.Get()) {
+		SceneManager::OpenScene(*StartScene.Get());
 	}
 }

@@ -8,6 +8,7 @@
 #include "GameObject.h"
 #include "Transform.h"
 #include <imgui/imgui_internal.h>
+#include "GameEngine.h"
 
 Viewport::Viewport(SDL_Renderer* renderer, int width, int height) :
 	EditorWindow(),
@@ -71,7 +72,7 @@ void Viewport::HandleInput()
 	constexpr float flightSpeed = 200.f;
 	Offset += dir * flightSpeed * Time::GetDeltaTime();
 
-	Scale += io.MouseWheel;
+	Scale += io.MouseWheel * Time::GetDeltaTime();
 	Scale = std::clamp(Scale, 0.1f, 20.0f);
 }
 
@@ -97,12 +98,14 @@ void Viewport::ImGui_OnWindow()
 	ImGuizmo::BeginFrame();
 
 	ImGui::BeginGroup();
-	if (ImGui::Button("Start Game")) {
-
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("End Game")) {
-
+	bool isRunning = GameEngine::GetEngine()->GameIsRunning();
+	if (ImGui::Button(isRunning ? "Stop Game" : "Start Game")) {
+		if (isRunning) {
+			GameEngine::GetEngine()->StopGame();
+		}
+		else {
+			GameEngine::GetEngine()->SimulateGame();
+		}
 	}
 	ImGui::EndGroup();
 
