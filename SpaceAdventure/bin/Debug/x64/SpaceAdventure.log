@@ -1,0 +1,230 @@
+﻿  Asset.cpp
+  AssetManager.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\AssetManager.cpp(74,45): warning C4100: 'folder': unreferenced parameter
+  AssetRegistery.cpp
+  BinarySaving.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\BinarySaving.cpp(6,66): warning C4100: 'vec2': unreferenced parameter
+E:\Projects\CppSteamProject\SpaceAdventure\BinarySaving.cpp(6,41): warning C4100: 'outstream': unreferenced parameter
+  Camera.cpp
+  CameraManager.cpp
+  Component.cpp
+  ComponentRegistery.cpp
+  ContentWindow.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\ContentWindow.cpp(36,63): warning C5054: operator '|': deprecated between enumerations of different types
+  EditorWindow.cpp
+  EditorWindowManager.cpp
+  GameEngine.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(35,3): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  (compiling source file 'GameEngine.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(37,3): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  (compiling source file 'GameEngine.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(226,2): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  (compiling source file 'GameEngine.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Math.h(5,9): warning C4005: 'M_PI': macro redefinition
+  (compiling source file 'GameEngine.cpp')
+      E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\SDL\SDL_stdinc.h(620,9):
+      see previous definition of 'M_PI'
+  
+  GameEngineSettings.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(35,3): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  (compiling source file 'GameEngineSettings.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(37,3): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  (compiling source file 'GameEngineSettings.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(226,2): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  (compiling source file 'GameEngineSettings.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Math.h(5,9): warning C4005: 'M_PI': macro redefinition
+  (compiling source file 'GameEngineSettings.cpp')
+      E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\SDL\SDL_stdinc.h(620,9):
+      see previous definition of 'M_PI'
+  
+  GameObject.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\GameObject.cpp(22,37): warning C4018: '<': signed/unsigned mismatch
+E:\Projects\CppSteamProject\SpaceAdventure\GameObject.cpp(36,39): warning C4018: '<': signed/unsigned mismatch
+E:\Projects\CppSteamProject\SpaceAdventure\GameObject.cpp(50,37): warning C4018: '<': signed/unsigned mismatch
+E:\Projects\CppSteamProject\SpaceAdventure\GameObject.cpp(61,39): warning C4018: '<': signed/unsigned mismatch
+  main.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(35,3): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  (compiling source file 'main.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(37,3): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  (compiling source file 'main.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(226,2): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  (compiling source file 'main.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Math.h(5,9): warning C4005: 'M_PI': macro redefinition
+  (compiling source file 'main.cpp')
+      E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\SDL\SDL_stdinc.h(620,9):
+      see previous definition of 'M_PI'
+  
+  Math.cpp
+  Matrix2x3.cpp
+  Properties.cpp
+  RenderComponent.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Math.h(5,9): warning C4005: 'M_PI': macro redefinition
+  (compiling source file 'RenderComponent.cpp')
+      E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\SDL\SDL_stdinc.h(620,9):
+      see previous definition of 'M_PI'
+  
+  Renderer.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Math.h(5,9): warning C4005: 'M_PI': macro redefinition
+  (compiling source file 'Renderer.cpp')
+      E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\SDL\SDL_stdinc.h(620,9):
+      see previous definition of 'M_PI'
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Renderer.cpp(116,101): warning C4100: 'size': unreferenced parameter
+  Generating Code...
+  Compiling...
+  Scene.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Math.h(5,9): warning C4005: 'M_PI': macro redefinition
+  (compiling source file 'Scene.cpp')
+      E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\SDL\SDL_stdinc.h(620,9):
+      see previous definition of 'M_PI'
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Scene.cpp(18,49): warning C4018: '<': signed/unsigned mismatch
+  SceneManager.cpp
+  imgui.cpp
+  ImGuizmo.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(759,28): warning C4245: 'initializing': conversion from 'int' to 'ImGuiID', signed/unsigned mismatch
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(769,32): warning C4245: 'argument': conversion from 'int' to 'const T', signed/unsigned mismatch
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(769,32): warning C4245:         with
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(769,32): warning C4245:         [
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(769,32): warning C4245:             T=ImU32
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(769,32): warning C4245:         ]
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(1354,118): warning C4244: 'argument': conversion from 'float' to 'ImDrawFlags', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(1384,122): warning C4244: 'argument': conversion from 'float' to 'ImDrawFlags', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(1647,86): warning C4244: 'argument': conversion from 'float' to 'ImDrawFlags', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(1989,35): warning C4245: '=': conversion from 'int' to 'ImGuiID', signed/unsigned mismatch
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(2574,35): warning C4245: '=': conversion from 'int' to 'ImGuiID', signed/unsigned mismatch
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(2639,38): warning C4245: 'argument': conversion from 'int' to 'const T', signed/unsigned mismatch
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(2639,38): warning C4245:         with
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(2639,38): warning C4245:         [
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(2639,38): warning C4245:             T=ImU32
+E:\Projects\CppSteamProject\SpaceAdventure\Source\ImGui\ImGuizmo.cpp(2639,38): warning C4245:         ]
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_impl_sdl2.cpp
+  imgui_impl_sdlrenderer2.cpp
+  imgui_tables.cpp
+  imgui_widgets.cpp
+  SpriteRenderer.cpp
+  SystemRegistery.cpp
+  Texture.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Math.h(5,9): warning C4005: 'M_PI': macro redefinition
+  (compiling source file 'Texture.cpp')
+      E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\SDL\SDL_stdinc.h(620,9):
+      see previous definition of 'M_PI'
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Texture.cpp(56,9): warning C4458: declaration of 'size' hides class member
+      E:\Projects\CppSteamProject\SpaceAdventure\Texture.h(38,10):
+      see declaration of 'Texture::size'
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Texture.cpp(82,9): warning C4458: declaration of 'tint' hides class member
+      E:\Projects\CppSteamProject\SpaceAdventure\Texture.h(36,12):
+      see declaration of 'Texture::tint'
+  
+  TextureEditor.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Math.h(5,9): warning C4005: 'M_PI': macro redefinition
+  (compiling source file 'TextureEditor.cpp')
+      E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\SDL\SDL_stdinc.h(620,9):
+      see previous definition of 'M_PI'
+  
+E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp(100,41): warning C4244: 'initializing': conversion from 'float' to 'Uint8', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp(100,60): warning C4244: 'initializing': conversion from 'float' to 'Uint8', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp(100,79): warning C4244: 'initializing': conversion from 'float' to 'Uint8', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp(100,98): warning C4244: 'initializing': conversion from 'float' to 'Uint8', possible loss of data
+E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp(165,10): warning C4456: declaration of 'localStart' hides previous local declaration
+      E:\Projects\CppSteamProject\SpaceAdventure\TextureEditor.cpp(147,16):
+      see declaration of 'localStart'
+  
+  TextureManager.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Math.h(5,9): warning C4005: 'M_PI': macro redefinition
+  (compiling source file 'TextureManager.cpp')
+      E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\SDL\SDL_stdinc.h(620,9):
+      see previous definition of 'M_PI'
+  
+  Time.cpp
+  Transform.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Transform.cpp(30,30): warning C4100: 'deltaTime': unreferenced parameter
+  Vector2.cpp
+  Viewport.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(35,3): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  (compiling source file 'Viewport.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(37,3): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  (compiling source file 'Viewport.cpp')
+  
+E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\matchmakingtypes.h(226,2): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  (compiling source file 'Viewport.cpp')
+  
+  WorldView.cpp
+E:\Projects\CppSteamProject\SpaceAdventure\WorldView.cpp(98,32): warning C4456: declaration of 'payload' hides previous local declaration
+      E:\Projects\CppSteamProject\SpaceAdventure\WorldView.cpp(90,27):
+      see declaration of 'payload'
+  
+  Generating Code...
+E:\Projects\CppSteamProject\SpaceAdventure\SceneManager.h(32,1): warning C4172: returning address of local variable or temporary 
+E:\Projects\CppSteamProject\SpaceAdventure\SceneManager.h(32,1): warning C4172: returning address of local variable or temporary 
+  SpaceAdventure.vcxproj -> E:\Projects\CppSteamProject\SpaceAdventure\bin\Debug\x64\SpaceGame.exe
+  E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\SDL\lib\x64\SDL2_image.dll
+  1 File(s) copied
+  E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\SDL\lib\x64\SDL2.dll
+  1 File(s) copied
+  E:\Projects\CppSteamProject\SpaceAdventure\Thirdparty\steam\lib\x64\steam_api64.dll
+  1 File(s) copied
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Scenes\imgui.ini
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Scenes\TestScene.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Attack01.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Attack01.png
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Attack02.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Attack02.png
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Death.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Death.png
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Death_dup.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Hurt.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Hurt.png
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Idle.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Idle.png
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Idle_dup.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Walk-rename.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Walk.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer-Walk.png
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer.png
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer_dup.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer_dup_dup.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Archer_dup_dup_dup.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\character.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\character.png
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\character2.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\character2.png
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Attack01.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Attack01.png
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Attack02.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Attack02.png
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Attack02_dup.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Attack02_dup_dup.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Attack03.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Attack03.png
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Death.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Death.png
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Death_dup.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Hurt.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Hurt.png
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Hurt_dup.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Idle.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Idle.png
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Idle_dup.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Walk.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Walk.png
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton-Walk_dup.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton.asset
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton.png
+  E:\Projects\CppSteamProject\SpaceAdventure\Content\Textures\Characters\Greatsword Skeleton_dup.asset
+  49 File(s) copied
