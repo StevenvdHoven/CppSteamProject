@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Shared configuration settings for every FlexEngine project.
+	Imported BEFORE Microsoft.Cpp.props (these properties must be known early).
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup Label="Configuration">
+		<PlatformToolset>v145</PlatformToolset>
+		<CharacterSet>Unicode</CharacterSet>
+	</PropertyGroup>
+	<PropertyGroup Label="Configuration" Condition="'$(Configuration)'=='Debug'">
+		<UseDebugLibraries>true</UseDebugLibraries>
+	</PropertyGroup>
+	<PropertyGroup Label="Configuration" Condition="'$(Configuration)'=='Development' Or '$(Configuration)'=='Shipping'">
+		<UseDebugLibraries>false</UseDebugLibraries>
+	</PropertyGroup>
+</Project>

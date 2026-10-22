@@ -1,0 +1,10 @@
+# Build output
+Binaries/
+Intermediate/
+
+# Visual Studio
+.vs/
+*.user
+
+# ImGui layout (per machine)
+imgui.ini

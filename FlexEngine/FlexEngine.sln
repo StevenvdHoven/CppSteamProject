@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.0.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlexEditor", "Source\Editor\FlexEditor.vcxproj", "{A04C3F5A-86B9-4F2F-BF43-8C01C395BF67}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlexCore", "Source\Core\FlexCore.vcxproj", "{09E204DC-F3FB-49AB-8B40-00F95CE22909}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlexRuntime", "Source\Runtime\FlexRuntime.vcxproj", "{4E45C51C-2255-4FD4-9A24-04617B3FA3CD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Development|x64 = Development|x64
+		Shipping|x64 = Shipping|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A04C3F5A-86B9-4F2F-BF43-8C01C395BF67}.Debug|x64.ActiveCfg = Debug|x64
+		{A04C3F5A-86B9-4F2F-BF43-8C01C395BF67}.Debug|x64.Build.0 = Debug|x64
+		{A04C3F5A-86B9-4F2F-BF43-8C01C395BF67}.Development|x64.ActiveCfg = Development|x64
+		{A04C3F5A-86B9-4F2F-BF43-8C01C395BF67}.Development|x64.Build.0 = Development|x64
+		{A04C3F5A-86B9-4F2F-BF43-8C01C395BF67}.Shipping|x64.ActiveCfg = Shipping|x64
+		{09E204DC-F3FB-49AB-8B40-00F95CE22909}.Debug|x64.ActiveCfg = Debug|x64
+		{09E204DC-F3FB-49AB-8B40-00F95CE22909}.Debug|x64.Build.0 = Debug|x64
+		{09E204DC-F3FB-49AB-8B40-00F95CE22909}.Development|x64.ActiveCfg = Development|x64
+		{09E204DC-F3FB-49AB-8B40-00F95CE22909}.Development|x64.Build.0 = Development|x64
+		{09E204DC-F3FB-49AB-8B40-00F95CE22909}.Shipping|x64.ActiveCfg = Shipping|x64
+		{09E204DC-F3FB-49AB-8B40-00F95CE22909}.Shipping|x64.Build.0 = Shipping|x64
+		{4E45C51C-2255-4FD4-9A24-04617B3FA3CD}.Debug|x64.ActiveCfg = Debug|x64
+		{4E45C51C-2255-4FD4-9A24-04617B3FA3CD}.Debug|x64.Build.0 = Debug|x64
+		{4E45C51C-2255-4FD4-9A24-04617B3FA3CD}.Development|x64.ActiveCfg = Development|x64
+		{4E45C51C-2255-4FD4-9A24-04617B3FA3CD}.Development|x64.Build.0 = Development|x64
+		{4E45C51C-2255-4FD4-9A24-04617B3FA3CD}.Shipping|x64.ActiveCfg = Shipping|x64
+		{4E45C51C-2255-4FD4-9A24-04617B3FA3CD}.Shipping|x64.Build.0 = Shipping|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C9D86DDA-67F5-4BCF-AE39-3DD2A67DD0CF}
+	EndGlobalSection
+EndGlobal

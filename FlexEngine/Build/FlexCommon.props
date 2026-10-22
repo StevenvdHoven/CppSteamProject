@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Shared compiler/linker settings for every FlexEngine project.
+	Imported AFTER Microsoft.Cpp.props.
+
+	Configurations:
+		Debug       - no optimisation, all debug tools       (FLEX_DEBUG, FLEX_DEBUG_TOOLS=1)
+		Development - optimised, debug tools kept             (FLEX_DEVELOPMENT, FLEX_DEBUG_TOOLS=1)
+		Shipping    - optimised, all debug tools stripped     (FLEX_SHIPPING, FLEX_DEBUG_TOOLS=0)
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<FlexRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\'))</FlexRoot>
+		<OutDir>$(FlexRoot)Binaries\$(Configuration)\</OutDir>
+		<IntDir>$(FlexRoot)Intermediate\$(ProjectName)\$(Configuration)\</IntDir>
+		<LocalDebuggerWorkingDirectory>$(OutDir)</LocalDebuggerWorkingDirectory>
+	</PropertyGroup>
+
+	<ItemDefinitionGroup>
+		<ClCompile>
+			<LanguageStandard>stdcpp20</LanguageStandard>
+			<ConformanceMode>true</ConformanceMode>
+			<WarningLevel>Level4</WarningLevel>
+			<SDLCheck>true</SDLCheck>
+			<MultiProcessorCompilation>true</MultiProcessorCompilation>
+			<AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+			<AdditionalIncludeDirectories>$(FlexRoot)Source;$(FlexRoot)Dependencies\SDL3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+			<PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+		</ClCompile>
+		<Link>
+			<GenerateDebugInformation>true</GenerateDebugInformation>
+			<AdditionalLibraryDirectories>$(FlexRoot)Dependencies\SDL3\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+		</Link>
+	</ItemDefinitionGroup>
+
+	<ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+		<ClCompile>
+			<Optimization>Disabled</Optimization>
+			<RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+			<PreprocessorDefinitions>_DEBUG;FLEX_DEBUG=1;FLEX_DEBUG_TOOLS=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+		</ClCompile>
+	</ItemDefinitionGroup>
+
+	<ItemDefinitionGroup Condition="'$(Configuration)'=='Development'">
+		<ClCompile>
+			<Optimization>MaxSpeed</Optimization>
+			<FunctionLevelLinking>true</FunctionLevelLinking>
+			<IntrinsicFunctions>true</IntrinsicFunctions>
+			<RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+			<PreprocessorDefinitions>NDEBUG;FLEX_DEVELOPMENT=1;FLEX_DEBUG_TOOLS=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+		</ClCompile>
+		<Link>
+			<EnableCOMDATFolding>true</EnableCOMDATFolding>
+			<OptimizeReferences>true</OptimizeReferences>
+		</Link>
+	</ItemDefinitionGroup>
+
+	<ItemDefinitionGroup Condition="'$(Configuration)'=='Shipping'">
+		<ClCompile>
+			<Optimization>MaxSpeed</Optimization>
+			<FunctionLevelLinking>true</FunctionLevelLinking>
+			<IntrinsicFunctions>true</IntrinsicFunctions>
+			<RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+			<PreprocessorDefinitions>NDEBUG;FLEX_SHIPPING=1;FLEX_DEBUG_TOOLS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+		</ClCompile>
+		<Link>
+			<EnableCOMDATFolding>true</EnableCOMDATFolding>
+			<OptimizeReferences>true</OptimizeReferences>
+		</Link>
+	</ItemDefinitionGroup>
+</Project>
