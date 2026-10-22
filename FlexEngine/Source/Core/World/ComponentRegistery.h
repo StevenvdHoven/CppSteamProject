@@ -1,0 +1,121 @@
+#pragma once
+#include "Core/Core.h"
+#include <concepts>
+#include <cstdint>
+#include <cstring>
+#include <memory>
+#include <string>
+#include <type_traits>
+
+namespace Flex
+{
+	// Dense id of a component type, the same in every module of this process.
+	// Ids depend on registration order, so they are never saved; names are.
+	using ComponentId = uint32_t;
+	inline constexpr ComponentId InvalidComponentId = UINT32_MAX;
+
+	// Marks a struct as a component and gives it its stable name:
+	//
+	//     struct Velocity
+	//     {
+	//         FLEX_COMPONENT(Velocity)
+	//         Vector2 Value;
+	//     };
+	//
+	// The name (not the C++ type) identifies the component, so the game module and
+	// FlexCore agree on ids even though each DLL has its own template statics.
+	#define FLEX_COMPONENT(TypeName) static constexpr const char* ComponentName = #TypeName;
+
+	template<typename T>
+	concept IsComponent = requires { { T::ComponentName } -> std::convertible_to<const char*>; }
+		&& !std::is_const_v<T> && !std::is_reference_v<T>
+		&& std::is_move_constructible_v<T> && std::is_destructible_v<T>;
+
+	// Type-erased description of a component type. Lives as long as the process,
+	// so pointers to it can be cached.
+	struct ComponentTypeInfo
+	{
+		std::string Name;
+		ComponentId Id = InvalidComponentId;
+		uint32_t Size = 0;
+		uint32_t Alignment = 0;
+
+		// Move-construct into destination and destroy source. nullptr = memcpy is enough.
+		void (*Relocate)(void* destination, void* source) = nullptr;
+		// nullptr = trivially destructible.
+		void (*Destruct)(void* object) = nullptr;
+
+		void RelocateObject(void* destination, void* source) const
+		{
+			if (Relocate) {
+				Relocate(destination, source);
+			} else {
+				std::memcpy(destination, source, Size);
+			}
+		}
+
+		void DestroyObject(void* object) const
+		{
+			if (Destruct) {
+				Destruct(object);
+			}
+		}
+	};
+
+	// Process-wide list of component types, shared by every module through FlexCore.
+	// Thread-safe. Types are registered lazily on first use (see GetComponentType).
+	class FLEX_API ComponentRegistery
+	{
+	public:
+		// Registers a type, or returns the existing one with the same name.
+		// A second registration with a different size or alignment is an error
+		// (two different structs using the same component name).
+		static const ComponentTypeInfo& Register(const ComponentTypeInfo& info);
+
+		static const ComponentTypeInfo& GetInfo(ComponentId id);
+		static const ComponentTypeInfo* FindByName(const std::string& name);
+		static uint32_t GetCount();
+	};
+
+	template<IsComponent T>
+	ComponentTypeInfo MakeComponentTypeInfo()
+	{
+		ComponentTypeInfo info;
+		info.Name = T::ComponentName;
+		info.Size = static_cast<uint32_t>(sizeof(T));
+		info.Alignment = static_cast<uint32_t>(alignof(T));
+		if constexpr (!std::is_trivially_copyable_v<T>) {
+			info.Relocate = [](void* destination, void* source)
+			{
+				T* sourceObject = static_cast<T*>(source);
+				std::construct_at(static_cast<T*>(destination), std::move(*sourceObject));
+				std::destroy_at(sourceObject);
+			};
+		}
+		if constexpr (!std::is_trivially_destructible_v<T>) {
+			info.Destruct = [](void* object) { std::destroy_at(static_cast<T*>(object)); };
+		}
+		return info;
+	}
+
+	// Registered type of T. Cached per module after the first call.
+	template<IsComponent T>
+	const ComponentTypeInfo& GetComponentType()
+	{
+		static const ComponentTypeInfo& Info = ComponentRegistery::Register(MakeComponentTypeInfo<T>());
+		return Info;
+	}
+
+	template<IsComponent T>
+	ComponentId GetComponentId()
+	{
+		return GetComponentType<T>().Id;
+	}
+
+	// True when no type appears twice in Ts.
+	template<typename... Ts>
+	struct DistinctTypes : std::true_type {};
+
+	template<typename T, typename... Rest>
+	struct DistinctTypes<T, Rest...> : std::bool_constant<(!std::is_same_v<T, Rest> && ...) && DistinctTypes<Rest...>::value> {};
+}

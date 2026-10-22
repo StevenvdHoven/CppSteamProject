@@ -43,3 +43,20 @@ static_assert(FLEX_DEBUG + FLEX_DEVELOPMENT + FLEX_SHIPPING == 1, "Exactly one o
 #endif
 
 #define FLEX_VERSION_STRING "0.1.0"
+
+// -----------------------
+// Assertions
+// -----------------------
+// FLEX_ASSERT(condition, "message") checks programmer errors in Debug and Development
+// (FLEX_DEBUG_TOOLS). On failure it logs, breaks into an attached debugger and aborts.
+// In Shipping the condition is NOT evaluated, so never put side effects in it.
+namespace Flex
+{
+	[[noreturn]] FLEX_API void AssertFailed(const char* condition, const char* message, const char* file, int line);
+}
+
+#if FLEX_DEBUG_TOOLS
+	#define FLEX_ASSERT(condition, message) do { if (!(condition)) { ::Flex::AssertFailed(#condition, message, __FILE__, __LINE__); } } while (false)
+#else
+	#define FLEX_ASSERT(condition, message) do { (void)sizeof(!(condition)); } while (false)
+#endif

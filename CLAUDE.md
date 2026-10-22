@@ -88,11 +88,17 @@ Visual Studio 2026 (toolset v145, C++20, x64 only). Open `FlexEngine/FlexEngine.
 - Equality operators are **exact**; use `NearlyEqual` for tolerance.
 - `Archive::Field` supports `Vector2`, `Vector2Int` and `Color` (stored as groups like `Position.X`). Derived archives need `using Archive::Field;` so these overloads aren't hidden.
 
-## Planned: world model (agreed, not built yet)
-- **One ECS world, our own archetype storage.** Every GameObject **is** an entity: an entity plus a `GameObjectInfo` component (name, Uid, hierarchy). **Lightweight entities** (bullets, RTS units) have only data components and are spawned in bulk. The same systems process both.
-- **Data components** are plain structs processed in bulk by **Systems**. **Behaviour components** are classes with `Start`/`Update`/`OnDestroy`. Both are attached with the same `AddComponent`/`GetComponent` API.
-- Particles are arrays inside an emitter component, not entities. Structural changes during iteration go through a command buffer. Handles are index + generation.
-- **Benchmark target:** 50,000 moving bullets updated and drawn at 60 fps in a Development build.
+## World / ECS (`Core/World/`, include `Core/World/World.h`)
+- **One ECS world, our own archetype storage.** Every GameObject **is** an entity: an entity plus a `GameObjectInfo` component (name, Uid, hierarchy). **Lightweight entities** (bullets, RTS units) have only data components and are spawned in bulk. The same systems process both. *(GameObjects, behaviours with `Start`/`Update`/`OnDestroy`, systems, reflection and rendering are later patches.)*
+- Particles are arrays inside an emitter component, not entities.
+- **`Entity`** = `Index` + `Generation` (8 bytes). `Entity{}` is invalid (generation 0). Destroying bumps the slot's generation, so stale handles stop being alive. Freed slots are reused LIFO.
+- **Components** are structs marked with `FLEX_COMPONENT(Name)`. Types are identified **by that name** through `ComponentRegistery` in FlexCore (lazy registration on first use, dense `ComponentId`), so game-module DLLs get the same ids. Ids depend on registration order: never save them, save names. A second type with the same name but another size/alignment asserts. Components must be movable; non-trivial types (`std::string`) are fine.
+- **`Archetype`** = one table per exact component set: one contiguous 64-byte-aligned column per component plus an `Entity` column. Rows are packed with **swap-and-pop**, so row order isn't stable. Add/remove moves the row to another archetype; moves are cached as edges.
+- **`World`** is an instance (not a singleton): `Spawn(components...)`, `SpawnBatch<Ts...>(count, init)` (default-constructs, reuses freed slots, no vector returned), `Destroy`, `IsAlive`, `AddComponent<T>(e, value)` (replaces if present, `nullptr` if dead), `RemoveComponent<T>`, `GetComponent<T>` (`nullptr` if missing; pointer valid until the next structural change), `HasComponent<T>`.
+- **Queries:** `world.Each<Position, const Velocity>([](Position&, const Velocity&) {...})`, optionally with `Entity` as the first parameter. Header templates: FlexCore is called once per matching archetype, never per entity.
+- **No structural changes inside `Each`** (asserts with `FLEX_DEBUG_TOOLS`): record them in `world.GetCommands()` (`Spawn` returns a usable reserved handle, `Destroy`, `AddComponent`, `RemoveComponent`) and call `world.ApplyCommands()` at the end of the frame. Commands are applied in order; commands on dead entities are ignored. Not thread-safe yet.
+- `FLEX_ASSERT(condition, message)` (`Core/Core.h`): logs, breaks into the debugger and aborts with `FLEX_DEBUG_TOOLS`; in Shipping the condition isn't evaluated.
+- **Benchmark target:** 50,000 moving bullets updated and drawn at 60 fps in a Development build. Patch 09 measured the update only (no drawing yet): ~0.04 ms per frame for 50k `Position += Velocity * dt`, plus ~0.05 ms to apply 1,000 destroys + 1,000 spawns.
 
 ## Code conventions
 - Everything in `namespace Flex`.

@@ -61,6 +61,11 @@
 		<ClInclude Include="Math\Vector2.h" />
 		<ClInclude Include="Project.h" />
 		<ClInclude Include="Uid.h" />
+		<ClInclude Include="World\Archetype.h" />
+		<ClInclude Include="World\CommandBuffer.h" />
+		<ClInclude Include="World\ComponentRegistery.h" />
+		<ClInclude Include="World\Entity.h" />
+		<ClInclude Include="World\World.h" />
 		<ClInclude Include="Serialization\Archive.h" />
 		<ClInclude Include="Serialization\BinaryArchive.h" />
 		<ClInclude Include="Serialization\TextArchive.h" />
@@ -71,10 +76,15 @@
 		<ClCompile Include="Assets\AssetManager.cpp" />
 		<ClCompile Include="Assets\Sprite.cpp" />
 		<ClCompile Include="Assets\Texture.cpp" />
+		<ClCompile Include="Core.cpp" />
 		<ClCompile Include="Engine.cpp" />
 		<ClCompile Include="Graphics\Renderer.cpp" />
 		<ClCompile Include="Project.cpp" />
 		<ClCompile Include="Uid.cpp" />
+		<ClCompile Include="World\Archetype.cpp" />
+		<ClCompile Include="World\CommandBuffer.cpp" />
+		<ClCompile Include="World\ComponentRegistery.cpp" />
+		<ClCompile Include="World\World.cpp" />
 		<ClCompile Include="Serialization\BinaryArchive.cpp" />
 		<ClCompile Include="Serialization\TextArchive.cpp" />
 		<ClCompile Include="Serialization\TextDocument.cpp" />
