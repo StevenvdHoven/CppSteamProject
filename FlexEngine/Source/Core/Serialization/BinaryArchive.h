@@ -16,6 +16,8 @@ namespace Flex
 	public:
 		explicit BinaryWriter(std::vector<std::byte>& buffer);
 
+		using Archive::Field; // keep the math overloads visible next to the overrides
+
 		uint32_t SerializeVersion(uint32_t currentVersion) override;
 
 		void Field(const char* name, bool& value) override;
@@ -41,6 +43,8 @@ namespace Flex
 	{
 	public:
 		explicit BinaryReader(std::span<const std::byte> data);
+
+		using Archive::Field; // keep the math overloads visible next to the overrides
 
 		uint32_t SerializeVersion(uint32_t currentVersion) override;
 

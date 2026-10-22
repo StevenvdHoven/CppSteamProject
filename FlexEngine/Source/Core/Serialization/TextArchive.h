@@ -12,6 +12,8 @@ namespace Flex
 	public:
 		TextArchive(TextSection& section, ArchiveMode mode);
 
+		using Archive::Field; // keep the math overloads visible next to the overrides
+
 		uint32_t SerializeVersion(uint32_t currentVersion) override;
 
 		void Field(const char* name, bool& value) override;

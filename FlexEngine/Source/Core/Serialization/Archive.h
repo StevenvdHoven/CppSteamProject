@@ -1,6 +1,8 @@
 #pragma once
 #include "Core/Core.h"
 #include "Core/Uid.h"
+#include "Core/Math/Color.h"
+#include "Core/Math/Vector2.h"
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -51,6 +53,35 @@ namespace Flex
 		// Groups the fields in between, e.g. "Transform" -> Transform.Position in text.
 		virtual void BeginObject(const char* name) = 0;
 		virtual void EndObject() = 0;
+
+		// Math types are stored as groups, so every archive supports them for free:
+		//     Position.X = 120
+		//     Position.Y = 64
+		void Field(const char* name, Vector2& value)
+		{
+			BeginObject(name);
+			Field("X", value.x);
+			Field("Y", value.y);
+			EndObject();
+		}
+
+		void Field(const char* name, Vector2Int& value)
+		{
+			BeginObject(name);
+			Field("X", value.x);
+			Field("Y", value.y);
+			EndObject();
+		}
+
+		void Field(const char* name, Color& value)
+		{
+			BeginObject(name);
+			Field("R", value.r);
+			Field("G", value.g);
+			Field("B", value.b);
+			Field("A", value.a);
+			EndObject();
+		}
 
 		const std::vector<std::string>& GetWarnings() const { return Warnings; }
 

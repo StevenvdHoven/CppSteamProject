@@ -81,6 +81,19 @@ Visual Studio 2026 (toolset v145, C++20, x64 only). Open `FlexEngine/FlexEngine.
 - **Texture Editor:** the filter is saved immediately. Sprite edits (drag to cut, select, name/rect/pivot, grid slicing with `Editor/SpriteSlicer`) stay a working copy until **Apply** writes them to the `.meta` and refreshes the database. Re-slicing with "Replace" **keeps the Id of every sprite whose name stays the same**, so references survive. Sprite names should be unique per texture.
 - The editor's "Assets" panel (with thumbnails and load statistics) is a temporary debug view until there's a content browser. Thumbnails keep their textures loaded while the editor runs. Clicking a texture opens the **Texture Editor** (preview + import settings).
 
+## Math (`Core/Math/`, include `Core/Math/Math.h`)
+- **Header-only and mostly `constexpr`**, so it inlines into hot loops in game code (no DLL calls). Don't move math into `.cpp` files.
+- **Conventions:** x right, **y down** (like SDL/Godot/image files). Angles are **radians** in code; a positive angle is **clockwise on screen**. 1 world unit = 1 pixel at zoom 1 (the camera can change that later).
+- `Vector2` (float `x, y`), `Vector2Int` (grid/pixel coordinates, hashable), `Matrix2x3` (affine: `dirX`, `dirY`, `orig`; `A * B` applies B first, so world = parent * local; `FromTRS` builds scale-rotate-translate directly), `Rect` (top-left + size, half-open), `Color` (float RGBA, `ToRGBA8` for SDL), `Random` (PCG32, seedable/deterministic, one per system or thread), `MathUtils` (`Pi`, degree/radian conversion, `Lerp`, `WrapAngle`, `DeltaAngle`, ...).
+- Equality operators are **exact**; use `NearlyEqual` for tolerance.
+- `Archive::Field` supports `Vector2`, `Vector2Int` and `Color` (stored as groups like `Position.X`). Derived archives need `using Archive::Field;` so these overloads aren't hidden.
+
+## Planned: world model (agreed, not built yet)
+- **One ECS world, our own archetype storage.** Every GameObject **is** an entity: an entity plus a `GameObjectInfo` component (name, Uid, hierarchy). **Lightweight entities** (bullets, RTS units) have only data components and are spawned in bulk. The same systems process both.
+- **Data components** are plain structs processed in bulk by **Systems**. **Behaviour components** are classes with `Start`/`Update`/`OnDestroy`. Both are attached with the same `AddComponent`/`GetComponent` API.
+- Particles are arrays inside an emitter component, not entities. Structural changes during iteration go through a command buffer. Handles are index + generation.
+- **Benchmark target:** 50,000 moving bullets updated and drawn at 60 fps in a Development build.
+
 ## Code conventions
 - Everything in `namespace Flex`.
 - Classes, methods and members in PascalCase; booleans with a `b` prefix (`bIsRunning`).

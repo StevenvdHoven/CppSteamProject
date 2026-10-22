@@ -30,3 +30,6 @@
 *.app
 *.vs
 
+
+# Claude's working folder (patches, staging copies, tests)
+Claude/
