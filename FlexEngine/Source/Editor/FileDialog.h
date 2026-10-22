@@ -21,6 +21,8 @@ namespace Flex
 		// filterPattern is a ';'-separated list of extensions without dots, e.g. "flexproj".
 		void OpenFile(SDL_Window* window, const std::string& filterName, const std::string& filterPattern, const std::filesystem::path& defaultLocation = {});
 		void OpenFolder(SDL_Window* window, const std::filesystem::path& defaultLocation = {});
+		// "Save as": the user picks a (possibly new) file name.
+		void SaveFile(SDL_Window* window, const std::string& filterName, const std::string& filterPattern, const std::filesystem::path& defaultLocation = {});
 
 		bool IsOpen() const;
 

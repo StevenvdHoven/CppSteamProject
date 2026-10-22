@@ -59,7 +59,8 @@ namespace Flex
 	public:
 		static std::shared_ptr<Sprite> Create(std::shared_ptr<Texture> texture, const SpriteDefinition& definition);
 
-		const char* GetTypeName() const override { return "Sprite"; }
+		static constexpr const char* TypeName = "Sprite";
+		const char* GetTypeName() const override { return TypeName; }
 		size_t GetMemorySize() const override { return sizeof(Sprite); } // the pixels belong to the texture
 
 		const std::shared_ptr<Texture>& GetTexture() const { return SourceTexture; }

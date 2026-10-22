@@ -51,8 +51,11 @@
 		<ClInclude Include="Core.h" />
 		<ClInclude Include="Engine.h" />
 		<ClInclude Include="FileSystem.h" />
+		<ClInclude Include="Graphics\Camera2D.h" />
 		<ClInclude Include="Graphics\Renderer.h" />
 		<ClInclude Include="Graphics\SpriteBatch.h" />
+		<ClInclude Include="Graphics\SpriteRenderer.h" />
+		<ClInclude Include="Graphics\SpriteRenderSystem.h" />
 		<ClInclude Include="Math\Color.h" />
 		<ClInclude Include="Math\Math.h" />
 		<ClInclude Include="Math\MathUtils.h" />
@@ -62,11 +65,14 @@
 		<ClInclude Include="Math\Vector2.h" />
 		<ClInclude Include="Physics\Collision2D.h" />
 		<ClInclude Include="Project.h" />
+		<ClInclude Include="Scene\Scene.h" />
+		<ClInclude Include="Scene\SceneSerializer.h" />
 		<ClInclude Include="Uid.h" />
 		<ClInclude Include="World\Archetype.h" />
 		<ClInclude Include="World\CommandBuffer.h" />
 		<ClInclude Include="World\ComponentRegistery.h" />
 		<ClInclude Include="World\Entity.h" />
+		<ClInclude Include="World\GameObject.h" />
 		<ClInclude Include="World\Hierarchy.h" />
 		<ClInclude Include="World\Transform.h" />
 		<ClInclude Include="World\World.h" />
@@ -84,7 +90,10 @@
 		<ClCompile Include="Engine.cpp" />
 		<ClCompile Include="Graphics\Renderer.cpp" />
 		<ClCompile Include="Graphics\SpriteBatch.cpp" />
+		<ClCompile Include="Graphics\SpriteRenderSystem.cpp" />
 		<ClCompile Include="Project.cpp" />
+		<ClCompile Include="Scene\Scene.cpp" />
+		<ClCompile Include="Scene\SceneSerializer.cpp" />
 		<ClCompile Include="Uid.cpp" />
 		<ClCompile Include="World\Archetype.cpp" />
 		<ClCompile Include="World\CommandBuffer.cpp" />

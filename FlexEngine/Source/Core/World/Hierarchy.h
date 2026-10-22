@@ -42,6 +42,9 @@ namespace Flex
 		// Direct children; empty when there are none. Valid until the next structural change.
 		FLEX_API std::span<const Entity> GetChildren(const World& world, Entity entity);
 
+		// Moves the entity to position index among its parent's children (clamped). Not for roots.
+		FLEX_API void SetSiblingIndex(World& world, Entity entity, int index);
+
 		// The top-most parent (the entity itself for a root).
 		FLEX_API Entity GetRoot(const World& world, Entity entity);
 

@@ -2,6 +2,7 @@
 #include "Core/Core.h"
 #include "Core/Assets/Texture.h"
 #include "Core/Math/Color.h"
+#include "Core/Math/Matrix2x3.h"
 #include "Core/Math/Rect.h"
 #include "Core/Math/Vector2.h"
 #include <cstdint>
@@ -63,6 +64,28 @@ namespace Flex
 		void DrawRect(const Rect& destination, const Color& color)
 		{
 			Draw(nullptr, destination, color);
+		}
+
+		// A quad that can be rotated, scaled or mirrored: localRect's corners go through transform.
+		void DrawTransformed(const Texture* texture, const Matrix2x3& transform, const Rect& localRect, const Color& tint, const Rect& uv = Rect{ 0.0f, 0.0f, 1.0f, 1.0f })
+		{
+			SDL_Texture* handle = texture ? texture->GetSDLTexture() : nullptr;
+			if (handle != CurrentTexture || QueuedQuads == MaxQuadsPerDrawCall) {
+				SubmitQueued();
+				CurrentTexture = handle;
+			}
+
+			const float right = localRect.x + localRect.width;
+			const float bottom = localRect.y + localRect.height;
+			const float uvRight = uv.x + uv.width;
+			const float uvBottom = uv.y + uv.height;
+
+			SpriteVertex* vertex = Vertices.data() + static_cast<size_t>(QueuedQuads) * 4;
+			vertex[0] = { transform.TransformPoint({ localRect.x, localRect.y }), tint, { uv.x, uv.y } };
+			vertex[1] = { transform.TransformPoint({ right, localRect.y }), tint, { uvRight, uv.y } };
+			vertex[2] = { transform.TransformPoint({ right, bottom }), tint, { uvRight, uvBottom } };
+			vertex[3] = { transform.TransformPoint({ localRect.x, bottom }), tint, { uv.x, uvBottom } };
+			++QueuedQuads;
 		}
 
 		// Draws everything queued. Call before presenting the frame.

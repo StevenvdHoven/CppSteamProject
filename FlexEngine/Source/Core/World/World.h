@@ -124,6 +124,18 @@ namespace Flex
 			return GetComponentData(entity, GetComponentId<T>()) != nullptr;
 		}
 
+		// The entity's component types (sorted by id); empty when it isn't alive.
+		// Valid until the next structural change.
+		std::span<const ComponentId> GetComponentIds(Entity entity) const;
+
+		// Type-erased versions for code that only knows a ComponentId (Inspector, scene files).
+		void* GetComponentById(Entity entity, ComponentId id) const { return GetComponentData(entity, id); }
+		// Default-constructs the component, or returns the existing one. nullptr when the entity
+		// isn't alive or the type has no default constructor.
+		void* AddComponentById(Entity entity, ComponentId id);
+		// Returns false when the entity isn't alive or doesn't have the component.
+		bool RemoveComponentById(Entity entity, ComponentId id);
+
 		// -----------------------
 		// Queries
 		// -----------------------
@@ -230,7 +242,6 @@ namespace Flex
 
 		void* GetComponentData(Entity entity, ComponentId id) const;
 		void* PrepareAddComponent(Entity entity, const ComponentTypeInfo& type, bool& bOutAdded);
-		bool RemoveComponentById(Entity entity, ComponentId id);
 
 		// Used by CommandBuffer::Apply. Payloads are always consumed (moved in or destroyed).
 		void SpawnReserved(Entity entity, const ComponentTypeInfo* const* types, void* const* payloads, uint32_t count);

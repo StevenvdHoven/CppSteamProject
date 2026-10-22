@@ -6,9 +6,12 @@
 #include <memory>
 #include <string>
 #include <type_traits>
+#include <vector>
 
 namespace Flex
 {
+	class Archive;
+
 	// Dense id of a component type, the same in every module of this process.
 	// Ids depend on registration order, so they are never saved; names are.
 	using ComponentId = uint32_t;
@@ -25,6 +28,11 @@ namespace Flex
 	// The name (not the C++ type) identifies the component, so the game module and
 	// FlexCore agree on ids even though each DLL has its own template statics.
 	#define FLEX_COMPONENT(TypeName) static constexpr const char* ComponentName = #TypeName;
+
+	// Registers a component type when the module loads (put it in one .cpp file), so it can be
+	// found by name before any code used it: scene loading and the Inspector's "Add Component".
+	#define FLEX_REGISTER_COMPONENT(Type) \
+		static const bool FlexComponentRegistered_##Type = (::Flex::GetComponentType<Type>(), true);
 
 	template<typename T>
 	concept IsComponent = requires { { T::ComponentName } -> std::convertible_to<const char*>; }
@@ -44,6 +52,10 @@ namespace Flex
 		void (*Relocate)(void* destination, void* source) = nullptr;
 		// nullptr = trivially destructible.
 		void (*Destruct)(void* object) = nullptr;
+		// Constructs a default value into uninitialised memory. nullptr = not default-constructible.
+		void (*DefaultConstruct)(void* destination) = nullptr;
+		// Calls the type's Serialize(Archive&). nullptr = the type has none (not saved, not in the Inspector).
+		void (*Serialize)(void* object, Archive& archive) = nullptr;
 
 		void RelocateObject(void* destination, void* source) const
 		{
@@ -75,6 +87,9 @@ namespace Flex
 		static const ComponentTypeInfo& GetInfo(ComponentId id);
 		static const ComponentTypeInfo* FindByName(const std::string& name);
 		static uint32_t GetCount();
+
+		// Every registered type, in id order.
+		static std::vector<const ComponentTypeInfo*> GetAll();
 	};
 
 	template<IsComponent T>
@@ -94,6 +109,12 @@ namespace Flex
 		}
 		if constexpr (!std::is_trivially_destructible_v<T>) {
 			info.Destruct = [](void* object) { std::destroy_at(static_cast<T*>(object)); };
+		}
+		if constexpr (std::is_default_constructible_v<T>) {
+			info.DefaultConstruct = [](void* destination) { ::new (destination) T(); };
+		}
+		if constexpr (requires(T& component, Archive& archive) { component.Serialize(archive); }) {
+			info.Serialize = [](void* object, Archive& archive) { static_cast<T*>(object)->Serialize(archive); };
 		}
 		return info;
 	}

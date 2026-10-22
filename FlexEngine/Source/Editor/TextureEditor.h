@@ -1,9 +1,9 @@
 #pragma once
+#include "Editor/EditorWindow.h"
 #include "Editor/SpriteSlicer.h"
 #include "Core/Assets/Sprite.h"
 #include "Core/Assets/Texture.h"
 #include "Core/Uid.h"
-#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -14,29 +14,28 @@ struct ImVec2;
 namespace Flex
 {
 	class AssetDatabase;
+	struct EditorContext;
 
 	// Editor window for one texture:
 	//  - preview + import settings (filter, saved immediately)
 	//  - sprites cut from it: drag on the image to cut one, click to select,
 	//    edit name/rect/pivot, or slice the whole sheet on a grid.
 	// Sprite edits are a working copy until "Apply" writes them to the .meta.
-	class TextureEditor
+	// One window per open texture; closing it with unapplied sprite edits asks first.
+	class TextureEditor final : public AssetEditor
 	{
 	public:
-		explicit TextureEditor(AssetDatabase& database) : Database{ database } {}
-
-		// Called after sprites were written, so the asset database can pick up new/removed sprite ids.
-		std::function<void()> OnSpritesSaved;
-
 		// selectSpriteId: optional sprite to select once the texture is open.
-		void Open(Uid textureId, Uid selectSpriteId = {});
-		void Close();
-		void Draw();
+		TextureEditor(EditorContext& context, Uid textureId, Uid selectSpriteId = {});
+
+		void Draw() override;
+		void OnReopen(Uid subAssetId) override { SelectSprite(subAssetId); }
 
 		bool HasUnsavedChanges() const { return EditSprites != SavedSprites; }
 
 	private:
-		void OpenNow(Uid textureId, Uid selectSpriteId);
+		void Load();
+		void SelectSprite(Uid spriteId);
 		void DrawSettings();
 		void DrawCanvas();
 		void DrawSidebar();
@@ -53,6 +52,7 @@ namespace Flex
 		std::string DefaultSpriteNamePrefix() const;
 
 	private:
+		EditorContext& Context;
 		AssetDatabase& Database;
 
 		Uid TextureId;
@@ -79,9 +79,7 @@ namespace Flex
 		bool bShowSlicePreview = false;
 		std::string SliceMessage;
 
-		// Switching textures with unapplied sprite edits asks first.
-		Uid PendingTextureId;
-		Uid PendingSpriteId;
+		// Closing with unapplied sprite edits asks first.
 		bool bRequestUnsavedPopup = false;
 	};
 }

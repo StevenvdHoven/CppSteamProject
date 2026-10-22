@@ -59,6 +59,18 @@ namespace Flex
 		return it != data.IdsByName.end() ? &data.Types[it->second] : nullptr;
 	}
 
+	std::vector<const ComponentTypeInfo*> ComponentRegistery::GetAll()
+	{
+		RegisteryData& data = GetData();
+		std::scoped_lock lock{ data.Mutex };
+		std::vector<const ComponentTypeInfo*> all;
+		all.reserve(data.Types.size());
+		for (const ComponentTypeInfo& type : data.Types) {
+			all.push_back(&type);
+		}
+		return all;
+	}
+
 	uint32_t ComponentRegistery::GetCount()
 	{
 		RegisteryData& data = GetData();

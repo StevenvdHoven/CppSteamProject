@@ -46,7 +46,8 @@ namespace Flex
 		// e.g. for generated images. Needs Renderer::Init first.
 		static std::shared_ptr<Texture> CreateFromPixels(int width, int height, const uint8_t* rgbaPixels, TextureFilter filter, std::string& outError);
 
-		const char* GetTypeName() const override { return "Texture"; }
+		static constexpr const char* TypeName = "Texture";
+		const char* GetTypeName() const override { return TypeName; }
 		size_t GetMemorySize() const override;
 
 		int GetWidth() const { return Width; }

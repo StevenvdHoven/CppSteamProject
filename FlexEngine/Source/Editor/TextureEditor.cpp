@@ -1,5 +1,6 @@
 #include "Editor/TextureEditor.h"
 #include "Editor/AssetDatabase.h"
+#include "Editor/EditorContext.h"
 #include "Editor/TextureImporter.h"
 #include "Core/Assets/AssetManager.h"
 #include "Core/FileSystem.h"
@@ -72,69 +73,49 @@ namespace Flex
 	// Opening / closing
 	// -----------------------
 
-	void TextureEditor::Open(Uid textureId, Uid selectSpriteId)
+	TextureEditor::TextureEditor(EditorContext& context, Uid textureId, Uid selectSpriteId)
+		: AssetEditor("Texture Editor", "TextureEditor", textureId)
+		, Context{ context }
+		, Database{ context.Assets }
+		, TextureId{ textureId }
 	{
-		if (textureId != TextureId && HasUnsavedChanges()) {
-			PendingTextureId = textureId;
-			PendingSpriteId = selectSpriteId;
-			bRequestUnsavedPopup = true;
-			return;
+		if (const AssetInfo* asset = Database.Find(textureId)) {
+			SetTitle(asset->Name + " - Texture Editor");
 		}
-		OpenNow(textureId, selectSpriteId);
+		Load();
+		SelectSprite(selectSpriteId);
 	}
 
-	void TextureEditor::OpenNow(Uid textureId, Uid selectSpriteId)
+	void TextureEditor::Load()
 	{
-		const AssetInfo* asset = Database.Find(textureId);
+		const AssetInfo* asset = Database.Find(TextureId);
 		if (!asset || asset->Type != TextureImporter::TypeName) {
+			ErrorMessage = "This texture no longer exists.";
 			return;
 		}
 
-		if (textureId != TextureId)
+		std::snprintf(SliceNamePrefix, sizeof(SliceNamePrefix), "%s", DefaultSpriteNamePrefix().c_str());
+		if (TextureImporter::ReadSettings(Database, *asset, Settings, ErrorMessage) &&
+			TextureImporter::ReadSprites(Database, *asset, SavedSprites, ErrorMessage))
 		{
-			TextureId = textureId;
-			ErrorMessage.clear();
-			SliceMessage.clear();
-			Settings = TextureImportSettings{};
-			EditSprites.clear();
-			SavedSprites.clear();
-			SelectedSprite = -1;
-			bCreatingSprite = false;
-			bFitToWindow = true;
-			std::snprintf(SliceNamePrefix, sizeof(SliceNamePrefix), "%s", DefaultSpriteNamePrefix().c_str());
-
-			if (TextureImporter::ReadSettings(Database, *asset, Settings, ErrorMessage) &&
-				TextureImporter::ReadSprites(Database, *asset, SavedSprites, ErrorMessage))
-			{
-				EditSprites = SavedSprites;
-				LoadedTexture = AssetManager::Load<Texture>(textureId);
-				if (!LoadedTexture) {
-					ErrorMessage = "Could not load the texture (see the log for details).";
-				}
-			}
-			else {
-				LoadedTexture.reset();
+			EditSprites = SavedSprites;
+			LoadedTexture = AssetManager::Load<Texture>(TextureId);
+			if (!LoadedTexture) {
+				ErrorMessage = "Could not load the texture (see the log for details).";
 			}
 		}
-
-		if (selectSpriteId.IsValid()) {
-			for (int index{ 0 }; index < static_cast<int>(EditSprites.size()); ++index) {
-				if (EditSprites[index].Id == selectSpriteId) {
-					SelectedSprite = index;
-				}
-			}
-		}
-		ImGui::SetWindowFocus("Texture Editor");
 	}
 
-	void TextureEditor::Close()
+	void TextureEditor::SelectSprite(Uid spriteId)
 	{
-		TextureId = Uid();
-		LoadedTexture.reset();
-		EditSprites.clear();
-		SavedSprites.clear();
-		SelectedSprite = -1;
-		ErrorMessage.clear();
+		if (!spriteId.IsValid()) {
+			return;
+		}
+		for (int index{ 0 }; index < static_cast<int>(EditSprites.size()); ++index) {
+			if (EditSprites[index].Id == spriteId) {
+				SelectedSprite = index;
+			}
+		}
 	}
 
 	std::string TextureEditor::DefaultSpriteNamePrefix() const
@@ -149,7 +130,18 @@ namespace Flex
 
 	void TextureEditor::Draw()
 	{
-		ImGui::Begin("Texture Editor");
+		ImGui::SetNextWindowSize(ImVec2(1000.0f, 650.0f), ImGuiCond_FirstUseEver);
+		const bool bVisible = BeginWindow();
+
+		// The tab's close button: keep the window open and ask when sprite edits aren't applied.
+		if (!bIsOpen && HasUnsavedChanges()) {
+			bIsOpen = true;
+			bRequestUnsavedPopup = true;
+		}
+		if (!bVisible) {
+			EndWindow();
+			return;
+		}
 
 		if (bRequestUnsavedPopup) {
 			ImGui::OpenPopup(UNSAVEDPOPUP);
@@ -159,8 +151,8 @@ namespace Flex
 
 		const AssetInfo* asset = TextureId.IsValid() ? Database.Find(TextureId) : nullptr;
 		if (!asset) {
-			ImGui::TextDisabled("Click a texture or sprite in the Assets panel to open it here.");
-			ImGui::End();
+			ImGui::TextDisabled("This texture no longer exists.");
+			EndWindow();
 			return;
 		}
 
@@ -193,7 +185,7 @@ namespace Flex
 			}
 		}
 
-		ImGui::End();
+		EndWindow();
 	}
 
 	void TextureEditor::DrawSettings()
@@ -607,19 +599,19 @@ namespace Flex
 		}
 
 		ImGui::TextUnformatted("The sprites of this texture have changes that aren't applied yet.");
-		if (ImGui::Button("Apply"))
+		if (ImGui::Button("Apply and Close"))
 		{
 			ApplySprites();
 			if (!HasUnsavedChanges()) {
-				OpenNow(PendingTextureId, PendingSpriteId);
+				bIsOpen = false;
 			}
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Discard"))
+		if (ImGui::Button("Discard and Close"))
 		{
 			RevertSprites();
-			OpenNow(PendingTextureId, PendingSpriteId);
+			bIsOpen = false;
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::SameLine();
@@ -659,8 +651,9 @@ namespace Flex
 			}
 		}
 
-		if (OnSpritesSaved) {
-			OnSpritesSaved(); // note: refreshes the database, so `asset` is invalid after this
+		// Picks up new/removed sprite ids. Note: refreshes the database, so `asset` is invalid after this.
+		if (Context.RefreshAssets) {
+			Context.RefreshAssets();
 		}
 	}
 

@@ -38,6 +38,25 @@ namespace Flex
 		SDL_ShowOpenFolderDialog(&FileDialog::OnDialogClosed, this, window, DefaultLocation.empty() ? nullptr : DefaultLocation.c_str(), false);
 	}
 
+	void FileDialog::SaveFile(SDL_Window* window, const std::string& filterName, const std::string& filterPattern, const std::filesystem::path& defaultLocation)
+	{
+		{
+			std::lock_guard<std::mutex> lock(Lock);
+			if (bIsOpen) {
+				return;
+			}
+			bIsOpen = true;
+			bHasResult = false;
+		}
+
+		FilterName = filterName;
+		FilterPattern = filterPattern;
+		DefaultLocation = PathToUtf8(defaultLocation);
+		Filter = SDL_DialogFileFilter{ FilterName.c_str(), FilterPattern.c_str() };
+
+		SDL_ShowSaveFileDialog(&FileDialog::OnDialogClosed, this, window, &Filter, 1, DefaultLocation.empty() ? nullptr : DefaultLocation.c_str());
+	}
+
 	bool FileDialog::IsOpen() const
 	{
 		std::lock_guard<std::mutex> lock(Lock);

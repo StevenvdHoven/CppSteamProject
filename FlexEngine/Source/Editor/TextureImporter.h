@@ -13,8 +13,8 @@ namespace Flex
 	// Editor-side knowledge about texture source files (.png/.bmp + their .meta).
 	namespace TextureImporter
 	{
-		constexpr const char* TypeName = "Texture";
-		constexpr const char* SpriteTypeName = "Sprite";
+		constexpr const char* TypeName = Texture::TypeName;
+		constexpr const char* SpriteTypeName = Sprite::TypeName;
 
 		// Registers the extensions, the default [Import] settings for new .meta files,
 		// and [Sprite] sections as sub-assets.

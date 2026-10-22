@@ -5,6 +5,9 @@
 
 namespace Flex
 {
+	FLEX_REGISTER_COMPONENT(Parent)
+	FLEX_REGISTER_COMPONENT(Children)
+
 	namespace
 	{
 		void RemoveFromChildren(World& world, Entity parent, Entity child)
@@ -83,6 +86,23 @@ namespace Flex
 	{
 		const Children* children = world.GetComponent<Children>(entity);
 		return children ? std::span<const Entity>{ children->Entities } : std::span<const Entity>{};
+	}
+
+	void Hierarchy::SetSiblingIndex(World& world, Entity entity, int index)
+	{
+		const Entity parent = GetParent(world, entity);
+		Children* children = parent.IsValid() ? world.GetComponent<Children>(parent) : nullptr;
+		if (!children) {
+			return;
+		}
+		std::vector<Entity>& list = children->Entities;
+		const auto it = std::find(list.begin(), list.end(), entity);
+		if (it == list.end()) {
+			return;
+		}
+		list.erase(it);
+		const size_t position = std::min(static_cast<size_t>(std::max(index, 0)), list.size());
+		list.insert(list.begin() + static_cast<std::ptrdiff_t>(position), entity);
 	}
 
 	Entity Hierarchy::GetRoot(const World& world, Entity entity)

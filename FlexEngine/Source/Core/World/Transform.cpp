@@ -6,6 +6,9 @@
 
 namespace Flex
 {
+	FLEX_REGISTER_COMPONENT(Transform)
+	FLEX_REGISTER_COMPONENT(WorldTransform)
+
 	namespace
 	{
 		struct TransformColumns

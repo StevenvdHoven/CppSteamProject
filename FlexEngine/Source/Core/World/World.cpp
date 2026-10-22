@@ -189,6 +189,14 @@ namespace Flex
 	// -----------------------
 	// Components
 	// -----------------------
+	std::span<const ComponentId> World::GetComponentIds(Entity entity) const
+	{
+		if (!IsAlive(entity)) {
+			return {};
+		}
+		return Records[entity.Index].Owner->GetComponentIds();
+	}
+
 	void* World::GetComponentData(Entity entity, ComponentId id) const
 	{
 		if (!IsAlive(entity)) {
@@ -214,6 +222,20 @@ namespace Flex
 		MoveEntity(record, target);
 		bOutAdded = true;
 		return target.GetElement(target.FindColumn(type.Id), record.Row);
+	}
+
+	void* World::AddComponentById(Entity entity, ComponentId id)
+	{
+		const ComponentTypeInfo& type = ComponentRegistery::GetInfo(id);
+		if (!type.DefaultConstruct || !IsAlive(entity)) {
+			return nullptr;
+		}
+		bool bAdded = false;
+		void* storage = PrepareAddComponent(entity, type, bAdded);
+		if (storage && bAdded) {
+			type.DefaultConstruct(storage);
+		}
+		return storage;
 	}
 
 	bool World::RemoveComponentById(Entity entity, ComponentId id)

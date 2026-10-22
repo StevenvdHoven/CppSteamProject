@@ -1,25 +1,69 @@
 #include "Editor/EditorApp.h"
+#include "Editor/ContentBrowser.h"
 #include "Editor/EditorAssetSource.h"
+#include "Editor/EditorContext.h"
 #include "Editor/EditorPreferences.h"
+#include "Editor/EditorWindow.h"
+#include "Editor/HierarchyWindow.h"
+#include "Editor/InspectorWindow.h"
 #include "Editor/ProjectBrowser.h"
 #include "Editor/TextureEditor.h"
 #include "Editor/TextureImporter.h"
+#include "Editor/ViewportWindow.h"
 #include "Core/Assets/AssetManager.h"
 #include "Core/Engine.h"
 #include "Core/FileSystem.h"
 #include "Core/Graphics/Renderer.h"
+#include "Core/Graphics/SpriteRenderSystem.h"
 #include "Core/Project.h"
+#include "Core/Scene/SceneSerializer.h"
 
 #include <SDL3/SDL.h>
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_sdlrenderer3.h>
 
 #include <algorithm>
+#include <cstdlib>
+#include <cstring>
 #include <vector>
 
 namespace Flex
 {
+	namespace
+	{
+		// Project name, folder and frame rate.
+		class ProjectWindow final : public EditorWindow
+		{
+		public:
+			ProjectWindow() : EditorWindow("Project") {}
+
+			void Draw() override
+			{
+				if (BeginWindow()) {
+					const Project* project = Project::GetActive();
+					ImGui::Text("Name: %s", project->GetName().c_str());
+					ImGui::Text("Folder: %s", PathToUtf8(project->GetRootDirectory()).c_str());
+					ImGui::Text("Created with engine: %s", project->GetEngineVersion().c_str());
+					ImGui::Separator();
+					ImGui::Text("FlexEngine %s (%s)", Engine::GetVersion(), Engine::GetBuildConfigName());
+					ImGui::Text("%.1f FPS (%.3f ms)", ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);
+				}
+				EndWindow();
+			}
+		};
+
+		constexpr const char* WindowSettingsName = "FlexEditorWindows";
+		constexpr const char* SceneAssetType = SceneSerializer::AssetTypeName;
+		constexpr const char* SavePromptPopup = "Save changes?";
+		constexpr const char* SceneErrorPopup = "Scene error";
+
+		// Settings entries in EditorLayout.ini.
+		void* const OpenWindowsEntry = reinterpret_cast<void*>(1);
+		void* const LastSceneEntry = reinterpret_cast<void*>(2);
+	}
+
 	EditorApp::EditorApp() = default;
 	EditorApp::~EditorApp() = default;
 
@@ -42,16 +86,25 @@ namespace Flex
 
 		if (Project* project = Project::GetActive()) {
 			const std::string title = "FlexEngine - " + project->GetName() + " (" + Engine::GetBuildConfigName() + ")";
-			if (!CreateWindowAndImGui(title, 1600, 900, project->GetSavedDirectory() / "EditorLayout.ini")) {
+			const std::filesystem::path layoutFile = project->GetSavedDirectory() / "EditorLayout.ini";
+			std::error_code error;
+			bResetLayoutRequested = !std::filesystem::exists(layoutFile, error); // first time: default layout
+			if (!CreateWindowAndImGui(title, 1600, 900, layoutFile)) {
 				return false;
 			}
 
 			TextureImporter::Register(Assets);
+			Assets.RegisterType(SceneAssetType, { SceneSerializer::FileExtension });
 			Assets.SetOwnerCacheFile(project->GetSavedDirectory() / "AssetOwners.cache");
 			AssetSourceForEditor = std::make_unique<EditorAssetSource>(Assets);
 			AssetManager::SetSource(AssetSourceForEditor.get());
-			TextureEditorWindow = std::make_unique<TextureEditor>(Assets);
-			TextureEditorWindow->OnSpritesSaved = [this]() { RefreshAssets(); };
+
+			Context = std::make_unique<EditorContext>(Assets);
+			Context->OpenAsset = [this](Uid assetId) { OpenAsset(assetId); };
+			Context->RefreshAssets = [this]() { RefreshAssets(); };
+			CreateProjectWindows();
+			Context->Undo.Reset(*Context);
+			RegisterWindowSettingsHandler(); // before the first frame, when ImGui reads the .ini
 			RefreshAssets();
 		}
 		else {
@@ -67,6 +120,118 @@ namespace Flex
 
 		bIsRunning = true;
 		return true;
+	}
+
+	void EditorApp::CreateProjectWindows()
+	{
+		// Order = Windows menu order and draw order. Content after Project: a window that appears
+		// last in a dock node becomes its visible tab.
+		Panels.push_back(std::make_unique<HierarchyWindow>(*Context));
+		Panels.push_back(std::make_unique<ViewportWindow>(*Context));
+		Panels.push_back(std::make_unique<InspectorWindow>(*Context));
+		Panels.push_back(std::make_unique<ProjectWindow>());
+		Panels.push_back(std::make_unique<ContentBrowser>(*Context));
+
+		// Which editor opens which asset type. Sprites open their texture's editor with the sprite selected.
+		AssetOpeners[TextureImporter::TypeName] = [this](const AssetInfo& asset) {
+			OpenAssetEditor(asset.Id, {}, [this, &asset]() { return std::make_unique<TextureEditor>(*Context, asset.Id); });
+		};
+		AssetOpeners[TextureImporter::SpriteTypeName] = [this](const AssetInfo& asset) {
+			const Uid textureId = asset.ParentId;
+			const Uid spriteId = asset.Id;
+			OpenAssetEditor(textureId, spriteId, [this, textureId, spriteId]() { return std::make_unique<TextureEditor>(*Context, textureId, spriteId); });
+		};
+		// A scene opens in the Hierarchy/Viewport (after asking to save the current one).
+		AssetOpeners[SceneAssetType] = [this](const AssetInfo& asset) {
+			const std::filesystem::path sceneFile = Assets.GetSourcePath(asset);
+			RunAfterSavePrompt([this, sceneFile]() { OpenScene(sceneFile); });
+		};
+	}
+
+	// Stores which windows are open and the last scene in the project's EditorLayout.ini, next to ImGui's own layout:
+	//     [FlexEditorWindows][Open]
+	//     Content=1
+	//     [FlexEditorWindows][Scene]
+	//     Path=Content/Main.scene
+	void EditorApp::RegisterWindowSettingsHandler()
+	{
+		ImGuiSettingsHandler handler;
+		handler.TypeName = WindowSettingsName;
+		handler.TypeHash = ImHashStr(WindowSettingsName);
+		handler.UserData = this;
+		handler.ReadOpenFn = [](ImGuiContext*, ImGuiSettingsHandler*, const char* name) -> void* {
+			if (std::strcmp(name, "Open") == 0) {
+				return OpenWindowsEntry;
+			}
+			return std::strcmp(name, "Scene") == 0 ? LastSceneEntry : nullptr;
+		};
+		handler.ReadLineFn = [](ImGuiContext*, ImGuiSettingsHandler* settingsHandler, void* entry, const char* line) {
+			EditorApp* app = static_cast<EditorApp*>(settingsHandler->UserData);
+			const char* separator = std::strchr(line, '=');
+			if (!separator) {
+				return;
+			}
+			const std::string key(line, separator);
+			if (entry == LastSceneEntry) {
+				if (key == "Path" && separator[1] != '\0') {
+					app->StartupScene = Project::GetActive()->GetRootDirectory() / Utf8ToPath(separator + 1);
+				}
+			} else if (EditorWindow* panel = app->FindPanel(key)) {
+				panel->SetOpen(std::atoi(separator + 1) != 0);
+			}
+		};
+		handler.WriteAllFn = [](ImGuiContext*, ImGuiSettingsHandler* settingsHandler, ImGuiTextBuffer* buffer) {
+			const EditorApp* app = static_cast<EditorApp*>(settingsHandler->UserData);
+			if (!app->Context) {
+				return;
+			}
+			buffer->appendf("[%s][Open]\n", settingsHandler->TypeName);
+			for (const auto& panel : app->Panels) {
+				buffer->appendf("%s=%d\n", panel->GetTitle().c_str(), panel->IsOpen() ? 1 : 0);
+			}
+			buffer->append("\n");
+			if (!app->Context->ScenePath.empty()) {
+				std::error_code error;
+				const std::filesystem::path relative = std::filesystem::relative(app->Context->ScenePath, Project::GetActive()->GetRootDirectory(), error);
+				buffer->appendf("[%s][Scene]\nPath=%s\n\n", settingsHandler->TypeName, PathToGenericUtf8(relative).c_str());
+			}
+		};
+		ImGui::AddSettingsHandler(&handler);
+	}
+
+	EditorWindow* EditorApp::FindPanel(const std::string& title) const
+	{
+		for (const auto& panel : Panels) {
+			if (panel->GetTitle() == title) {
+				return panel.get();
+			}
+		}
+		return nullptr;
+	}
+
+	// Hierarchy on the left, Inspector on the right, Content (and Project) at the bottom,
+	// Viewport in the middle. Windows that don't exist yet keep their spot for when they do.
+	void EditorApp::BuildDefaultLayout(ImGuiID dockspaceId)
+	{
+		ImGui::DockBuilderRemoveNode(dockspaceId);
+		ImGui::DockBuilderAddNode(dockspaceId, ImGuiDockNodeFlags_DockSpace);
+		ImGui::DockBuilderSetNodeSize(dockspaceId, ImGui::GetMainViewport()->WorkSize);
+
+		ImGuiID center = dockspaceId;
+		const ImGuiID left = ImGui::DockBuilderSplitNode(center, ImGuiDir_Left, 0.18f, nullptr, &center);
+		const ImGuiID right = ImGui::DockBuilderSplitNode(center, ImGuiDir_Right, 0.26f, nullptr, &center);
+		const ImGuiID bottom = ImGui::DockBuilderSplitNode(center, ImGuiDir_Down, 0.32f, nullptr, &center);
+
+		ImGui::DockBuilderDockWindow("Hierarchy", left);
+		ImGui::DockBuilderDockWindow("Inspector", right);
+		ImGui::DockBuilderDockWindow("Content", bottom);
+		ImGui::DockBuilderDockWindow("Project", bottom);
+		ImGui::DockBuilderDockWindow("Viewport", center);
+		ImGui::DockBuilderFinish(dockspaceId);
+
+		for (const auto& panel : Panels) {
+			panel->SetOpen(true);
+		}
 	}
 
 	bool EditorApp::CreateWindowAndImGui(const std::string& title, int width, int height, const std::filesystem::path& imguiIniFile)
@@ -113,10 +278,10 @@ namespace Flex
 			{
 				ImGui_ImplSDL3_ProcessEvent(&event);
 				if (event.type == SDL_EVENT_QUIT) {
-					bIsRunning = false;
+					RequestQuit();
 				}
 				if (event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED && event.window.windowID == SDL_GetWindowID(Window)) {
-					bIsRunning = false;
+					RequestQuit();
 				}
 			}
 
@@ -150,10 +315,16 @@ namespace Flex
 	{
 		Browser.reset();
 
+		// Save the layout while the windows still exist: the settings handler writes their state.
+		if (ImGui::GetCurrentContext() && ImGui::GetIO().IniFilename) {
+			ImGui::SaveIniSettingsToDisk(ImGui::GetIO().IniFilename);
+			ImGui::GetIO().IniFilename = nullptr;
+		}
+
 		// Release every texture before the renderer goes away.
-		Thumbnails.clear();
-		SpriteThumbnails.clear();
-		TextureEditorWindow.reset();
+		AssetEditors.clear();
+		Panels.clear();
+		Context.reset();
 		AssetManager::Shutdown();
 		AssetSourceForEditor.reset();
 
@@ -171,6 +342,15 @@ namespace Flex
 
 		Project::CloseActive();
 		Engine::Shutdown();
+	}
+
+	void EditorApp::RequestQuit()
+	{
+		if (Context) {
+			RunAfterSavePrompt([this]() { bIsRunning = false; });
+		} else {
+			bIsRunning = false;
+		}
 	}
 
 	bool EditorApp::LaunchEditor(const std::filesystem::path& projectFile)
@@ -211,6 +391,19 @@ namespace Flex
 
 		if (ImGui::BeginMenu("File"))
 		{
+			if (ImGui::MenuItem("New Scene")) {
+				RunAfterSavePrompt([this]() { NewScene(); });
+			}
+			if (ImGui::MenuItem("Open Scene...", nullptr, false, !OpenSceneDialog.IsOpen())) {
+				OpenSceneDialog.OpenFile(Window, "FlexEngine Scene", "scene", Project::GetActive()->GetContentDirectory());
+			}
+			if (ImGui::MenuItem("Save Scene", "Ctrl+S")) {
+				SaveScene();
+			}
+			if (ImGui::MenuItem("Save Scene As...", nullptr, false, !SaveSceneDialog.IsOpen())) {
+				SaveSceneDialog.SaveFile(Window, "FlexEngine Scene", "scene", Project::GetActive()->GetContentDirectory());
+			}
+			ImGui::Separator();
 			if (ImGui::MenuItem("New Project...")) {
 				LaunchEditor({});
 			}
@@ -224,13 +417,58 @@ namespace Flex
 			ImGui::EndMenu();
 		}
 
+		if (ImGui::BeginMenu("Edit"))
+		{
+			const SceneUndo& undo = Context->Undo;
+			if (ImGui::MenuItem(("Undo " + undo.GetUndoName()).c_str(), "Ctrl+Z", false, undo.CanUndo())) {
+				Context->Undo.Undo(*Context);
+			}
+			if (ImGui::MenuItem(("Redo " + undo.GetRedoName()).c_str(), "Ctrl+Y", false, undo.CanRedo())) {
+				Context->Undo.Redo(*Context);
+			}
+			ImGui::EndMenu();
+		}
+
+		DrawWindowsMenu();
+
 		ImGui::EndMainMenuBar();
+	}
+
+	void EditorApp::DrawWindowsMenu()
+	{
+		if (!ImGui::BeginMenu("Windows")) {
+			return;
+		}
+
+		for (const auto& panel : Panels) {
+			bool bOpen = panel->IsOpen();
+			if (ImGui::MenuItem(panel->GetTitle().c_str(), nullptr, &bOpen)) {
+				if (bOpen) {
+					panel->Focus();
+				} else {
+					panel->SetOpen(false);
+				}
+			}
+		}
+
+		if (!AssetEditors.empty()) {
+			ImGui::SeparatorText("Asset editors");
+			for (const auto& editor : AssetEditors) {
+				if (ImGui::MenuItem(editor->GetTitle().c_str())) {
+					editor->Focus();
+				}
+			}
+		}
+
+		ImGui::Separator();
+		if (ImGui::MenuItem("Reset Layout")) {
+			bResetLayoutRequested = true;
+		}
+		ImGui::EndMenu();
 	}
 
 	void EditorApp::DrawProjectEditor()
 	{
-		Project* project = Project::GetActive();
-
 		DrawMainMenuBar();
 
 		std::filesystem::path chosenProject;
@@ -238,26 +476,232 @@ namespace Flex
 			LaunchEditor(chosenProject);
 		}
 
-		ImGui::DockSpaceOverViewport();
+		// The scene that was open last time (EditorLayout.ini is read during the first frame).
+		if (!bStartupSceneHandled) {
+			bStartupSceneHandled = true;
+			std::error_code error;
+			if (!StartupScene.empty() && std::filesystem::exists(StartupScene, error)) {
+				OpenScene(StartupScene);
+			}
+		}
+		if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_S, ImGuiInputFlags_RouteGlobal)) {
+			SaveScene();
+		}
+		// A focused text field keeps its own Ctrl+Z (global routes have the lowest priority).
+		if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_Z, ImGuiInputFlags_RouteGlobal)) {
+			Context->Undo.Undo(*Context);
+		}
+		if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_Y, ImGuiInputFlags_RouteGlobal) || ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiMod_Shift | ImGuiKey_Z, ImGuiInputFlags_RouteGlobal)) {
+			Context->Undo.Redo(*Context);
+		}
 
-		ImGui::Begin("Project");
-		ImGui::Text("Name: %s", project->GetName().c_str());
-		ImGui::Text("Folder: %s", PathToUtf8(project->GetRootDirectory()).c_str());
-		ImGui::Text("Created with engine: %s", project->GetEngineVersion().c_str());
-		ImGui::Separator();
-		ImGui::Text("FlexEngine %s (%s)", Engine::GetVersion(), Engine::GetBuildConfigName());
-		ImGui::Text("%.1f FPS (%.3f ms)", ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);
-		ImGui::End();
+		const ImGuiID dockspaceId = ImGui::DockSpaceOverViewport();
+		if (bResetLayoutRequested) {
+			BuildDefaultLayout(dockspaceId);
+			bResetLayoutRequested = false;
+		}
 
-		DrawAssetsPanel();
-		TextureEditorWindow->Draw();
+		// The editor doesn't run game systems; it only keeps world transforms current for drawing and picking.
+		UpdateWorldTransforms(Context->EditorScene.GetWorld());
+
+		for (const auto& panel : Panels) {
+			if (panel->IsOpen()) {
+				panel->Draw();
+			}
+		}
+		for (const auto& editor : AssetEditors) {
+			if (editor->IsOpen()) {
+				editor->Draw();
+			}
+		}
+		// A closed asset editor is gone for good (it releases its asset); reopening creates a new one.
+		std::erase_if(AssetEditors, [](const std::unique_ptr<AssetEditor>& editor) { return !editor->IsOpen(); });
+
+		DrawSceneDialogs();
+		UpdateWindowTitle();
+	}
+
+	// -----------------------
+	// Scene files
+	// -----------------------
+
+	void EditorApp::NewScene()
+	{
+		Context->EditorScene.Clear();
+		Context->ScenePath.clear();
+		Context->CurrentSelection.Clear();
+		Context->SavedSceneRevision = Context->SceneRevision;
+		Context->Undo.Reset(*Context);
+		ImGui::MarkIniSettingsDirty();
+	}
+
+	bool EditorApp::OpenScene(const std::filesystem::path& sceneFile)
+	{
+		std::vector<std::string> warnings;
+		std::string error;
+		Context->CurrentSelection.Clear();
+		if (!SceneSerializer::LoadFromFile(Context->EditorScene, sceneFile, warnings, error)) {
+			SceneError = "Could not open " + PathToUtf8(sceneFile) + ":\n" + error;
+			bRequestSceneErrorPopup = true;
+			return false;
+		}
+		for (const std::string& warning : warnings) {
+			SDL_Log("%s: %s", PathToUtf8(sceneFile.filename()).c_str(), warning.c_str());
+		}
+		Context->ScenePath = sceneFile;
+		Context->SavedSceneRevision = Context->SceneRevision;
+		Context->Undo.Reset(*Context);
+		ImGui::MarkIniSettingsDirty();
+		return true;
+	}
+
+	void EditorApp::SaveScene()
+	{
+		if (Context->ScenePath.empty()) {
+			if (!SaveSceneDialog.IsOpen()) {
+				SaveSceneDialog.SaveFile(Window, "FlexEngine Scene", "scene", Project::GetActive()->GetContentDirectory());
+			}
+			return;
+		}
+		SaveSceneAs(Context->ScenePath);
+	}
+
+	bool EditorApp::SaveSceneAs(const std::filesystem::path& sceneFile)
+	{
+		std::error_code fileError;
+		const bool bNewFile = !std::filesystem::exists(sceneFile, fileError);
+		std::string error;
+		if (!SceneSerializer::SaveToFile(Context->EditorScene, sceneFile, error)) {
+			SceneError = "Could not save " + PathToUtf8(sceneFile) + ":\n" + error;
+			bRequestSceneErrorPopup = true;
+			return false;
+		}
+		Context->ScenePath = sceneFile;
+		Context->SavedSceneRevision = Context->SceneRevision;
+		ImGui::MarkIniSettingsDirty();
+		if (bNewFile) {
+			RefreshAssets(); // gives the new file its .meta and shows it in Content
+		}
+		return true;
+	}
+
+	void EditorApp::RunAfterSavePrompt(std::function<void()> action)
+	{
+		if (!Context->IsSceneDirty()) {
+			action();
+			return;
+		}
+		ActionAfterSave = std::move(action);
+		bRequestSavePrompt = true;
+	}
+
+	void EditorApp::DrawSceneDialogs()
+	{
+		std::filesystem::path chosen;
+		if (OpenSceneDialog.PollResult(chosen)) {
+			RunAfterSavePrompt([this, chosen]() { OpenScene(chosen); });
+		}
+		if (SaveSceneDialog.PollResult(chosen)) {
+			if (chosen.extension() != SceneSerializer::FileExtension) {
+				chosen += SceneSerializer::FileExtension;
+			}
+			if (SaveSceneAs(chosen) && bContinueAfterSaveAs && ActionAfterSave) {
+				ActionAfterSave();
+			}
+			bContinueAfterSaveAs = false;
+			ActionAfterSave = nullptr;
+		} else if (bContinueAfterSaveAs && !SaveSceneDialog.IsOpen()) {
+			bContinueAfterSaveAs = false; // the dialog was cancelled: so is the action
+			ActionAfterSave = nullptr;
+		}
+
+		if (bRequestSavePrompt) {
+			ImGui::OpenPopup(SavePromptPopup);
+			bRequestSavePrompt = false;
+		}
+		if (ImGui::BeginPopupModal(SavePromptPopup, nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+			const std::string sceneName = Context->ScenePath.empty() ? std::string("Untitled") : PathToUtf8(Context->ScenePath.filename());
+			ImGui::Text("Save changes to %s?", sceneName.c_str());
+			if (ImGui::Button("Save")) {
+				if (Context->ScenePath.empty()) {
+					bContinueAfterSaveAs = true;
+					SaveScene(); // opens "Save As"; the action runs once a file was chosen
+				} else if (SaveSceneAs(Context->ScenePath) && ActionAfterSave) {
+					ActionAfterSave();
+					ActionAfterSave = nullptr;
+				}
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Don't Save")) {
+				if (ActionAfterSave) {
+					ActionAfterSave();
+				}
+				ActionAfterSave = nullptr;
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Cancel") || ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+				ActionAfterSave = nullptr;
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndPopup();
+		}
+
+		if (bRequestSceneErrorPopup) {
+			ImGui::OpenPopup(SceneErrorPopup);
+			bRequestSceneErrorPopup = false;
+		}
+		if (ImGui::BeginPopupModal(SceneErrorPopup, nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+			ImGui::TextUnformatted(SceneError.c_str());
+			if (ImGui::Button("OK")) {
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndPopup();
+		}
+	}
+
+	void EditorApp::UpdateWindowTitle()
+	{
+		const std::string sceneName = Context->ScenePath.empty() ? std::string("Untitled") : PathToUtf8(Context->ScenePath.stem());
+		const std::string title = "FlexEngine - " + Project::GetActive()->GetName() + " - " + sceneName
+			+ (Context->IsSceneDirty() ? "*" : "") + " (" + Engine::GetBuildConfigName() + ")";
+		if (title != WindowTitle) {
+			WindowTitle = title;
+			SDL_SetWindowTitle(Window, WindowTitle.c_str());
+		}
+	}
+
+	void EditorApp::OpenAsset(Uid assetId)
+	{
+		const AssetInfo* asset = Assets.Find(assetId);
+		if (!asset) {
+			return;
+		}
+		if (auto opener = AssetOpeners.find(asset->Type); opener != AssetOpeners.end()) {
+			opener->second(*asset);
+		}
+	}
+
+	void EditorApp::OpenAssetEditor(Uid editedAssetId, Uid subAssetId, const std::function<std::unique_ptr<AssetEditor>()>& create)
+	{
+		for (const auto& editor : AssetEditors) {
+			if (editor->GetAssetId() == editedAssetId) {
+				editor->Focus();
+				editor->OnReopen(subAssetId);
+				return;
+			}
+		}
+		AssetEditors.push_back(create());
+		AssetEditors.back()->Focus();
 	}
 
 	void EditorApp::RefreshAssets()
 	{
 		LastAssetRefresh = Assets.Refresh(Project::GetActive()->GetContentDirectory());
-		Thumbnails.clear();
-		SpriteThumbnails.clear();
+		Context->Thumbnails.Clear();
+		ResetSpriteCaches(Context->EditorScene.GetWorld()); // reload changed assets on the next draw
+		++Context->AssetRevision;
 		AssetManager::ClearFailures();
 
 		SDL_Log("Assets: %d found, %d .meta created, %d duplicate ids fixed, %d orphaned .meta, %d errors",
@@ -265,107 +709,5 @@ namespace Flex
 		for (const std::string& message : LastAssetRefresh.Messages) {
 			SDL_Log("  %s", message.c_str());
 		}
-	}
-
-	// Temporary panel to see the asset database at work, until there's a real content browser.
-	void EditorApp::DrawAssetsPanel()
-	{
-		ImGui::Begin("Assets");
-
-		if (ImGui::Button("Refresh")) {
-			RefreshAssets();
-		}
-		ImGui::SameLine();
-		ImGui::TextDisabled("%d assets | %d .meta created | %d duplicates fixed | %d orphaned .meta | %d errors",
-			LastAssetRefresh.AssetCount, LastAssetRefresh.MetaCreated, LastAssetRefresh.DuplicatesFixed, LastAssetRefresh.OrphanMetas, LastAssetRefresh.Errors);
-
-		if (!LastAssetRefresh.Messages.empty() && ImGui::TreeNode("Messages")) {
-			for (const std::string& message : LastAssetRefresh.Messages) {
-				ImGui::TextWrapped("%s", message.c_str());
-			}
-			ImGui::TreePop();
-		}
-
-		// Proof that sharing works: one entry per loaded asset, no matter how many users.
-		size_t loadedBytes = 0;
-		const auto loadedAssets = AssetManager::GetLoadedAssets();
-		for (const auto& loaded : loadedAssets) {
-			loadedBytes += loaded->GetMemorySize();
-		}
-		ImGui::TextDisabled("Loaded: %d asset(s), %.2f MB | GPU textures alive: %d",
-			static_cast<int>(loadedAssets.size()), loadedBytes / (1024.0 * 1024.0), Renderer::GetLiveTextureCount());
-
-		const float thumbnailSize = 32.0f;
-		if (ImGui::BeginTable("AssetTable", 4, ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY))
-		{
-			ImGui::TableSetupScrollFreeze(0, 1);
-			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, thumbnailSize);
-			ImGui::TableSetupColumn("Path");
-			ImGui::TableSetupColumn("Type");
-			ImGui::TableSetupColumn("Id");
-			ImGui::TableHeadersRow();
-
-			const auto& assets = Assets.GetAssets();
-			ImGuiListClipper clipper;
-			clipper.Begin(static_cast<int>(assets.size()), thumbnailSize + ImGui::GetStyle().CellPadding.y * 2.0f);
-			while (clipper.Step())
-			{
-				for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; ++row)
-				{
-					const AssetInfo& asset = assets[row];
-					ImGui::PushID(row);
-					ImGui::TableNextRow(ImGuiTableRowFlags_None, thumbnailSize);
-
-					// Only rows on screen load a preview.
-					ImGui::TableNextColumn();
-					if (asset.Type == TextureImporter::TypeName)
-					{
-						auto [thumbnail, bInserted] = Thumbnails.try_emplace(asset.Id);
-						if (bInserted) {
-							thumbnail->second = AssetManager::Load<Texture>(asset.Id);
-						}
-						if (const auto& texture = thumbnail->second) {
-							const float scale = thumbnailSize / static_cast<float>(std::max(texture->GetWidth(), texture->GetHeight()));
-							ImGui::Image(static_cast<ImTextureID>(reinterpret_cast<intptr_t>(texture->GetSDLTexture())), ImVec2(texture->GetWidth() * scale, texture->GetHeight() * scale));
-						}
-					}
-					else if (asset.Type == TextureImporter::SpriteTypeName)
-					{
-						// Loading the sprite loads (or reuses) its texture: still one image in memory.
-						auto [thumbnail, bInserted] = SpriteThumbnails.try_emplace(asset.Id);
-						if (bInserted) {
-							thumbnail->second = AssetManager::Load<Sprite>(asset.Id);
-						}
-						if (const auto& sprite = thumbnail->second) {
-							const SpriteRect& rect = sprite->GetRect();
-							const Texture& texture = *sprite->GetTexture();
-							const float scale = thumbnailSize / static_cast<float>(std::max(rect.Width, rect.Height));
-							const ImVec2 uv0(rect.X / static_cast<float>(texture.GetWidth()), rect.Y / static_cast<float>(texture.GetHeight()));
-							const ImVec2 uv1((rect.X + rect.Width) / static_cast<float>(texture.GetWidth()), (rect.Y + rect.Height) / static_cast<float>(texture.GetHeight()));
-							ImGui::Image(static_cast<ImTextureID>(reinterpret_cast<intptr_t>(texture.GetSDLTexture())), ImVec2(rect.Width * scale, rect.Height * scale), uv0, uv1);
-						}
-					}
-
-					ImGui::TableNextColumn();
-					const std::string label = asset.IsSubAsset() ? "      " + asset.Name : PathToGenericUtf8(asset.Path);
-					if (ImGui::Selectable(label.c_str(), false, ImGuiSelectableFlags_SpanAllColumns, ImVec2(0, thumbnailSize))) {
-						if (asset.Type == TextureImporter::TypeName) {
-							TextureEditorWindow->Open(asset.Id);
-						}
-						else if (asset.Type == TextureImporter::SpriteTypeName) {
-							TextureEditorWindow->Open(asset.ParentId, asset.Id);
-						}
-					}
-					ImGui::TableNextColumn();
-					ImGui::TextUnformatted(asset.Type.c_str());
-					ImGui::TableNextColumn();
-					ImGui::TextUnformatted(asset.Id.ToString().c_str());
-					ImGui::PopID();
-				}
-			}
-			ImGui::EndTable();
-		}
-
-		ImGui::End();
 	}
 }

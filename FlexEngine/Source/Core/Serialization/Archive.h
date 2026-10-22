@@ -4,6 +4,7 @@
 #include "Core/Math/Color.h"
 #include "Core/Math/Vector2.h"
 #include <cstdint>
+#include <initializer_list>
 #include <string>
 #include <vector>
 
@@ -50,6 +51,16 @@ namespace Flex
 		virtual void Field(const char* name, std::string& value) = 0;
 		virtual void Field(const char* name, Uid& value) = 0;
 
+		// An asset reference that may only point at assets of these types (type names as the
+		// asset database knows them, e.g. Texture::TypeName, "Scene"). Stored exactly like a
+		// plain Uid field; the editor's Inspector uses the types to filter what can be picked.
+		//     archive.Field("Asset", AssetId, { Sprite::TypeName, Texture::TypeName });
+		virtual void Field(const char* name, Uid& value, std::initializer_list<const char*> allowedAssetTypes)
+		{
+			(void)allowedAssetTypes;
+			Field(name, value);
+		}
+
 		// Groups the fields in between, e.g. "Transform" -> Transform.Position in text.
 		virtual void BeginObject(const char* name) = 0;
 		virtual void EndObject() = 0;
@@ -57,7 +68,8 @@ namespace Flex
 		// Math types are stored as groups, so every archive supports them for free:
 		//     Position.X = 120
 		//     Position.Y = 64
-		void Field(const char* name, Vector2& value)
+		// Virtual so an archive can show them differently (the editor's Inspector does).
+		virtual void Field(const char* name, Vector2& value)
 		{
 			BeginObject(name);
 			Field("X", value.x);
@@ -65,7 +77,7 @@ namespace Flex
 			EndObject();
 		}
 
-		void Field(const char* name, Vector2Int& value)
+		virtual void Field(const char* name, Vector2Int& value)
 		{
 			BeginObject(name);
 			Field("X", value.x);
@@ -73,7 +85,7 @@ namespace Flex
 			EndObject();
 		}
 
-		void Field(const char* name, Color& value)
+		virtual void Field(const char* name, Color& value)
 		{
 			BeginObject(name);
 			Field("R", value.r);
