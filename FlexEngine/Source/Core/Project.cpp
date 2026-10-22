@@ -21,7 +21,8 @@ namespace Flex
 			outputstream << "# FlexEngine per-machine and build output\n"
 				<< "Saved/\n"
 				<< "Binaries/\n"
-				<< "Intermediate/\n";
+				<< "Intermediate/\n"
+				<< "Builds/\n";
 			return outputstream.good();
 		}
 	}
@@ -153,9 +154,12 @@ namespace Flex
 
 		// Version 0 = files written before the text format (no version, unquoted values).
 		// They load the same way, so no upgrade step is needed yet.
-		archive.SerializeVersion(FileVersion);
+		const uint32_t version = archive.SerializeVersion(FileVersion);
 		archive.Field("Name", Name);
 		archive.Field("EngineVersion", EngineVersion);
+		if (version >= 2) {
+			archive.Field("StartScene", StartScene);
+		}
 
 		for (const std::string& warning : archive.GetWarnings()) {
 			SDL_Log("%s: %s", PathToUtf8(ProjectFile).c_str(), warning.c_str());

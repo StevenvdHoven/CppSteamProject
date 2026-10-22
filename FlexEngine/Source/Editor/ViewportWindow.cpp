@@ -1,6 +1,8 @@
 #include "Editor/ViewportWindow.h"
 #include "Editor/EditorContext.h"
 #include "Editor/SceneEditing.h"
+#include "Core/Game/GameInstance.h"
+#include "Core/Graphics/Camera.h"
 #include "Core/Graphics/Renderer.h"
 #include "Core/Graphics/SpriteRenderer.h"
 #include "Core/World/GameObject.h"
@@ -64,6 +66,8 @@ namespace Flex
 			return;
 		}
 
+		DrawToolbar();
+
 		const ImVec2 available = ImGui::GetContentRegionAvail();
 		const Vector2 size{ std::max(available.x, 1.0f), std::max(available.y, 1.0f) };
 		const float pixelScale = ImGui::GetIO().DisplayFramebufferScale.x;
@@ -79,7 +83,9 @@ namespace Flex
 
 		// One invisible button covers the image: it takes the mouse and is the drop target.
 		ImGui::InvisibleButton("##ViewportInput", ToImVec2(size), ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | ImGuiButtonFlags_MouseButtonMiddle);
-		HandleInput(imageMin, size);
+		if (!Context.bGameView) {
+			HandleInput(imageMin, size); // the game view is for watching; editing uses the editor camera
+		}
 
 		if (ImGui::BeginDragDropTarget()) {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(AssetPayloadType)) {
@@ -91,15 +97,41 @@ namespace Flex
 			ImGui::EndDragDropTarget();
 		}
 
-		DrawOverlay(drawList, imageMin, size);
+		if (!Context.bGameView) {
+			DrawOverlay(drawList, imageMin, size);
 
-		// Zoom and help, top-left.
-		drawList->AddText(ImVec2(imageMin.x + 8.0f, imageMin.y + 6.0f), IM_COL32(200, 200, 200, 160), "RMB/MMB: pan   Wheel: zoom   F: frame selection");
-		char zoomText[32];
-		std::snprintf(zoomText, sizeof(zoomText), "%.0f%%", Camera.Zoom * 100.0f);
-		drawList->AddText(ImVec2(imageMin.x + 8.0f, imageMin.y + 6.0f + ImGui::GetTextLineHeightWithSpacing()), IM_COL32(200, 200, 200, 160), zoomText);
+			// Zoom and help, top-left.
+			drawList->AddText(ImVec2(imageMin.x + 8.0f, imageMin.y + 6.0f), IM_COL32(200, 200, 200, 160), "RMB/MMB: pan   Wheel: zoom   F: frame selection");
+			char zoomText[32];
+			std::snprintf(zoomText, sizeof(zoomText), "%.0f%%", Camera.Zoom * 100.0f);
+			drawList->AddText(ImVec2(imageMin.x + 8.0f, imageMin.y + 6.0f + ImGui::GetTextLineHeightWithSpacing()), IM_COL32(200, 200, 200, 160), zoomText);
+		}
 
 		EndWindow();
+	}
+
+	void ViewportWindow::DrawToolbar()
+	{
+		ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX() + 6.0f, ImGui::GetCursorPosY() + 4.0f));
+		if (ImGui::Button(Context.bIsPlaying ? "Stop" : "Play") && Context.TogglePlay) {
+			Context.TogglePlay();
+		}
+		if (ImGui::IsItemHovered()) {
+			ImGui::SetTooltip("F5. Stopping restores the scene as it was before Play.");
+		}
+		ImGui::SameLine();
+		ImGui::Checkbox("Game View", &Context.bGameView);
+		if (ImGui::IsItemHovered()) {
+			ImGui::SetTooltip("Show what the main Camera sees");
+		}
+		if (Context.bIsPlaying) {
+			const GameInstance::Statistics& stats = Context.Game.GetStatistics();
+			ImGui::SameLine();
+			const unsigned sprites = Context.bGameView ? stats.SpritesDrawn : static_cast<unsigned>(Items.size());
+			ImGui::TextDisabled("%.0f fps | tick %.2f ms | %u sprites | %u bodies", ImGui::GetIO().Framerate,
+				stats.TickMilliseconds, sprites, stats.Physics.DynamicBodies);
+		}
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
 	}
 
 	void ViewportWindow::RenderScene(const Vector2& size, float pixelScale)
@@ -111,6 +143,14 @@ namespace Flex
 		SDL_SetRenderTarget(sdlRenderer, Target);
 		SDL_SetRenderScale(sdlRenderer, 1.0f, 1.0f);
 		SDL_SetRenderViewport(sdlRenderer, nullptr);
+
+		if (Context.bGameView) {
+			Batch.ResetStatistics();
+			Context.Game.Render(Context.EditorScene, Batch, size * pixelScale);
+			Items.clear();
+			SDL_SetRenderTarget(sdlRenderer, nullptr);
+			return;
+		}
 		SDL_SetRenderDrawColor(sdlRenderer, 38, 40, 46, 255);
 		SDL_RenderClear(sdlRenderer);
 
@@ -280,6 +320,12 @@ namespace Flex
 			const ImU32 color = entity == selected ? IM_COL32(255, 170, 40, 255) : IM_COL32(220, 220, 220, 200);
 			drawList->AddLine(ImVec2(center.x - CrossSize, center.y), ImVec2(center.x + CrossSize, center.y), color, 2.0f);
 			drawList->AddLine(ImVec2(center.x, center.y - CrossSize), ImVec2(center.x, center.y + CrossSize), color, 2.0f);
+		});
+
+		// What each camera shows in the game.
+		world.Each<const Flex::Camera, const WorldTransform>([&](const Flex::Camera& camera, const WorldTransform& worldTransform) {
+			const Rect view = GetCameraViewRect(worldTransform, camera);
+			drawList->AddRect(toScreen(view.GetMin()), toScreen(view.GetMax()), IM_COL32(230, 230, 230, 150), 0.0f, 0, 1.5f);
 		});
 
 		// Outline of the selected sprite.

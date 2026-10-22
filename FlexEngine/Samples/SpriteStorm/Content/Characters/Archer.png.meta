@@ -1,0 +1,436 @@
+[Meta version=1]
+Id = uid(43afa66540c132de)
+Type = "Texture"
+
+[Import version=1]
+Filter = "PixelArt"
+
+[Sprite version=1]
+Id = uid(33bb93bbc76364e3)
+Name = "Archer_00"
+Rect.X = 40
+Rect.Y = 40
+Rect.Width = 22
+Rect.Height = 17
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(5a4fdea4889e317b)
+Name = "Archer_01"
+Rect.X = 140
+Rect.Y = 40
+Rect.Width = 22
+Rect.Height = 17
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(92bf6b293d9f675a)
+Name = "Archer_02"
+Rect.X = 240
+Rect.Y = 39
+Rect.Width = 22
+Rect.Height = 18
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(05dc5b455df38f55)
+Name = "Archer_03"
+Rect.X = 340
+Rect.Y = 39
+Rect.Width = 22
+Rect.Height = 18
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(13b14c05683f8949)
+Name = "Archer_04"
+Rect.X = 440
+Rect.Y = 40
+Rect.Width = 22
+Rect.Height = 17
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(66008a00dfd890b3)
+Name = "Archer_05"
+Rect.X = 540
+Rect.Y = 40
+Rect.Width = 22
+Rect.Height = 17
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(344ad6cacac1dfbf)
+Name = "Archer_06"
+Rect.X = 40
+Rect.Y = 140
+Rect.Width = 22
+Rect.Height = 17
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(58acbb584fde6815)
+Name = "Archer_07"
+Rect.X = 140
+Rect.Y = 139
+Rect.Width = 22
+Rect.Height = 17
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(fd2a8eeb4bcb31d4)
+Name = "Archer_08"
+Rect.X = 240
+Rect.Y = 140
+Rect.Width = 22
+Rect.Height = 17
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(426f814296e0a9ab)
+Name = "Archer_09"
+Rect.X = 340
+Rect.Y = 141
+Rect.Width = 22
+Rect.Height = 16
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(f370d2ef93b4aa7e)
+Name = "Archer_10"
+Rect.X = 440
+Rect.Y = 140
+Rect.Width = 22
+Rect.Height = 17
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(5ae813c2dfd8a633)
+Name = "Archer_11"
+Rect.X = 540
+Rect.Y = 139
+Rect.Width = 22
+Rect.Height = 17
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(913b82ee0b1136c4)
+Name = "Archer_12"
+Rect.X = 640
+Rect.Y = 140
+Rect.Width = 22
+Rect.Height = 17
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(0512b268673b8c8e)
+Name = "Archer_13"
+Rect.X = 740
+Rect.Y = 141
+Rect.Width = 22
+Rect.Height = 16
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(74cb34d124e5d842)
+Name = "Archer_14"
+Rect.X = 40
+Rect.Y = 240
+Rect.Width = 18
+Rect.Height = 20
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(e3534e28dd779e7a)
+Name = "Archer_15"
+Rect.X = 140
+Rect.Y = 238
+Rect.Width = 18
+Rect.Height = 22
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(d01f3e8d98a5b714)
+Name = "Archer_16"
+Rect.X = 240
+Rect.Y = 240
+Rect.Width = 18
+Rect.Height = 20
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(25d961366056e3f7)
+Name = "Archer_17"
+Rect.X = 340
+Rect.Y = 240
+Rect.Width = 23
+Rect.Height = 20
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(bcd752484aa699c2)
+Name = "Archer_18"
+Rect.X = 440
+Rect.Y = 240
+Rect.Width = 22
+Rect.Height = 20
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(0dde9198f4c98f5c)
+Name = "Archer_19"
+Rect.X = 540
+Rect.Y = 240
+Rect.Width = 21
+Rect.Height = 17
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(39a3cd3548eb2809)
+Name = "Archer_20"
+Rect.X = 640
+Rect.Y = 240
+Rect.Width = 37
+Rect.Height = 17
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(686d5cd893175ce1)
+Name = "Archer_21"
+Rect.X = 740
+Rect.Y = 240
+Rect.Width = 24
+Rect.Height = 20
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(d794d7d842b05f80)
+Name = "Archer_22"
+Rect.X = 840
+Rect.Y = 240
+Rect.Width = 18
+Rect.Height = 20
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(5fb359d4c757d13a)
+Name = "Archer_23"
+Rect.X = 40
+Rect.Y = 340
+Rect.Width = 18
+Rect.Height = 20
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(542efa58b5cc3189)
+Name = "Archer_24"
+Rect.X = 140
+Rect.Y = 338
+Rect.Width = 18
+Rect.Height = 22
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(9178d74a0a3fb2fa)
+Name = "Archer_25"
+Rect.X = 240
+Rect.Y = 340
+Rect.Width = 18
+Rect.Height = 20
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(b71dbb0c07d5ad03)
+Name = "Archer_26"
+Rect.X = 340
+Rect.Y = 340
+Rect.Width = 25
+Rect.Height = 20
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(f0d269f2d9303773)
+Name = "Archer_27"
+Rect.X = 437
+Rect.Y = 342
+Rect.Width = 28
+Rect.Height = 18
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(4050594545c74c68)
+Name = "Archer_28"
+Rect.X = 537
+Rect.Y = 342
+Rect.Width = 26
+Rect.Height = 18
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(e32a39fcddc1e735)
+Name = "Archer_29"
+Rect.X = 637
+Rect.Y = 342
+Rect.Width = 28
+Rect.Height = 18
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(eb12362dd2dfba09)
+Name = "Archer_30"
+Rect.X = 737
+Rect.Y = 342
+Rect.Width = 26
+Rect.Height = 18
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(aea50f9cc29ca1d6)
+Name = "Archer_31"
+Rect.X = 837
+Rect.Y = 342
+Rect.Width = 24
+Rect.Height = 18
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(b8d14cfc2729d423)
+Name = "Archer_32"
+Rect.X = 937
+Rect.Y = 342
+Rect.Width = 55
+Rect.Height = 18
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(a02f4f0484bb63ad)
+Name = "Archer_33"
+Rect.X = 1037
+Rect.Y = 332
+Rect.Width = 63
+Rect.Height = 37
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(f1d93c58b2859d71)
+Name = "Archer_34"
+Rect.X = 1137
+Rect.Y = 332
+Rect.Width = 47
+Rect.Height = 38
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(9bd006ec80cd24b6)
+Name = "Archer_35"
+Rect.X = 40
+Rect.Y = 440
+Rect.Width = 22
+Rect.Height = 17
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(f27e638eb77a7e95)
+Name = "Archer_36"
+Rect.X = 140
+Rect.Y = 440
+Rect.Width = 22
+Rect.Height = 17
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(f509c35194781c3d)
+Name = "Archer_37"
+Rect.X = 240
+Rect.Y = 440
+Rect.Width = 22
+Rect.Height = 17
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(3d4a1087abb2db42)
+Name = "Archer_38"
+Rect.X = 340
+Rect.Y = 440
+Rect.Width = 22
+Rect.Height = 17
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(878fcf80525643d6)
+Name = "Archer_39"
+Rect.X = 40
+Rect.Y = 540
+Rect.Width = 22
+Rect.Height = 17
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(455a2a82be996473)
+Name = "Archer_40"
+Rect.X = 139
+Rect.Y = 541
+Rect.Width = 18
+Rect.Height = 16
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(c3960e6d4d2b20b3)
+Name = "Archer_41"
+Rect.X = 236
+Rect.Y = 543
+Rect.Width = 17
+Rect.Height = 13
+Pivot.X = 0.5
+Pivot.Y = 0.5
+
+[Sprite version=1]
+Id = uid(5a4984f8b4bc392f)
+Name = "Archer_42"
+Rect.X = 335
+Rect.Y = 547
+Rect.Width = 17
+Rect.Height = 10
+Pivot.X = 0.5
+Pivot.Y = 0.5

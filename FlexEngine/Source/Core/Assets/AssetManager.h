@@ -16,6 +16,9 @@ namespace Flex
 
 		// Returns a new, fully loaded asset, or nullptr with outError filled in.
 		virtual std::shared_ptr<Asset> LoadAsset(Uid id, std::string& outName, std::string& outError) = 0;
+
+		// The sub-assets of an asset (e.g. a texture's sprites), in their stored order.
+		virtual std::vector<Uid> GetSubAssets(Uid parentId) { (void)parentId; return {}; }
 	};
 
 	// Loads assets by Uid on first use and shares them.
@@ -33,6 +36,9 @@ namespace Flex
 		}
 
 		static std::shared_ptr<Asset> LoadAsset(Uid id);
+
+		// The sub-assets of an asset (e.g. a texture's sprites), as the current source knows them.
+		static std::vector<Uid> GetSubAssets(Uid parentId);
 
 		// Already loaded? Doesn't load anything.
 		static std::shared_ptr<Asset> FindLoaded(Uid id);

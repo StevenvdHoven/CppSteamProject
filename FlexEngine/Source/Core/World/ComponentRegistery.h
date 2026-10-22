@@ -3,6 +3,7 @@
 #include <concepts>
 #include <cstdint>
 #include <cstring>
+#include <functional>
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -57,6 +58,10 @@ namespace Flex
 		// Calls the type's Serialize(Archive&). nullptr = the type has none (not saved, not in the Inspector).
 		void (*Serialize)(void* object, Archive& archive) = nullptr;
 
+		// The module that registered it was unloaded (hot reload): the function pointers are
+		// invalid. A stale type isn't found by name until the new module registers it again.
+		bool bIsStale = false;
+
 		void RelocateObject(void* destination, void* source) const
 		{
 			if (Relocate) {
@@ -81,15 +86,20 @@ namespace Flex
 	public:
 		// Registers a type, or returns the existing one with the same name.
 		// A second registration with a different size or alignment is an error
-		// (two different structs using the same component name).
+		// (two different structs using the same component name), unless the existing one is
+		// stale: then it's replaced (same id) with the new layout and functions.
 		static const ComponentTypeInfo& Register(const ComponentTypeInfo& info);
 
 		static const ComponentTypeInfo& GetInfo(ComponentId id);
 		static const ComponentTypeInfo* FindByName(const std::string& name);
 		static uint32_t GetCount();
 
-		// Every registered type, in id order.
+		// Every registered type that isn't stale, in id order.
 		static std::vector<const ComponentTypeInfo*> GetAll();
+
+		// Marks every type matching the predicate stale (before its module is unloaded; no
+		// component of those types may still exist). Returns how many were marked.
+		static size_t MarkStale(const std::function<bool(const ComponentTypeInfo&)>& predicate);
 	};
 
 	template<IsComponent T>

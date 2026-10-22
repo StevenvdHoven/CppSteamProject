@@ -1,0 +1,110 @@
+[Scene version=1]
+
+[GameObject version=1]
+Name = "Camera"
+Id = uid(b3563827c5de40bb)
+
+[Transform version=1]
+Position.X = 0
+Position.Y = 0
+Rotation = 0
+Scale.X = 1
+Scale.Y = 1
+
+[Camera version=1]
+ViewSize.X = 1280
+ViewSize.Y = 720
+Background.R = 0.07
+Background.G = 0.08
+Background.B = 0.1
+Background.A = 1
+
+[GameObject version=1]
+Name = "Wall Left"
+Id = uid(45080d08264c0306)
+
+[Transform version=1]
+Position.X = -740
+Position.Y = 0
+Rotation = 0
+Scale.X = 1
+Scale.Y = 1
+
+[BoxCollider2D version=1]
+Size.X = 200
+Size.Y = 1120
+Offset.X = 0
+Offset.Y = 0
+
+[GameObject version=1]
+Name = "Wall Right"
+Id = uid(d39313d8f0061f62)
+
+[Transform version=1]
+Position.X = 740
+Position.Y = 0
+Rotation = 0
+Scale.X = 1
+Scale.Y = 1
+
+[BoxCollider2D version=1]
+Size.X = 200
+Size.Y = 1120
+Offset.X = 0
+Offset.Y = 0
+
+[GameObject version=1]
+Name = "Wall Top"
+Id = uid(31a97e153a1c7cd2)
+
+[Transform version=1]
+Position.X = 0
+Position.Y = -460
+Rotation = 0
+Scale.X = 1
+Scale.Y = 1
+
+[BoxCollider2D version=1]
+Size.X = 1680
+Size.Y = 200
+Offset.X = 0
+Offset.Y = 0
+
+[GameObject version=1]
+Name = "Wall Bottom"
+Id = uid(ef2f128118b56bf7)
+
+[Transform version=1]
+Position.X = 0
+Position.Y = 460
+Rotation = 0
+Scale.X = 1
+Scale.Y = 1
+
+[BoxCollider2D version=1]
+Size.X = 1680
+Size.Y = 200
+Offset.X = 0
+Offset.Y = 0
+
+[GameObject version=1]
+Name = "Sprite Swarm"
+Id = uid(d0b112a40961a807)
+
+[Transform version=1]
+Position.X = 0
+Position.Y = 0
+Rotation = 0
+Scale.X = 1
+Scale.Y = 1
+
+[SpriteSwarm version=1]
+Sheet = uid(43afa66540c132de)
+Count = 100000
+MinSpeed = 60
+MaxSpeed = 260
+MinScale = 0.6
+MaxScale = 1.1
+MaxSpin = 2
+ColliderRadius = 8
+Seed = 2026

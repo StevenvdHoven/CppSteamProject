@@ -4,14 +4,22 @@
 #include "Editor/EditorContext.h"
 #include "Editor/EditorPreferences.h"
 #include "Editor/EditorWindow.h"
+#include "Editor/EntitiesWindow.h"
 #include "Editor/HierarchyWindow.h"
+#include "Editor/InspectorArchive.h"
 #include "Editor/InspectorWindow.h"
+#include "Editor/OutputWindow.h"
+#include "Editor/ProjectScripts.h"
 #include "Editor/ProjectBrowser.h"
+#include "Editor/ProjectBuilder.h"
 #include "Editor/TextureEditor.h"
 #include "Editor/TextureImporter.h"
 #include "Editor/ViewportWindow.h"
 #include "Core/Assets/AssetManager.h"
 #include "Core/Engine.h"
+#include "Core/Game/GameModule.h"
+#include "Core/Graphics/SpriteRenderer.h"
+#include "Core/World/GameObject.h"
 #include "Core/FileSystem.h"
 #include "Core/Graphics/Renderer.h"
 #include "Core/Graphics/SpriteRenderSystem.h"
@@ -26,6 +34,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <cstdio>
 #include <cstring>
 #include <vector>
 
@@ -33,25 +42,44 @@ namespace Flex
 {
 	namespace
 	{
-		// Project name, folder and frame rate.
+		// Project name, folder, game module, start scene and frame rate.
 		class ProjectWindow final : public EditorWindow
 		{
 		public:
-			ProjectWindow() : EditorWindow("Project") {}
+			explicit ProjectWindow(EditorContext& context) : EditorWindow("Project"), Context{ context } {}
 
 			void Draw() override
 			{
 				if (BeginWindow()) {
-					const Project* project = Project::GetActive();
+					Project* project = Project::GetActive();
 					ImGui::Text("Name: %s", project->GetName().c_str());
 					ImGui::Text("Folder: %s", PathToUtf8(project->GetRootDirectory()).c_str());
 					ImGui::Text("Created with engine: %s", project->GetEngineVersion().c_str());
+
+					ImGui::SeparatorText("Game");
+					ImGui::TextWrapped("Module: %s", Context.GameModuleStatus.c_str());
+					if (ImGui::BeginTable("ProjectSettings", 2, ImGuiTableFlags_SizingStretchProp)) {
+						ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 90.0f);
+						ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+						InspectorArchive archive(Context);
+						Uid startScene = project->GetStartScene();
+						archive.Field("Start Scene", startScene, { SceneSerializer::AssetTypeName });
+						ImGui::EndTable();
+						if (archive.WasChanged()) {
+							project->SetStartScene(startScene);
+							project->Save();
+						}
+					}
+
 					ImGui::Separator();
 					ImGui::Text("FlexEngine %s (%s)", Engine::GetVersion(), Engine::GetBuildConfigName());
 					ImGui::Text("%.1f FPS (%.3f ms)", ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);
 				}
 				EndWindow();
 			}
+
+		private:
+			EditorContext& Context;
 		};
 
 		constexpr const char* WindowSettingsName = "FlexEditorWindows";
@@ -102,6 +130,12 @@ namespace Flex
 			Context = std::make_unique<EditorContext>(Assets);
 			Context->OpenAsset = [this](Uid assetId) { OpenAsset(assetId); };
 			Context->RefreshAssets = [this]() { RefreshAssets(); };
+			Context->TogglePlay = [this]() { Context->bIsPlaying ? StopPlay() : StartPlay(); };
+			Context->NewScript = [this]() { bRequestNewScriptPopup = true; };
+			Context->RecompileScripts = [this]() { RecompileScripts(); };
+			Context->Output.InstallSdlLogHook(); // from here on, engine log lines also go to the Output window
+			ProjectScripts::UpdateEngineLocation(*project);
+			LoadGameModule(); // before scenes load: the module's components must be registered
 			CreateProjectWindows();
 			Context->Undo.Reset(*Context);
 			RegisterWindowSettingsHandler(); // before the first frame, when ImGui reads the .ini
@@ -128,8 +162,10 @@ namespace Flex
 		// last in a dock node becomes its visible tab.
 		Panels.push_back(std::make_unique<HierarchyWindow>(*Context));
 		Panels.push_back(std::make_unique<ViewportWindow>(*Context));
+		Panels.push_back(std::make_unique<EntitiesWindow>(*Context));
 		Panels.push_back(std::make_unique<InspectorWindow>(*Context));
-		Panels.push_back(std::make_unique<ProjectWindow>());
+		Panels.push_back(std::make_unique<ProjectWindow>(*Context));
+		Panels.push_back(std::make_unique<OutputWindow>(*Context));
 		Panels.push_back(std::make_unique<ContentBrowser>(*Context));
 
 		// Which editor opens which asset type. Sprites open their texture's editor with the sprite selected.
@@ -224,14 +260,17 @@ namespace Flex
 
 		ImGui::DockBuilderDockWindow("Hierarchy", left);
 		ImGui::DockBuilderDockWindow("Inspector", right);
+		ImGui::DockBuilderDockWindow("Entities", right);
 		ImGui::DockBuilderDockWindow("Content", bottom);
 		ImGui::DockBuilderDockWindow("Project", bottom);
+		ImGui::DockBuilderDockWindow("Output", bottom);
 		ImGui::DockBuilderDockWindow("Viewport", center);
 		ImGui::DockBuilderFinish(dockspaceId);
 
 		for (const auto& panel : Panels) {
 			panel->SetOpen(true);
 		}
+		FrontTabsCountdown = 2; // once the windows exist, show these tabs
 	}
 
 	bool EditorApp::CreateWindowAndImGui(const std::string& title, int width, int height, const std::filesystem::path& imguiIniFile)
@@ -322,8 +361,12 @@ namespace Flex
 		}
 
 		// Release every texture before the renderer goes away.
+		PlayKeepAlive.clear();
 		AssetEditors.clear();
 		Panels.clear();
+		if (Context) {
+			Context->Output.UninstallSdlLogHook();
+		}
 		Context.reset();
 		AssetManager::Shutdown();
 		AssetSourceForEditor.reset();
@@ -347,10 +390,30 @@ namespace Flex
 	void EditorApp::RequestQuit()
 	{
 		if (Context) {
+			StopPlay();
 			RunAfterSavePrompt([this]() { bIsRunning = false; });
 		} else {
 			bIsRunning = false;
 		}
+	}
+
+	bool EditorApp::LaunchRuntime(const std::filesystem::path& sceneFile)
+	{
+		const char* basePath = SDL_GetBasePath();
+		if (!basePath || !Project::GetActive()) {
+			return false;
+		}
+		const std::string runtimeExe = std::string(basePath) + "FlexRuntime.exe";
+		const std::string projectArgument = PathToUtf8(Project::GetActive()->GetProjectFile());
+		const std::string sceneArgument = PathToUtf8(sceneFile);
+		const char* arguments[] = { runtimeExe.c_str(), "--project", projectArgument.c_str(), "--scene", sceneArgument.c_str(), nullptr };
+		SDL_Process* process = SDL_CreateProcess(arguments, false);
+		if (!process) {
+			SDL_Log("Could not start %s: %s", runtimeExe.c_str(), SDL_GetError());
+			return false;
+		}
+		SDL_DestroyProcess(process); // only frees SDL's handle
+		return true;
 	}
 
 	bool EditorApp::LaunchEditor(const std::filesystem::path& projectFile)
@@ -397,11 +460,24 @@ namespace Flex
 			if (ImGui::MenuItem("Open Scene...", nullptr, false, !OpenSceneDialog.IsOpen())) {
 				OpenSceneDialog.OpenFile(Window, "FlexEngine Scene", "scene", Project::GetActive()->GetContentDirectory());
 			}
-			if (ImGui::MenuItem("Save Scene", "Ctrl+S")) {
+			if (ImGui::MenuItem("Save Scene", "Ctrl+S", false, !Context->bIsPlaying)) {
 				SaveScene();
 			}
-			if (ImGui::MenuItem("Save Scene As...", nullptr, false, !SaveSceneDialog.IsOpen())) {
+			if (ImGui::MenuItem("Save Scene As...", nullptr, false, !SaveSceneDialog.IsOpen() && !Context->bIsPlaying)) {
 				SaveSceneDialog.SaveFile(Window, "FlexEngine Scene", "scene", Project::GetActive()->GetContentDirectory());
+			}
+			ImGui::Separator();
+			if (ImGui::MenuItem(Context->bIsPlaying ? "Stop" : "Play", "F5")) {
+				Context->TogglePlay();
+			}
+			if (ImGui::MenuItem(BuildJob.IsRunning() ? "Building Project..." : "Build Project...", nullptr, false, !BuildJob.IsRunning() && !ScriptJob.IsRunning())) {
+				bRequestBuildPopup = true;
+			}
+			if (ImGui::MenuItem("Run Standalone", nullptr, false, !Context->ScenePath.empty())) {
+				LaunchRuntime(Context->ScenePath);
+			}
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+				ImGui::SetTooltip(Context->ScenePath.empty() ? "Save the scene first." : "Runs the saved scene file in FlexRuntime.");
 			}
 			ImGui::Separator();
 			if (ImGui::MenuItem("New Project...")) {
@@ -420,15 +496,16 @@ namespace Flex
 		if (ImGui::BeginMenu("Edit"))
 		{
 			const SceneUndo& undo = Context->Undo;
-			if (ImGui::MenuItem(("Undo " + undo.GetUndoName()).c_str(), "Ctrl+Z", false, undo.CanUndo())) {
+			if (ImGui::MenuItem(("Undo " + undo.GetUndoName()).c_str(), "Ctrl+Z", false, undo.CanUndo() && !Context->bIsPlaying)) {
 				Context->Undo.Undo(*Context);
 			}
-			if (ImGui::MenuItem(("Redo " + undo.GetRedoName()).c_str(), "Ctrl+Y", false, undo.CanRedo())) {
+			if (ImGui::MenuItem(("Redo " + undo.GetRedoName()).c_str(), "Ctrl+Y", false, undo.CanRedo() && !Context->bIsPlaying)) {
 				Context->Undo.Redo(*Context);
 			}
 			ImGui::EndMenu();
 		}
 
+		DrawScriptsMenu();
 		DrawWindowsMenu();
 
 		ImGui::EndMainMenuBar();
@@ -484,15 +561,34 @@ namespace Flex
 				OpenScene(StartupScene);
 			}
 		}
-		if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_S, ImGuiInputFlags_RouteGlobal)) {
-			SaveScene();
+		if (ImGui::Shortcut(ImGuiKey_F5, ImGuiInputFlags_RouteGlobal)) {
+			Context->TogglePlay();
 		}
-		// A focused text field keeps its own Ctrl+Z (global routes have the lowest priority).
-		if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_Z, ImGuiInputFlags_RouteGlobal)) {
-			Context->Undo.Undo(*Context);
+		if (ImGui::Shortcut(ImGuiKey_F7, ImGuiInputFlags_RouteGlobal)) {
+			RecompileScripts();
 		}
-		if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_Y, ImGuiInputFlags_RouteGlobal) || ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiMod_Shift | ImGuiKey_Z, ImGuiInputFlags_RouteGlobal)) {
-			Context->Undo.Redo(*Context);
+		bool bBuildSucceeded = false;
+		if (ScriptJob.Poll(bBuildSucceeded)) {
+			OnScriptsBuilt(bBuildSucceeded);
+		}
+		if (BuildJob.Poll(bBuildSucceeded)) {
+			Context->ScriptJobStatus.clear();
+			if (bBuildSucceeded && bOpenBuildFolder) {
+				SDL_OpenURL(("file:///" + PathToGenericUtf8(BuildTarget)).c_str());
+			}
+		}
+		// While playing, saving and undo are off: Stop discards the changes anyway.
+		if (!Context->bIsPlaying) {
+			if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_S, ImGuiInputFlags_RouteGlobal)) {
+				SaveScene();
+			}
+			// A focused text field keeps its own Ctrl+Z (global routes have the lowest priority).
+			if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_Z, ImGuiInputFlags_RouteGlobal)) {
+				Context->Undo.Undo(*Context);
+			}
+			if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_Y, ImGuiInputFlags_RouteGlobal) || ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiMod_Shift | ImGuiKey_Z, ImGuiInputFlags_RouteGlobal)) {
+				Context->Undo.Redo(*Context);
+			}
 		}
 
 		const ImGuiID dockspaceId = ImGui::DockSpaceOverViewport();
@@ -501,8 +597,12 @@ namespace Flex
 			bResetLayoutRequested = false;
 		}
 
-		// The editor doesn't run game systems; it only keeps world transforms current for drawing and picking.
-		UpdateWorldTransforms(Context->EditorScene.GetWorld());
+		// Editing runs no game systems, only keeps world transforms current for drawing and picking.
+		if (Context->bIsPlaying) {
+			Context->Game.Tick(Context->EditorScene, ImGui::GetIO().DeltaTime);
+		} else {
+			UpdateWorldTransforms(Context->EditorScene.GetWorld());
+		}
 
 		for (const auto& panel : Panels) {
 			if (panel->IsOpen()) {
@@ -514,10 +614,20 @@ namespace Flex
 				editor->Draw();
 			}
 		}
+		if (FrontTabsCountdown > 0 && --FrontTabsCountdown == 0) {
+			for (const char* title : { "Inspector", "Content" }) {
+				if (EditorWindow* panel = FindPanel(title)) {
+					panel->Focus();
+				}
+			}
+		}
+
 		// A closed asset editor is gone for good (it releases its asset); reopening creates a new one.
 		std::erase_if(AssetEditors, [](const std::unique_ptr<AssetEditor>& editor) { return !editor->IsOpen(); });
 
 		DrawSceneDialogs();
+		DrawNewScriptDialog();
+		DrawBuildProjectDialog();
 		UpdateWindowTitle();
 	}
 
@@ -527,6 +637,7 @@ namespace Flex
 
 	void EditorApp::NewScene()
 	{
+		StopPlay();
 		Context->EditorScene.Clear();
 		Context->ScenePath.clear();
 		Context->CurrentSelection.Clear();
@@ -537,6 +648,7 @@ namespace Flex
 
 	bool EditorApp::OpenScene(const std::filesystem::path& sceneFile)
 	{
+		StopPlay();
 		std::vector<std::string> warnings;
 		std::string error;
 		Context->CurrentSelection.Clear();
@@ -658,6 +770,310 @@ namespace Flex
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::EndPopup();
+		}
+	}
+
+	// -----------------------
+	// Scripts
+	// -----------------------
+
+	void EditorApp::DrawScriptsMenu()
+	{
+		if (!ImGui::BeginMenu("Scripts")) {
+			return;
+		}
+		Project* project = Project::GetActive();
+		if (ImGui::MenuItem("New Script...")) {
+			bRequestNewScriptPopup = true;
+		}
+		if (ImGui::MenuItem(ScriptJob.IsRunning() ? "Recompiling..." : "Recompile", "F7", false, !ScriptJob.IsRunning())) {
+			RecompileScripts();
+		}
+		ImGui::Separator();
+		std::error_code error;
+		const std::filesystem::path solution = ProjectScripts::GetSolutionFile(*project);
+		const std::filesystem::path moduleProject = ProjectScripts::GetModuleProjectFile(*project);
+		const std::filesystem::path toOpen = std::filesystem::exists(solution, error) ? solution : moduleProject;
+		if (ImGui::MenuItem("Open in Visual Studio", nullptr, false, std::filesystem::exists(toOpen, error))) {
+			SDL_OpenURL(("file:///" + PathToGenericUtf8(toOpen)).c_str());
+		}
+		if (ImGui::MenuItem("Open Source Folder", nullptr, false, std::filesystem::exists(ProjectScripts::GetSourceDirectory(*project), error))) {
+			SDL_OpenURL(("file:///" + PathToGenericUtf8(ProjectScripts::GetSourceDirectory(*project))).c_str());
+		}
+		ImGui::EndMenu();
+	}
+
+	void EditorApp::DrawNewScriptDialog()
+	{
+		constexpr const char* PopupName = "New Script";
+		if (bRequestNewScriptPopup) {
+			bRequestNewScriptPopup = false;
+			NewScriptName[0] = '\0';
+			NewScriptError.clear();
+			ImGui::OpenPopup(PopupName);
+		}
+		if (!ImGui::BeginPopupModal(PopupName, nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+			return;
+		}
+		Project* project = Project::GetActive();
+		if (ImGui::IsWindowAppearing()) {
+			ImGui::SetKeyboardFocusHere();
+		}
+		const bool bEnter = ImGui::InputTextWithHint("Name", "e.g. Health", NewScriptName, sizeof(NewScriptName), ImGuiInputTextFlags_EnterReturnsTrue);
+		ImGui::RadioButton("Component", &NewScriptTemplate, 0);
+		ImGui::SameLine();
+		ImGui::RadioButton("System", &NewScriptTemplate, 1);
+		ImGui::SameLine();
+		ImGui::RadioButton("Component + System", &NewScriptTemplate, 2);
+		const std::string name = NewScriptName;
+		const char* files = NewScriptTemplate == 1 ? ".cpp" : ".h + .cpp";
+		ImGui::TextDisabled("Source/%s %s, namespace %s", name.empty() ? "<Name>" : name.c_str(), files, project->GetName().c_str());
+		ImGui::Checkbox("Open in code editor", &bOpenNewScript);
+		if (!NewScriptError.empty()) {
+			ImGui::TextColored(ImVec4(1.0f, 0.45f, 0.45f, 1.0f), "%s", NewScriptError.c_str());
+		}
+
+		if (ImGui::Button("Create") || bEnter) {
+			std::vector<std::filesystem::path> created;
+			if (ProjectScripts::CreateScript(*project, name, static_cast<ProjectScripts::ScriptTemplate>(NewScriptTemplate), created, NewScriptError)) {
+				for (const std::filesystem::path& file : created) {
+					Context->Output.Add(OutputLog::Level::Success, "Created " + PathToUtf8(file));
+					if (bOpenNewScript && file.extension() == ".cpp") {
+						SDL_OpenURL(("file:///" + PathToGenericUtf8(file)).c_str());
+					}
+				}
+				Context->Output.Add(OutputLog::Level::Info, "Press Recompile (F7) to build it into " + project->GetName() + ".dll.");
+				RefreshAssets(); // the Content window lists the new files
+				ImGui::CloseCurrentPopup();
+			}
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Cancel") || ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+
+	void EditorApp::DrawBuildProjectDialog()
+	{
+		constexpr const char* PopupName = "Build Project";
+		Project* project = Project::GetActive();
+		if (bRequestBuildPopup) {
+			bRequestBuildPopup = false;
+			BuildError.clear();
+			if (BuildOutput[0] == '\0') {
+				std::snprintf(BuildOutput, sizeof(BuildOutput), "%s", PathToUtf8(ProjectBuilder::GetDefaultOutputDirectory(*project)).c_str());
+			}
+			ImGui::OpenPopup(PopupName);
+		}
+		std::filesystem::path chosenFolder;
+		if (BuildFolderDialog.PollResult(chosenFolder)) {
+			std::snprintf(BuildOutput, sizeof(BuildOutput), "%s", PathToUtf8(chosenFolder).c_str());
+		}
+		if (!ImGui::BeginPopupModal(PopupName, nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+			return;
+		}
+
+		ImGui::TextUnformatted("A standalone folder that runs the game without the editor.");
+		const char* configurations[] = { "Development", "Shipping" };
+		ImGui::Combo("Configuration", &BuildConfiguration, configurations, 2);
+		ImGui::TextDisabled(BuildConfiguration == 0 ? "Optimised, with debug tools and a console window." : "Optimised, no debug tools, no console window.");
+		ImGui::SetNextItemWidth(420.0f);
+		ImGui::InputText("##Output", BuildOutput, sizeof(BuildOutput));
+		ImGui::SameLine();
+		if (ImGui::Button("Browse...") && !BuildFolderDialog.IsOpen()) {
+			BuildFolderDialog.OpenFolder(Window, Utf8ToPath(BuildOutput));
+		}
+		ImGui::TextDisabled("Output: %s/%s/%s.exe", BuildOutput, project->GetName().c_str(), project->GetName().c_str());
+		ImGui::Checkbox("Open the folder when done", &bOpenBuildFolder);
+		if (!BuildError.empty()) {
+			ImGui::TextColored(ImVec4(1.0f, 0.45f, 0.45f, 1.0f), "%s", BuildError.c_str());
+		}
+
+		if (ImGui::Button("Build")) {
+			const std::string configuration = configurations[BuildConfiguration];
+			if (ProjectBuilder::CheckEngineBinaries(configuration, BuildError) && !BuildJob.IsRunning() && !ScriptJob.IsRunning()) {
+				StopPlay();
+				const std::filesystem::path outputDirectory = Utf8ToPath(BuildOutput);
+				BuildTarget = outputDirectory / Utf8ToPath(project->GetName());
+				Context->ScriptJobStatus = "Building " + project->GetName() + " (" + configuration + ")...";
+				if (EditorWindow* output = FindPanel("Output")) {
+					output->Focus();
+				}
+				OutputLog& log = Context->Output;
+				BuildJob.Start([project, configuration, outputDirectory, &log]() { return ProjectBuilder::Build(*project, configuration, outputDirectory, log); });
+				ImGui::CloseCurrentPopup();
+			}
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Cancel") || ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+
+	void EditorApp::RecompileScripts()
+	{
+		if (ScriptJob.IsRunning() || BuildJob.IsRunning()) {
+			return;
+		}
+		StopPlay();
+		Project* project = Project::GetActive();
+		std::string error;
+		std::error_code fileError;
+		if (std::filesystem::exists(ProjectScripts::GetSourceDirectory(*project), fileError) && !ProjectScripts::EnsureProjectFiles(*project, error)) {
+			Context->Output.Add(OutputLog::Level::Error, error);
+			return;
+		}
+		if (EditorWindow* output = FindPanel("Output")) {
+			output->Focus();
+		}
+		const std::string configuration = Engine::GetBuildConfigName();
+		Context->ScriptJobStatus = "Building " + project->GetName() + ".dll (" + configuration + ")...";
+		OutputLog& log = Context->Output;
+		ScriptJob.Start([project, configuration, &log]() { return ProjectScripts::BuildModule(*project, configuration, log); });
+	}
+
+	void EditorApp::OnScriptsBuilt(bool bSucceeded)
+	{
+		Context->ScriptJobStatus.clear();
+		if (bSucceeded) {
+			ReloadGameModule();
+		}
+	}
+
+	// -----------------------
+	// Game module and Play mode
+	// -----------------------
+
+	// Loads a copy from Saved/ModuleCache, so Visual Studio (or Recompile) can rebuild the
+	// original while the editor runs. Recompile then hot-reloads it (ReloadGameModule).
+	void EditorApp::LoadGameModule()
+	{
+		Project* project = Project::GetActive();
+		const std::filesystem::path moduleFile = GameModule::FindModuleFile(*project);
+		if (moduleFile.empty()) {
+			Context->GameModuleStatus = "none (" + project->GetName() + ".dll not built)";
+			return;
+		}
+
+		std::error_code error;
+		// A module built against older engine headers has the wrong struct layouts: give a hint.
+		if (const char* basePath = SDL_GetBasePath()) {
+			const std::filesystem::path engineCore = Utf8ToPath(basePath) / "FlexCore.dll";
+			std::error_code timeError;
+			if (std::filesystem::last_write_time(moduleFile, timeError) < std::filesystem::last_write_time(engineCore, timeError)) {
+				SDL_Log("%s was built before the current FlexCore.dll. If engine headers changed since, press Recompile (F7).", PathToUtf8(moduleFile.filename()).c_str());
+			}
+		}
+
+		const std::filesystem::path cacheDirectory = project->GetSavedDirectory() / "ModuleCache";
+		std::filesystem::create_directories(cacheDirectory, error);
+		for (const auto& old : std::filesystem::directory_iterator(cacheDirectory, error)) {
+			std::error_code removeError;
+			std::filesystem::remove(old.path(), removeError); // copies still loaded (by other editors) stay
+		}
+		const std::string copyName = project->GetName() + "-" + std::to_string(SDL_GetCurrentThreadID()) + "-" + std::to_string(++ModuleLoadCount) + ".dll";
+		const std::filesystem::path copy = cacheDirectory / Utf8ToPath(copyName);
+		const bool bCopied = std::filesystem::copy_file(moduleFile, copy, std::filesystem::copy_options::overwrite_existing, error);
+
+		std::string loadError;
+		if (GameModule::Load(bCopied ? copy : moduleFile, loadError)) {
+			Context->GameModuleStatus = PathToUtf8(moduleFile.filename()) + " (Recompile reloads it)";
+		} else {
+			Context->GameModuleStatus = "failed: " + loadError;
+			SDL_Log("%s", loadError.c_str());
+		}
+	}
+
+	void EditorApp::ReloadGameModule()
+	{
+		StopPlay();
+		const uint64_t start = SDL_GetPerformanceCounter();
+
+		// 1. The scene as text (every component with a Serialize, including the module's).
+		TextDocument sceneText;
+		SceneSerializer::Save(Context->EditorScene, sceneText);
+		Uid selected;
+		if (const GameObjectInfo* info = Context->EditorScene.GetWorld().GetComponent<GameObjectInfo>(Context->CurrentSelection.GetEntity())) {
+			selected = info->Id;
+		}
+		std::vector<std::shared_ptr<Asset>> keepAlive; // don't unload textures just to reload them
+		Context->EditorScene.GetWorld().Each<const SpriteRenderer>([&](const SpriteRenderer& renderer) {
+			if (renderer.Loaded && (keepAlive.empty() || keepAlive.back() != renderer.Loaded)) {
+				keepAlive.push_back(renderer.Loaded);
+			}
+		});
+
+		// 2. No component of the old module may survive its unload.
+		Context->EditorScene.Clear();
+		Context->Game = GameInstance{}; // drops system pointers into the old module
+		size_t componentTypes = 0;
+		size_t systems = 0;
+		GameModule::Unload(componentTypes, systems);
+
+		// 3. The rebuilt module registers its components and systems again (layouts may change).
+		LoadGameModule();
+
+		// 4. The scene back: fields that still exist keep their values; components the module
+		//    no longer has are kept as unknown sections, so nothing is lost.
+		std::vector<std::string> warnings;
+		std::string error;
+		SceneSerializer::Load(Context->EditorScene, sceneText, warnings, error);
+		for (const std::string& warning : warnings) {
+			Context->Output.Add(OutputLog::Level::Warning, warning);
+		}
+		if (Context->CurrentSelection.GetKind() == Selection::Kind::Entity) {
+			Context->CurrentSelection.SelectEntity(Context->EditorScene.FindByUid(selected));
+		}
+
+		const double milliseconds = static_cast<double>(SDL_GetPerformanceCounter() - start) * 1000.0 / static_cast<double>(SDL_GetPerformanceFrequency());
+		if (GameModule::IsLoaded()) {
+			Context->Output.Add(OutputLog::Level::Success, "Game module reloaded in " + std::to_string(static_cast<int>(milliseconds)) + " ms ("
+				+ std::to_string(componentTypes) + " component types and " + std::to_string(systems) + " systems replaced).");
+		} else {
+			Context->Output.Add(OutputLog::Level::Error, "The game module could not be loaded: " + Context->GameModuleStatus);
+		}
+	}
+
+	void EditorApp::StartPlay()
+	{
+		if (Context->bIsPlaying) {
+			return;
+		}
+		SceneSerializer::Save(Context->EditorScene, PlaySnapshot);
+		PlayRevision = Context->SceneRevision;
+		PlaySelection = Uid();
+		if (const GameObjectInfo* info = Context->EditorScene.GetWorld().GetComponent<GameObjectInfo>(Context->CurrentSelection.GetEntity())) {
+			PlaySelection = info->Id;
+		}
+		Context->bIsPlaying = true;
+		Context->bGameView = true;
+		Context->Game.Begin(Context->EditorScene);
+	}
+
+	void EditorApp::StopPlay()
+	{
+		if (!Context || !Context->bIsPlaying) {
+			return;
+		}
+		// Keep the scene's assets loaded while it's rebuilt, so Stop doesn't reload every texture.
+		PlayKeepAlive.clear();
+		Context->EditorScene.GetWorld().Each<const SpriteRenderer>([&](const SpriteRenderer& renderer) {
+			if (renderer.Loaded && (PlayKeepAlive.empty() || PlayKeepAlive.back() != renderer.Loaded)) {
+				PlayKeepAlive.push_back(renderer.Loaded);
+			}
+		});
+
+		std::vector<std::string> warnings;
+		std::string error;
+		const bool bAssetSelected = Context->CurrentSelection.GetKind() == Selection::Kind::Asset;
+		SceneSerializer::Load(Context->EditorScene, PlaySnapshot, warnings, error);
+		Context->bIsPlaying = false;
+		Context->bGameView = false;
+		Context->SceneRevision = PlayRevision;
+		if (!bAssetSelected) {
+			Context->CurrentSelection.SelectEntity(Context->EditorScene.FindByUid(PlaySelection));
 		}
 	}
 

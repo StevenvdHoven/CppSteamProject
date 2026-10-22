@@ -47,17 +47,23 @@
 
 	<ItemGroup>
 		<ClInclude Include="AssetDatabase.h" />
+		<ClInclude Include="BuildTools.h" />
 		<ClInclude Include="ContentBrowser.h" />
 		<ClInclude Include="EditorApp.h" />
 		<ClInclude Include="EditorAssetSource.h" />
 		<ClInclude Include="EditorContext.h" />
 		<ClInclude Include="EditorPreferences.h" />
 		<ClInclude Include="EditorWindow.h" />
+		<ClInclude Include="EntitiesWindow.h" />
 		<ClInclude Include="FileDialog.h" />
 		<ClInclude Include="HierarchyWindow.h" />
 		<ClInclude Include="InspectorArchive.h" />
 		<ClInclude Include="InspectorWindow.h" />
+		<ClInclude Include="OutputLog.h" />
+		<ClInclude Include="OutputWindow.h" />
 		<ClInclude Include="ProjectBrowser.h" />
+		<ClInclude Include="ProjectBuilder.h" />
+		<ClInclude Include="ProjectScripts.h" />
 		<ClInclude Include="SceneEditing.h" />
 		<ClInclude Include="SceneUndo.h" />
 		<ClInclude Include="Selection.h" />
@@ -69,16 +75,22 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ClCompile Include="AssetDatabase.cpp" />
+		<ClCompile Include="BuildTools.cpp" />
 		<ClCompile Include="ContentBrowser.cpp" />
 		<ClCompile Include="EditorApp.cpp" />
 		<ClCompile Include="EditorAssetSource.cpp" />
 		<ClCompile Include="EditorPreferences.cpp" />
+		<ClCompile Include="EntitiesWindow.cpp" />
 		<ClCompile Include="FileDialog.cpp" />
 		<ClCompile Include="HierarchyWindow.cpp" />
 		<ClCompile Include="InspectorArchive.cpp" />
 		<ClCompile Include="InspectorWindow.cpp" />
+		<ClCompile Include="OutputLog.cpp" />
+		<ClCompile Include="OutputWindow.cpp" />
 		<ClCompile Include="Main.cpp" />
 		<ClCompile Include="ProjectBrowser.cpp" />
+		<ClCompile Include="ProjectBuilder.cpp" />
+		<ClCompile Include="ProjectScripts.cpp" />
 		<ClCompile Include="SceneEditing.cpp" />
 		<ClCompile Include="SceneUndo.cpp" />
 		<ClCompile Include="SpriteSlicer.cpp" />

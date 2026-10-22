@@ -1,0 +1,4 @@
+[Project version=2]
+Name = "SpriteStorm"
+EngineVersion = "0.1.0"
+StartScene = uid(47b1274c057db6aa)

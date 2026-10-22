@@ -28,7 +28,15 @@ namespace Flex
 		std::scoped_lock lock{ data.Mutex };
 
 		if (auto it = data.IdsByName.find(info.Name); it != data.IdsByName.end()) {
-			const ComponentTypeInfo& existing = data.Types[it->second];
+			ComponentTypeInfo& existing = data.Types[it->second];
+			if (existing.bIsStale) {
+				// Hot reload: the new module brings this type back, maybe with another layout.
+				const ComponentId id = existing.Id;
+				existing = info;
+				existing.Id = id;
+				existing.bIsStale = false;
+				return existing;
+			}
 			if (existing.Size != info.Size || existing.Alignment != info.Alignment) {
 				SDL_Log("ComponentRegistery: component '%s' registered twice with different layouts (size %u/%u, alignment %u/%u).",
 					info.Name.c_str(), existing.Size, info.Size, existing.Alignment, info.Alignment);
@@ -56,7 +64,7 @@ namespace Flex
 		RegisteryData& data = GetData();
 		std::scoped_lock lock{ data.Mutex };
 		auto it = data.IdsByName.find(name);
-		return it != data.IdsByName.end() ? &data.Types[it->second] : nullptr;
+		return it != data.IdsByName.end() && !data.Types[it->second].bIsStale ? &data.Types[it->second] : nullptr;
 	}
 
 	std::vector<const ComponentTypeInfo*> ComponentRegistery::GetAll()
@@ -66,9 +74,25 @@ namespace Flex
 		std::vector<const ComponentTypeInfo*> all;
 		all.reserve(data.Types.size());
 		for (const ComponentTypeInfo& type : data.Types) {
-			all.push_back(&type);
+			if (!type.bIsStale) {
+				all.push_back(&type);
+			}
 		}
 		return all;
+	}
+
+	size_t ComponentRegistery::MarkStale(const std::function<bool(const ComponentTypeInfo&)>& predicate)
+	{
+		RegisteryData& data = GetData();
+		std::scoped_lock lock{ data.Mutex };
+		size_t marked = 0;
+		for (ComponentTypeInfo& type : data.Types) {
+			if (!type.bIsStale && predicate(type)) {
+				type.bIsStale = true;
+				++marked;
+			}
+		}
+		return marked;
 	}
 
 	uint32_t ComponentRegistery::GetCount()

@@ -1,13 +1,16 @@
 #pragma once
 #include "Editor/AssetDatabase.h"
+#include "Editor/OutputLog.h"
 #include "Editor/SceneUndo.h"
 #include "Editor/Selection.h"
 #include "Editor/ThumbnailCache.h"
+#include "Core/Game/GameInstance.h"
 #include "Core/Scene/Scene.h"
 #include "Core/Uid.h"
 #include <cstdint>
 #include <filesystem>
 #include <functional>
+#include <string>
 
 namespace Flex
 {
@@ -43,11 +46,25 @@ namespace Flex
 
 		SceneUndo Undo;
 
+		// Play mode: the scene runs as a game (Start/FixedUpdate/Update systems, physics).
+		// Stopping restores the scene as it was, so changes made while playing are discarded.
+		GameInstance Game;
+		bool bIsPlaying = false;
+		bool bGameView = false;               // Viewport shows what the main camera sees
+		std::function<void()> TogglePlay;     // set by EditorApp
+		std::string GameModuleStatus;         // shown in the Project window
+
 		// Increases on every asset refresh, so windows can rebuild cached lists.
 		uint32_t AssetRevision = 0;
+
+		// Build output and engine log lines, shown by the Output window.
+		OutputLog Output;
+		std::string ScriptJobStatus; // "Building SpriteStorm.dll..." while a build runs
 
 		// Set by EditorApp.
 		std::function<void(Uid)> OpenAsset;     // double-click: opens the right editor for the asset's type
 		std::function<void()> RefreshAssets;    // rescans Content/
+		std::function<void()> NewScript;        // opens the New Script dialog
+		std::function<void()> RecompileScripts; // builds the game module
 	};
 }

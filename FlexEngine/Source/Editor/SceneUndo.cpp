@@ -34,6 +34,9 @@ namespace Flex
 
 	void SceneUndo::Record(EditorContext& context, std::string name)
 	{
+		if (context.bIsPlaying) {
+			return;
+		}
 		if (States.empty()) {
 			Reset(context);
 		}

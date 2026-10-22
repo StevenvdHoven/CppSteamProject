@@ -27,6 +27,7 @@ namespace Flex
 		void Draw() override;
 
 	private:
+		void DrawToolbar();
 		void EnsureRenderTarget(int width, int height);
 		void RenderScene(const Vector2& size, float pixelScale);
 		void DrawGrid(const Vector2& size, float pixelScale);

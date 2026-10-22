@@ -58,6 +58,11 @@ namespace Flex
 		return asset;
 	}
 
+	std::vector<Uid> AssetManager::GetSubAssets(Uid parentId)
+	{
+		return Source ? Source->GetSubAssets(parentId) : std::vector<Uid>{};
+	}
+
 	std::shared_ptr<Asset> AssetManager::FindLoaded(Uid id)
 	{
 		std::lock_guard<std::recursive_mutex> guard(Lock);

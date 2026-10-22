@@ -24,4 +24,13 @@ namespace Flex
 		outError = "No importer for asset type '" + asset->Type + "'.";
 		return nullptr;
 	}
+
+	std::vector<Uid> EditorAssetSource::GetSubAssets(Uid parentId)
+	{
+		std::vector<Uid> ids;
+		for (const AssetInfo* subAsset : Database.GetSubAssets(parentId)) {
+			ids.push_back(subAsset->Id);
+		}
+		return ids;
+	}
 }

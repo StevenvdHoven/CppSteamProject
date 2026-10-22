@@ -22,7 +22,7 @@ namespace Flex
 	{
 	public:
 		static constexpr const char* FileExtension = ".flexproj";
-		static constexpr uint32_t FileVersion = 1;
+		static constexpr uint32_t FileVersion = 2;
 
 		// Creates <parentDirectory>/<name>/ with the layout above and makes it the active project.
 		static Project* Create(const std::filesystem::path& parentDirectory, const std::string& name, std::string& outError);
@@ -42,6 +42,10 @@ namespace Flex
 		const std::string& GetName() const { return Name; }
 		const std::string& GetEngineVersion() const { return EngineVersion; }
 
+		// The scene FlexRuntime opens when it runs this project (a Scene asset; none = not set).
+		Uid GetStartScene() const { return StartScene; }
+		void SetStartScene(Uid scene) { StartScene = scene; }
+
 		const std::filesystem::path& GetProjectFile() const { return ProjectFile; }
 		std::filesystem::path GetRootDirectory() const { return ProjectFile.parent_path(); }
 		std::filesystem::path GetContentDirectory() const { return GetRootDirectory() / "Content"; }
@@ -56,6 +60,7 @@ namespace Flex
 	private:
 		std::string Name;
 		std::string EngineVersion;
+		Uid StartScene;
 		std::filesystem::path ProjectFile;
 
 		// The whole .flexproj, so keys and sections this version doesn't know about

@@ -2,6 +2,7 @@
 #include "Editor/EditorWindow.h"
 #include "Core/Uid.h"
 #include <cstdint>
+#include <filesystem>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -34,6 +35,8 @@ namespace Flex
 		void DrawToolbar();
 		void DrawFolderTree(size_t folderIndex);
 		void DrawTiles();
+		void DrawScriptsNode();
+		void DrawScriptTiles();
 		void DrawTile(const AssetInfo& asset, float tileSize, bool bIsSubAsset);
 		bool MatchesSearch(const AssetInfo& asset) const;
 
@@ -45,5 +48,9 @@ namespace Flex
 		char SearchText[128]{};
 		float TileSize = 72.0f;
 		std::unordered_set<Uid> ExpandedTextures;
+
+		// The project's C++ scripts (Source/), shown as their own folder.
+		std::vector<std::filesystem::path> Scripts;
+		bool bShowingScripts = false;
 	};
 }

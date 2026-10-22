@@ -13,6 +13,7 @@ namespace Flex
 		explicit EditorAssetSource(const AssetDatabase& database) : Database{ database } {}
 
 		std::shared_ptr<Asset> LoadAsset(Uid id, std::string& outName, std::string& outError) override;
+		std::vector<Uid> GetSubAssets(Uid parentId) override;
 
 	private:
 		const AssetDatabase& Database;

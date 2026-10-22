@@ -1,6 +1,9 @@
 #pragma once
 #include "Editor/AssetDatabase.h"
+#include "Editor/BuildTools.h"
 #include "Editor/FileDialog.h"
+#include "Core/Assets/Asset.h"
+#include "Core/Serialization/TextDocument.h"
 #include "Core/Uid.h"
 
 #include <filesystem>
@@ -41,6 +44,8 @@ namespace Flex
 
 		// Starts a new FlexEditor process. An empty path opens the project browser.
 		static bool LaunchEditor(const std::filesystem::path& projectFile);
+		// Starts FlexRuntime on the open project with this scene.
+		static bool LaunchRuntime(const std::filesystem::path& sceneFile);
 
 	private:
 		bool CreateWindowAndImGui(const std::string& title, int width, int height, const std::filesystem::path& imguiIniFile);
@@ -68,6 +73,20 @@ namespace Flex
 		void DrawSceneDialogs();
 		void UpdateWindowTitle();
 
+		// Scripts (the project's C++ game code)
+		void DrawScriptsMenu();
+		void DrawNewScriptDialog();
+		void RecompileScripts();
+		void OnScriptsBuilt(bool bSucceeded);
+		void DrawBuildProjectDialog();
+
+		// Game module and Play mode
+		void LoadGameModule();
+		// Hot reload: scene to text, clear, unload the old module, load the rebuilt one, scene back.
+		void ReloadGameModule();
+		void StartPlay();
+		void StopPlay();
+
 	private:
 		SDL_Window* Window = nullptr;
 		bool bIsRunning = false;
@@ -87,6 +106,7 @@ namespace Flex
 		std::unordered_map<std::string, std::function<void(const AssetInfo&)>> AssetOpeners; // by asset type
 
 		bool bResetLayoutRequested = false;
+		int FrontTabsCountdown = 0; // after a default layout: frames until Inspector/Content come to the front
 
 		FileDialog OpenSceneDialog;
 		FileDialog SaveSceneDialog;
@@ -98,6 +118,29 @@ namespace Flex
 		std::filesystem::path StartupScene; // last opened scene, from EditorLayout.ini
 		bool bStartupSceneHandled = false;
 		std::string WindowTitle;
+
+		BackgroundJob ScriptJob;      // a running module build
+		uint32_t ModuleLoadCount = 0; // each load uses a new copy in Saved/ModuleCache
+		bool bRequestNewScriptPopup = false;
+		char NewScriptName[64]{};
+		int NewScriptTemplate = 2;
+		bool bOpenNewScript = true;
+		std::string NewScriptError;
+
+		// Build Project
+		BackgroundJob BuildJob;
+		bool bRequestBuildPopup = false;
+		int BuildConfiguration = 0;      // 0 = Development, 1 = Shipping
+		char BuildOutput[512]{};
+		bool bOpenBuildFolder = true;
+		std::string BuildError;
+		std::filesystem::path BuildTarget; // the folder being built (to open afterwards)
+		FileDialog BuildFolderDialog;
+
+		TextDocument PlaySnapshot;    // the scene as it was when Play was pressed
+		Uid PlaySelection;
+		uint64_t PlayRevision = 0;
+		std::vector<std::shared_ptr<Asset>> PlayKeepAlive; // assets kept loaded across Stop
 
 		// ImGui keeps a pointer to this string, so it has to outlive the ImGui context.
 		std::string ImGuiIniFile;

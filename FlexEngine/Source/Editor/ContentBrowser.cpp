@@ -1,10 +1,13 @@
 #include "Editor/ContentBrowser.h"
 #include "Editor/EditorContext.h"
+#include "Editor/ProjectScripts.h"
 #include "Editor/TextureImporter.h"
 #include "Core/Assets/AssetManager.h"
 #include "Core/FileSystem.h"
 #include "Core/Graphics/Renderer.h"
+#include "Core/Project.h"
 
+#include <SDL3/SDL.h>
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <algorithm>
@@ -65,6 +68,8 @@ namespace Flex
 			indexByPath[path] = index;
 		}
 
+		Scripts = ProjectScripts::ListScripts(*Project::GetActive());
+
 		if (!indexByPath.contains(CurrentFolder)) {
 			CurrentFolder.clear();
 		}
@@ -90,11 +95,16 @@ namespace Flex
 			ImGui::TableNextColumn();
 			if (ImGui::BeginChild("FolderTree")) {
 				DrawFolderTree(0);
+				DrawScriptsNode();
 			}
 			ImGui::EndChild();
 			ImGui::TableNextColumn();
 			if (ImGui::BeginChild("Tiles")) {
-				DrawTiles();
+				if (bShowingScripts) {
+					DrawScriptTiles();
+				} else {
+					DrawTiles();
+				}
 			}
 			ImGui::EndChild();
 			ImGui::EndTable();
@@ -115,7 +125,15 @@ namespace Flex
 		ImGui::SetNextItemWidth(120.0f);
 		ImGui::SliderFloat("##TileSize", &TileSize, 40.0f, 160.0f, "Size %.0f");
 		ImGui::SameLine();
-		ImGui::TextDisabled("Content/%s", CurrentFolder.c_str());
+		if (bShowingScripts) {
+			if (Context.NewScript && ImGui::Button("New Script...")) {
+				Context.NewScript();
+			}
+			ImGui::SameLine();
+			ImGui::TextDisabled("Source/ (C++, built into %s.dll)", Project::GetActive()->GetName().c_str());
+		} else {
+			ImGui::TextDisabled("Content/%s", CurrentFolder.c_str());
+		}
 
 		// Load statistics (kept from the old debug panel): one entry per loaded asset, however many users.
 		size_t loadedBytes = 0;
@@ -139,19 +157,76 @@ namespace Flex
 		if (folderIndex == 0) {
 			flags |= ImGuiTreeNodeFlags_DefaultOpen;
 		}
-		if (folder.Path == CurrentFolder) {
+		if (folder.Path == CurrentFolder && !bShowingScripts) {
 			flags |= ImGuiTreeNodeFlags_Selected;
 		}
 
 		const bool bOpen = ImGui::TreeNodeEx(folder.Path.empty() ? "##ContentRoot" : folder.Path.c_str(), flags, "%s", folder.Name.c_str());
 		if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
 			CurrentFolder = folder.Path;
+			bShowingScripts = false;
 		}
 		if (bOpen) {
 			for (size_t child : folder.Children) {
 				DrawFolderTree(child);
 			}
 			ImGui::TreePop();
+		}
+	}
+
+	void ContentBrowser::DrawScriptsNode()
+	{
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+		if (bShowingScripts) {
+			flags |= ImGuiTreeNodeFlags_Selected;
+		}
+		ImGui::Spacing();
+		ImGui::TreeNodeEx("##SourceRoot", flags, "Source (C++)");
+		if (ImGui::IsItemClicked()) {
+			bShowingScripts = true;
+		}
+	}
+
+	// One tile per .h/.cpp; double-click opens it in the code editor Windows has for it.
+	void ContentBrowser::DrawScriptTiles()
+	{
+		const std::filesystem::path sourceDirectory = ProjectScripts::GetSourceDirectory(*Project::GetActive());
+		if (Scripts.empty()) {
+			ImGui::TextDisabled("No scripts yet. Create one with New Script... (also in the Scripts menu).");
+		}
+		const float tileSize = TileSize * ImGui::GetStyle().FontScaleDpi;
+		const float spacing = ImGui::GetStyle().ItemSpacing.x;
+		const int columns = std::max(1, static_cast<int>((ImGui::GetContentRegionAvail().x + spacing) / (tileSize + spacing)));
+		const float textHeight = ImGui::GetTextLineHeight();
+		for (size_t index = 0; index < Scripts.size(); ++index) {
+			if (index % static_cast<size_t>(columns) != 0) {
+				ImGui::SameLine();
+			}
+			const std::filesystem::path& script = Scripts[index];
+			const std::string name = PathToUtf8(script.filename());
+			ImGui::PushID(static_cast<int>(index));
+			const ImVec2 tileMin = ImGui::GetCursorScreenPos();
+			if (ImGui::Selectable("##Script", false, ImGuiSelectableFlags_AllowDoubleClick, ImVec2(tileSize, tileSize + textHeight + 4.0f))
+				&& ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+				SDL_OpenURL(("file:///" + PathToGenericUtf8(sourceDirectory / script)).c_str());
+			}
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)) {
+				ImGui::SetTooltip("Source/%s\nDouble-click to open", PathToGenericUtf8(script).c_str());
+			}
+			ImDrawList* drawList = ImGui::GetWindowDrawList();
+			const ImVec2 imageMin{ tileMin.x + 4.0f, tileMin.y + 4.0f };
+			const ImVec2 imageMax{ tileMin.x + tileSize - 4.0f, tileMin.y + tileSize - 4.0f };
+			const bool bHeader = script.extension() == ".h";
+			drawList->AddRectFilled(imageMin, imageMax, bHeader ? IM_COL32(55, 70, 95, 255) : IM_COL32(45, 85, 70, 255), 4.0f);
+			const char* kind = bHeader ? ".h" : ".cpp";
+			const ImVec2 kindSize = ImGui::CalcTextSize(kind);
+			drawList->AddText(ImVec2(imageMin.x + (imageMax.x - imageMin.x - kindSize.x) * 0.5f, imageMin.y + (imageMax.y - imageMin.y - kindSize.y) * 0.5f),
+				IM_COL32(220, 220, 220, 255), kind);
+			drawList->PushClipRect(tileMin, ImVec2(tileMin.x + tileSize, tileMin.y + tileSize + textHeight + 4.0f), true);
+			const ImVec2 nameSize = ImGui::CalcTextSize(name.c_str());
+			drawList->AddText(ImVec2(tileMin.x + std::max(0.0f, (tileSize - nameSize.x) * 0.5f), tileMin.y + tileSize), ImGui::GetColorU32(ImGuiCol_Text), name.c_str());
+			drawList->PopClipRect();
+			ImGui::PopID();
 		}
 	}
 

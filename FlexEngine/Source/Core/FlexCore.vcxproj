@@ -46,11 +46,16 @@
 	<ItemGroup>
 		<ClInclude Include="Assets\Asset.h" />
 		<ClInclude Include="Assets\AssetManager.h" />
+		<ClInclude Include="Assets\ContentAssetSource.h" />
 		<ClInclude Include="Assets\Sprite.h" />
 		<ClInclude Include="Assets\Texture.h" />
 		<ClInclude Include="Core.h" />
 		<ClInclude Include="Engine.h" />
 		<ClInclude Include="FileSystem.h" />
+		<ClInclude Include="Game\GameInstance.h" />
+		<ClInclude Include="Game\GameModule.h" />
+		<ClInclude Include="Game\SystemRegistery.h" />
+		<ClInclude Include="Graphics\Camera.h" />
 		<ClInclude Include="Graphics\Camera2D.h" />
 		<ClInclude Include="Graphics\Renderer.h" />
 		<ClInclude Include="Graphics\SpriteBatch.h" />
@@ -64,6 +69,7 @@
 		<ClInclude Include="Math\Rect.h" />
 		<ClInclude Include="Math\Vector2.h" />
 		<ClInclude Include="Physics\Collision2D.h" />
+		<ClInclude Include="Physics\Physics2D.h" />
 		<ClInclude Include="Project.h" />
 		<ClInclude Include="Scene\Scene.h" />
 		<ClInclude Include="Scene\SceneSerializer.h" />
@@ -84,13 +90,19 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ClCompile Include="Assets\AssetManager.cpp" />
+		<ClCompile Include="Assets\ContentAssetSource.cpp" />
 		<ClCompile Include="Assets\Sprite.cpp" />
 		<ClCompile Include="Assets\Texture.cpp" />
 		<ClCompile Include="Core.cpp" />
 		<ClCompile Include="Engine.cpp" />
+		<ClCompile Include="Game\GameInstance.cpp" />
+		<ClCompile Include="Game\GameModule.cpp" />
+		<ClCompile Include="Game\SystemRegistery.cpp" />
+		<ClCompile Include="Graphics\Camera.cpp" />
 		<ClCompile Include="Graphics\Renderer.cpp" />
 		<ClCompile Include="Graphics\SpriteBatch.cpp" />
 		<ClCompile Include="Graphics\SpriteRenderSystem.cpp" />
+		<ClCompile Include="Physics\Physics2D.cpp" />
 		<ClCompile Include="Project.cpp" />
 		<ClCompile Include="Scene\Scene.cpp" />
 		<ClCompile Include="Scene\SceneSerializer.cpp" />
