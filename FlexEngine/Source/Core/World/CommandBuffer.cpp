@@ -33,8 +33,9 @@ namespace Flex
 
 	void CommandBuffer::Apply()
 	{
-		// Applying can't record new commands (nothing user-side runs), so a plain loop is safe.
-		for (Command& command : Commands) {
+		// Deferred functions can record new commands, so index (not iterate) and copy each command.
+		for (size_t i = 0; i < Commands.size(); ++i) {
+			const Command command = Commands[i];
 			switch (command.Type) {
 			case CommandType::Spawn:
 				OwnerWorld.SpawnReserved(command.Target, SpawnTypes.data() + command.FirstSpawnComponent,
@@ -49,6 +50,12 @@ namespace Flex
 			case CommandType::RemoveComponent:
 				OwnerWorld.RemoveComponentById(command.Target, command.Component->Id);
 				break;
+			case CommandType::Deferred: {
+				// Moved out first: the function may record more deferred functions (vector growth).
+				std::function<void(World&)> function = std::move(DeferredFunctions[command.DeferredFunction]);
+				function(OwnerWorld);
+				break;
+			}
 			}
 		}
 		Reset();
@@ -118,6 +125,14 @@ namespace Flex
 		command.Component = &type;
 	}
 
+	void CommandBuffer::Defer(std::function<void(World&)> function)
+	{
+		Command& command = Commands.emplace_back();
+		command.Type = CommandType::Deferred;
+		command.DeferredFunction = static_cast<uint32_t>(DeferredFunctions.size());
+		DeferredFunctions.push_back(std::move(function));
+	}
+
 	void CommandBuffer::DestroyPendingPayloads()
 	{
 		for (Command& command : Commands) {
@@ -135,6 +150,7 @@ namespace Flex
 		Commands.clear();
 		SpawnTypes.clear();
 		SpawnPayloads.clear();
+		DeferredFunctions.clear();
 		CurrentBlock = 0;
 		BlockOffset = 0;
 	}

@@ -101,6 +101,35 @@ namespace Flex
 		return texture;
 	}
 
+	std::shared_ptr<Texture> Texture::CreateFromPixels(int width, int height, const uint8_t* rgbaPixels, TextureFilter filter, std::string& outError)
+	{
+		if (!Renderer::IsInitialised()) {
+			outError = "Renderer is not initialised.";
+			return nullptr;
+		}
+
+		SDL_Texture* handle = SDL_CreateTexture(Renderer::GetSDLRenderer(), SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STATIC, width, height);
+		if (!handle) {
+			outError = std::string("Could not create GPU texture: ") + SDL_GetError();
+			return nullptr;
+		}
+		if (!SDL_UpdateTexture(handle, nullptr, rgbaPixels, width * 4)) {
+			outError = std::string("Could not upload texture pixels: ") + SDL_GetError();
+			SDL_DestroyTexture(handle);
+			return nullptr;
+		}
+		SDL_SetTextureBlendMode(handle, SDL_BLENDMODE_BLEND);
+
+		auto texture = std::shared_ptr<Texture>(new Texture());
+		texture->Handle = handle;
+		texture->Width = width;
+		texture->Height = height;
+		Renderer::OnTextureCreated();
+
+		texture->SetFilter(filter);
+		return texture;
+	}
+
 	size_t Texture::GetMemorySize() const
 	{
 		return static_cast<size_t>(Width) * static_cast<size_t>(Height) * 4;

@@ -3,6 +3,7 @@
 #include "Core/World/ComponentRegistery.h"
 #include "Core/World/Entity.h"
 #include <cstddef>
+#include <functional>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -66,6 +67,11 @@ namespace Flex
 			RecordRemoveComponent(entity, GetComponentType<T>());
 		}
 
+		// Runs function(world) when the commands are applied, in order with the other commands.
+		// For changes that take several steps, e.g. Hierarchy::SetParent inside World::Each.
+		// The function may record more commands; they run in the same Apply.
+		void Defer(std::function<void(World&)> function);
+
 		// Applies and clears every recorded command.
 		void Apply();
 
@@ -78,7 +84,8 @@ namespace Flex
 			Spawn,
 			Destroy,
 			AddComponent,
-			RemoveComponent
+			RemoveComponent,
+			Deferred
 		};
 
 		struct Command
@@ -89,6 +96,7 @@ namespace Flex
 			void* Payload = nullptr;                      // AddComponent
 			uint32_t FirstSpawnComponent = 0;             // Spawn: range in SpawnTypes/SpawnPayloads
 			uint32_t SpawnComponentCount = 0;
+			uint32_t DeferredFunction = 0;                // Deferred: index in DeferredFunctions
 		};
 
 		struct PayloadBlock
@@ -117,6 +125,7 @@ namespace Flex
 		std::vector<Command> Commands;
 		std::vector<const ComponentTypeInfo*> SpawnTypes; // sorted by id per spawn
 		std::vector<void*> SpawnPayloads;
+		std::vector<std::function<void(World&)>> DeferredFunctions;
 
 		// Payloads live in fixed blocks so they never move once constructed.
 		std::vector<PayloadBlock> Blocks;

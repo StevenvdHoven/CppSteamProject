@@ -42,6 +42,10 @@ namespace Flex
 		// Loads a .png or .bmp from disk and uploads it to the GPU. Needs Renderer::Init first.
 		static std::shared_ptr<Texture> LoadFromFile(const std::filesystem::path& sourceFile, const TextureImportSettings& settings, std::string& outError);
 
+		// Creates a texture from width * height RGBA pixels (4 bytes each, row by row, top row first),
+		// e.g. for generated images. Needs Renderer::Init first.
+		static std::shared_ptr<Texture> CreateFromPixels(int width, int height, const uint8_t* rgbaPixels, TextureFilter filter, std::string& outError);
+
 		const char* GetTypeName() const override { return "Texture"; }
 		size_t GetMemorySize() const override;
 
