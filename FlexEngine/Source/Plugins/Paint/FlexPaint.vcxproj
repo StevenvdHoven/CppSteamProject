@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup Label="ProjectConfigurations">
+		<ProjectConfiguration Include="Debug|x64">
+			<Configuration>Debug</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="Development|x64">
+			<Configuration>Development</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<!-- Only here so the solution can map it; the solution does not build editor plugins in Shipping. -->
+		<ProjectConfiguration Include="Shipping|x64">
+			<Configuration>Shipping</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+	</ItemGroup>
+
+	<PropertyGroup Label="Globals">
+		<VCProjectVersion>18.0</VCProjectVersion>
+		<ProjectGuid>{52FC559B-78C3-4D56-9A13-CFC6519A527F}</ProjectGuid>
+		<RootNamespace>FlexPaint</RootNamespace>
+		<WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+	</PropertyGroup>
+
+	<!-- The Paint editor plugin: Binaries/<Config>/Plugins/FlexPaint.dll. -->
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+	<Import Project="..\..\..\Build\FlexConfiguration.props" />
+	<PropertyGroup Label="Configuration">
+		<ConfigurationType>DynamicLibrary</ConfigurationType>
+	</PropertyGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+	<ImportGroup Label="PropertySheets">
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+		<Import Project="..\..\..\Build\FlexCommon.props" />
+		<Import Project="..\..\..\Build\FlexEditorPlugin.props" />
+	</ImportGroup>
+
+	<ItemGroup>
+		<ClInclude Include="PaintEditor.h" />
+		<ClInclude Include="PaintImage.h" />
+		<ClInclude Include="Painting.h" />
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="PaintEditor.cpp" />
+		<ClCompile Include="PaintImage.cpp" />
+		<ClCompile Include="Painting.cpp" />
+		<ClCompile Include="PaintPlugin.cpp" />
+	</ItemGroup>
+
+	<!-- Build order only: FlexEditorPlugin.props links the import libraries. -->
+	<ItemGroup>
+		<ProjectReference Include="..\..\Core\FlexCore.vcxproj">
+			<Project>{09E204DC-F3FB-49AB-8B40-00F95CE22909}</Project>
+			<LinkLibraryDependencies>false</LinkLibraryDependencies>
+		</ProjectReference>
+		<ProjectReference Include="..\..\Editor\FlexEditorCore.vcxproj">
+			<Project>{8A4AF817-6CAD-42FA-A025-314B16617063}</Project>
+			<LinkLibraryDependencies>false</LinkLibraryDependencies>
+		</ProjectReference>
+	</ItemGroup>
+
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

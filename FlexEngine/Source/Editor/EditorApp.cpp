@@ -154,6 +154,7 @@ namespace Flex
 			ProjectScripts::UpdateEngineLocation(*project);
 			LoadGameModule(); // before scenes load: the module's components must be registered
 			CreateProjectWindows();
+			Plugins.LoadAll(*this, *project); // after the editor's own types and windows, before the first asset scan
 			Context->Undo.Reset(*Context);
 			RegisterWindowSettingsHandler(); // before the first frame, when ImGui reads the .ini
 			RefreshAssets();
@@ -182,6 +183,7 @@ namespace Flex
 		Panels.push_back(std::make_unique<EntitiesWindow>(*Context));
 		Panels.push_back(std::make_unique<InspectorWindow>(*Context));
 		Panels.push_back(std::make_unique<ProjectWindow>(*Context));
+		Panels.push_back(std::make_unique<PluginsWindow>(Plugins));
 		Panels.push_back(std::make_unique<OutputWindow>(*Context));
 		Panels.push_back(std::make_unique<ContentBrowser>(*Context));
 
@@ -280,6 +282,7 @@ namespace Flex
 		ImGui::DockBuilderDockWindow("Entities", right);
 		ImGui::DockBuilderDockWindow("Content", bottom);
 		ImGui::DockBuilderDockWindow("Project", bottom);
+		ImGui::DockBuilderDockWindow("Plugins", bottom);
 		ImGui::DockBuilderDockWindow("Output", bottom);
 		ImGui::DockBuilderDockWindow("Viewport", center);
 		ImGui::DockBuilderFinish(dockspaceId);
@@ -364,6 +367,7 @@ namespace Flex
 			SDL_RenderClear(sdlRenderer);
 			ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), sdlRenderer);
 			SDL_RenderPresent(sdlRenderer);
+			Renderer::EndFrame();
 		}
 	}
 
@@ -381,6 +385,7 @@ namespace Flex
 		PlayKeepAlive.clear();
 		AssetEditors.clear();
 		Panels.clear();
+		Plugins.UnloadAll(); // after their windows, before the assets are released
 		if (Context) {
 			Context->Output.UninstallSdlLogHook();
 		}
@@ -503,6 +508,7 @@ namespace Flex
 			if (ImGui::MenuItem("Open Project...", nullptr, false, !OpenProjectDialog.IsOpen())) {
 				OpenProjectDialog.OpenFile(Window, "FlexEngine Project", "flexproj", Project::GetActive()->GetRootDirectory().parent_path());
 			}
+			DrawPluginMenuItems("File", true);
 			ImGui::Separator();
 			if (ImGui::MenuItem("Exit")) {
 				RequestQuit();
@@ -519,10 +525,27 @@ namespace Flex
 			if (ImGui::MenuItem(("Redo " + undo.GetRedoName()).c_str(), "Ctrl+Y", false, undo.CanRedo() && !Context->bIsPlaying)) {
 				Context->Undo.Redo(*Context);
 			}
+			DrawPluginMenuItems("Edit", true);
 			ImGui::EndMenu();
 		}
 
 		DrawScriptsMenu();
+
+		// Menus that only plugins add, in the order they were first used.
+		std::vector<std::string> pluginMenus;
+		for (const PluginMenuItem& item : PluginMenuItems) {
+			const bool bBuiltIn = item.Menu == "File" || item.Menu == "Edit" || item.Menu == "Scripts" || item.Menu == "Windows";
+			if (!bBuiltIn && std::find(pluginMenus.begin(), pluginMenus.end(), item.Menu) == pluginMenus.end()) {
+				pluginMenus.push_back(item.Menu);
+			}
+		}
+		for (const std::string& menu : pluginMenus) {
+			if (ImGui::BeginMenu(menu.c_str())) {
+				DrawPluginMenuItems(menu, false);
+				ImGui::EndMenu();
+			}
+		}
+
 		DrawWindowsMenu();
 
 		ImGui::EndMainMenuBar();
@@ -554,11 +577,29 @@ namespace Flex
 			}
 		}
 
+		DrawPluginMenuItems("Windows", true);
 		ImGui::Separator();
 		if (ImGui::MenuItem("Reset Layout")) {
 			bResetLayoutRequested = true;
 		}
 		ImGui::EndMenu();
+	}
+
+	void EditorApp::DrawPluginMenuItems(const std::string& menu, bool bSeparate)
+	{
+		for (const PluginMenuItem& item : PluginMenuItems) {
+			if (item.Menu != menu) {
+				continue;
+			}
+			if (bSeparate) {
+				ImGui::Separator();
+				bSeparate = false;
+			}
+			const bool bEnabled = !item.IsEnabled || item.IsEnabled();
+			if (ImGui::MenuItem(item.Label.c_str(), item.Shortcut.empty() ? nullptr : item.Shortcut.c_str(), false, bEnabled)) {
+				item.Action();
+			}
+		}
 	}
 
 	void EditorApp::DrawProjectEditor()
@@ -621,15 +662,19 @@ namespace Flex
 			UpdateWorldTransforms(Context->EditorScene.GetWorld());
 		}
 
-		for (const auto& panel : Panels) {
-			if (panel->IsOpen()) {
-				panel->Draw();
+		// By index: a window may open another one (e.g. a plugin's asset editor) while it draws.
+		for (size_t index = 0; index < Panels.size(); ++index) {
+			if (Panels[index]->IsOpen()) {
+				Panels[index]->Draw();
 			}
 		}
-		for (const auto& editor : AssetEditors) {
-			if (editor->IsOpen()) {
-				editor->Draw();
+		for (size_t index = 0; index < AssetEditors.size(); ++index) {
+			if (AssetEditors[index]->IsOpen()) {
+				AssetEditors[index]->Draw();
 			}
+		}
+		for (const std::function<void()>& draw : PluginDrawCallbacks) {
+			draw();
 		}
 		if (FrontTabsCountdown > 0 && --FrontTabsCountdown == 0) {
 			for (const char* title : { "Inspector", "Content" }) {
@@ -817,6 +862,7 @@ namespace Flex
 		if (ImGui::MenuItem("Open Source Folder", nullptr, false, std::filesystem::exists(ProjectScripts::GetSourceDirectory(*project), error))) {
 			SDL_OpenURL(("file:///" + PathToGenericUtf8(ProjectScripts::GetSourceDirectory(*project))).c_str());
 		}
+		DrawPluginMenuItems("Scripts", true);
 		ImGui::EndMenu();
 	}
 
@@ -918,7 +964,10 @@ namespace Flex
 					output->Focus();
 				}
 				OutputLog& log = Context->Output;
-				BuildJob.Start([project, configuration, outputDirectory, &log]() { return ProjectBuilder::Build(*project, configuration, outputDirectory, log); });
+				const std::vector<std::string> skippedExtensions = Assets.GetEditorOnlyExtensions();
+				BuildJob.Start([project, configuration, outputDirectory, skippedExtensions, &log]() {
+					return ProjectBuilder::Build(*project, configuration, outputDirectory, skippedExtensions, log);
+				});
 				ImGui::CloseCurrentPopup();
 			}
 		}
@@ -1127,6 +1176,47 @@ namespace Flex
 		}
 		AssetEditors.push_back(create());
 		AssetEditors.back()->Focus();
+	}
+
+	// -----------------------
+	// Plugin host
+	// -----------------------
+
+	void EditorApp::RegisterAssetType(const std::string& typeName, const std::vector<std::string>& extensions,
+		AssetDatabase::MetaInitializer initializeMeta, AssetTypeFlags flags)
+	{
+		Assets.RegisterType(typeName, extensions, std::move(initializeMeta), flags);
+	}
+
+	void EditorApp::RegisterAssetOpener(const std::string& typeName, std::function<void(const AssetInfo&)> open)
+	{
+		AssetOpeners[typeName] = std::move(open);
+	}
+
+	void EditorApp::AddPanel(std::unique_ptr<EditorWindow> panel)
+	{
+		Panels.push_back(std::move(panel));
+	}
+
+	void EditorApp::AddMenuItem(const std::string& menu, const std::string& label, const std::string& shortcut,
+		std::function<void()> action, std::function<bool()> isEnabled)
+	{
+		PluginMenuItems.push_back(PluginMenuItem{ menu, label, shortcut, std::move(action), std::move(isEnabled) });
+	}
+
+	void EditorApp::AddContentCreateItem(const std::string& label, std::function<void(const std::filesystem::path& folder)> create)
+	{
+		Context->ContentCreateItems.push_back(ContentCreateItem{ label, std::move(create) });
+	}
+
+	void EditorApp::RegisterThumbnail(const std::string& typeName, std::function<std::shared_ptr<Texture>(const AssetInfo&)> makeThumbnail)
+	{
+		Context->Thumbnails.SetProvider(typeName, std::move(makeThumbnail));
+	}
+
+	void EditorApp::AddDrawCallback(std::function<void()> draw)
+	{
+		PluginDrawCallbacks.push_back(std::move(draw));
 	}
 
 	void EditorApp::RefreshAssets()

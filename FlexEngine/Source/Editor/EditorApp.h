@@ -1,6 +1,8 @@
 #pragma once
 #include "Editor/AssetDatabase.h"
 #include "Editor/BuildTools.h"
+#include "Editor/EditorPlugin.h"
+#include "Editor/EditorPlugins.h"
 #include "Editor/FileDialog.h"
 #include "Core/Assets/Asset.h"
 #include "Core/Serialization/TextDocument.h"
@@ -28,7 +30,8 @@ namespace Flex
 	//  - Started without a project: shows the ProjectBrowser.
 	//  - Started with --project <file>: opens that project in the editor.
 	// Opening or creating another project always starts a new FlexEditor process.
-	class EditorApp
+	// It is also the host editor plugins register their asset types, windows and menu items with.
+	class EditorApp final : public EditorPluginHost
 	{
 	public:
 		EditorApp();
@@ -47,6 +50,21 @@ namespace Flex
 		// Starts FlexRuntime on the open project with this scene.
 		static bool LaunchRuntime(const std::filesystem::path& sceneFile);
 
+		// EditorPluginHost
+		EditorContext& GetContext() override { return *Context; }
+		SDL_Window* GetMainWindow() override { return Window; }
+		void RegisterAssetType(const std::string& typeName, const std::vector<std::string>& extensions,
+			AssetDatabase::MetaInitializer initializeMeta, AssetTypeFlags flags) override;
+		void RegisterAssetOpener(const std::string& typeName, std::function<void(const AssetInfo&)> open) override;
+		// Focuses the editor already open for editedAssetId, or creates one with create().
+		void OpenAssetEditor(Uid editedAssetId, Uid subAssetId, const std::function<std::unique_ptr<AssetEditor>()>& create) override;
+		void AddPanel(std::unique_ptr<EditorWindow> panel) override;
+		void AddMenuItem(const std::string& menu, const std::string& label, const std::string& shortcut,
+			std::function<void()> action, std::function<bool()> isEnabled) override;
+		void AddContentCreateItem(const std::string& label, std::function<void(const std::filesystem::path& folder)> create) override;
+		void RegisterThumbnail(const std::string& typeName, std::function<std::shared_ptr<Texture>(const AssetInfo&)> makeThumbnail) override;
+		void AddDrawCallback(std::function<void()> draw) override;
+
 	private:
 		bool CreateWindowAndImGui(const std::string& title, int width, int height, const std::filesystem::path& imguiIniFile);
 		void CreateProjectWindows();
@@ -55,12 +73,12 @@ namespace Flex
 		void DrawProjectEditor();
 		void DrawMainMenuBar();
 		void DrawWindowsMenu();
+		// Plugin items of one menu, after a separator when bSeparate.
+		void DrawPluginMenuItems(const std::string& menu, bool bSeparate);
 		void RefreshAssets();
 
 		// Double-click in the Content window: runs the opener registered for the asset's type.
 		void OpenAsset(Uid assetId);
-		// Focuses the editor already open for editedAssetId, or creates one with create().
-		void OpenAssetEditor(Uid editedAssetId, Uid subAssetId, const std::function<std::unique_ptr<AssetEditor>()>& create);
 
 		EditorWindow* FindPanel(const std::string& title) const;
 
@@ -104,6 +122,19 @@ namespace Flex
 		std::vector<std::unique_ptr<EditorWindow>> Panels;
 		std::vector<std::unique_ptr<AssetEditor>> AssetEditors;
 		std::unordered_map<std::string, std::function<void(const AssetInfo&)>> AssetOpeners; // by asset type
+
+		// Editor plugins and the menu items they added.
+		EditorPluginManager Plugins;
+		struct PluginMenuItem
+		{
+			std::string Menu;
+			std::string Label;
+			std::string Shortcut;
+			std::function<void()> Action;
+			std::function<bool()> IsEnabled; // empty = always enabled
+		};
+		std::vector<PluginMenuItem> PluginMenuItems;
+		std::vector<std::function<void()>> PluginDrawCallbacks;
 
 		bool bResetLayoutRequested = false;
 		int FrontTabsCountdown = 0; // after a default layout: frames until Inspector/Content come to the front

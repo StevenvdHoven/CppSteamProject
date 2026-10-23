@@ -5,6 +5,10 @@ VisualStudioVersion = 18.0.0.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlexEditor", "Source\Editor\FlexEditor.vcxproj", "{A04C3F5A-86B9-4F2F-BF43-8C01C395BF67}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlexEditorCore", "Source\Editor\FlexEditorCore.vcxproj", "{8A4AF817-6CAD-42FA-A025-314B16617063}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlexPaint", "Source\Plugins\Paint\FlexPaint.vcxproj", "{52FC559B-78C3-4D56-9A13-CFC6519A527F}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlexCore", "Source\Core\FlexCore.vcxproj", "{09E204DC-F3FB-49AB-8B40-00F95CE22909}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlexRuntime", "Source\Runtime\FlexRuntime.vcxproj", "{4E45C51C-2255-4FD4-9A24-04617B3FA3CD}"
@@ -25,6 +29,16 @@ Global
 		{A04C3F5A-86B9-4F2F-BF43-8C01C395BF67}.Development|x64.ActiveCfg = Development|x64
 		{A04C3F5A-86B9-4F2F-BF43-8C01C395BF67}.Development|x64.Build.0 = Development|x64
 		{A04C3F5A-86B9-4F2F-BF43-8C01C395BF67}.Shipping|x64.ActiveCfg = Shipping|x64
+		{8A4AF817-6CAD-42FA-A025-314B16617063}.Debug|x64.ActiveCfg = Debug|x64
+		{8A4AF817-6CAD-42FA-A025-314B16617063}.Debug|x64.Build.0 = Debug|x64
+		{8A4AF817-6CAD-42FA-A025-314B16617063}.Development|x64.ActiveCfg = Development|x64
+		{8A4AF817-6CAD-42FA-A025-314B16617063}.Development|x64.Build.0 = Development|x64
+		{8A4AF817-6CAD-42FA-A025-314B16617063}.Shipping|x64.ActiveCfg = Shipping|x64
+		{52FC559B-78C3-4D56-9A13-CFC6519A527F}.Debug|x64.ActiveCfg = Debug|x64
+		{52FC559B-78C3-4D56-9A13-CFC6519A527F}.Debug|x64.Build.0 = Debug|x64
+		{52FC559B-78C3-4D56-9A13-CFC6519A527F}.Development|x64.ActiveCfg = Development|x64
+		{52FC559B-78C3-4D56-9A13-CFC6519A527F}.Development|x64.Build.0 = Development|x64
+		{52FC559B-78C3-4D56-9A13-CFC6519A527F}.Shipping|x64.ActiveCfg = Shipping|x64
 		{09E204DC-F3FB-49AB-8B40-00F95CE22909}.Debug|x64.ActiveCfg = Debug|x64
 		{09E204DC-F3FB-49AB-8B40-00F95CE22909}.Debug|x64.Build.0 = Debug|x64
 		{09E204DC-F3FB-49AB-8B40-00F95CE22909}.Development|x64.ActiveCfg = Development|x64
