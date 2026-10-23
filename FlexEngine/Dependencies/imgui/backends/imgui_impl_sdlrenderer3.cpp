@@ -27,6 +27,7 @@
 
 // CHANGELOG
 // (minor and older changes stripped away, please see git history for details)
+//  FlexEngine: Textures keep their own scale mode (the engine's texture filter). The sampler callbacks override it for one draw and restore it afterwards.
 //  2026-07-15: Fixed default sampler state to be linear (broken 2026-04-23). (#9470, #9378)
 //  2026-04-23: Added support for standard draw callbacks (in platform_io): DrawCallback_ResetRenderState, DrawCallback_SetSamplerLinear, DrawCallback_SetSamplerNearest. (#9378)
 //  2026-03-12: Fixed invalid assert in ImGui_ImplSDLRenderer3_UpdateTexture() if ImTextureID_Invalid is defined to be != 0, which became the default since 2026-03-12. (#9295)
@@ -65,7 +66,7 @@ struct ImGui_ImplSDLRenderer3_Data
     ImVector<SDL_FColor>    ColorBuffer;
 
     // Render State
-    SDL_ScaleMode           CurrentScaleMode;
+    SDL_ScaleMode           CurrentScaleMode;   // FlexEngine: SDL_SCALEMODE_INVALID = use the texture's own scale mode
 
     ImGui_ImplSDLRenderer3_Data()   { memset((void*)this, 0, sizeof(*this)); }
 };
@@ -87,7 +88,7 @@ static void ImGui_ImplSDLRenderer3_SetupRenderState(SDL_Renderer* renderer)
     SDL_SetRenderViewport(renderer, nullptr);
     SDL_SetRenderClipRect(renderer, nullptr);
 
-    bd->CurrentScaleMode = SDL_SCALEMODE_LINEAR;
+    bd->CurrentScaleMode = SDL_SCALEMODE_INVALID; // FlexEngine: was SDL_SCALEMODE_LINEAR
 }
 
 void ImGui_ImplSDLRenderer3_NewFrame()
@@ -173,7 +174,6 @@ void ImGui_ImplSDLRenderer3_RenderDrawData(ImDrawData* draw_data, SDL_Renderer* 
     // Will project scissor/clipping rectangles into framebuffer space
     ImVec2 clip_off = draw_data->DisplayPos;         // (0,0) unless using multi-viewports
     ImVec2 clip_scale = render_scale;
-    SDL_ScaleMode last_scale_mode = bd->CurrentScaleMode;
 
     // Render command lists
     for (const ImDrawList* draw_list : draw_data->CmdLists)
@@ -211,18 +211,24 @@ void ImGui_ImplSDLRenderer3_RenderDrawData(ImDrawData* draw_data, SDL_Renderer* 
                 const float* uv = (const float*)(const void*)((const char*)(vtx_buffer + pcmd->VtxOffset) + offsetof(ImDrawVert, uv));
                 const SDL_Color* color = (const SDL_Color*)(const void*)((const char*)(vtx_buffer + pcmd->VtxOffset) + offsetof(ImDrawVert, col)); // SDL 2.0.19+
 
-                if (last_scale_mode != bd->CurrentScaleMode)
-                    SDL_FlushRenderer(renderer);
-
                 // Bind texture, Draw
+                // FlexEngine: the texture is shared with the engine (SpriteBatch, other windows), so its scale mode is
+                // only overridden while a sampler callback is active, and restored after the draw. SDL records the
+                // scale mode with each queued draw, so no flush is needed.
                 SDL_Texture* tex = (SDL_Texture*)pcmd->GetTexID();
-                SDL_SetTextureScaleMode(tex, bd->CurrentScaleMode);
+                SDL_ScaleMode own_scale_mode = SDL_SCALEMODE_INVALID;
+                if (bd->CurrentScaleMode != SDL_SCALEMODE_INVALID && tex != nullptr && SDL_GetTextureScaleMode(tex, &own_scale_mode) && own_scale_mode != bd->CurrentScaleMode)
+                    SDL_SetTextureScaleMode(tex, bd->CurrentScaleMode);
+                else
+                    own_scale_mode = SDL_SCALEMODE_INVALID;
                 SDL_RenderGeometryRaw8BitColor(renderer, bd->ColorBuffer, tex,
                     xy, (int)sizeof(ImDrawVert),
                     color, (int)sizeof(ImDrawVert),
                     uv, (int)sizeof(ImDrawVert),
                     draw_list->VtxBuffer.Size - pcmd->VtxOffset,
                     idx_buffer + pcmd->IdxOffset, pcmd->ElemCount, sizeof(ImDrawIdx));
+                if (own_scale_mode != SDL_SCALEMODE_INVALID)
+                    SDL_SetTextureScaleMode(tex, own_scale_mode);
             }
         }
     }
