@@ -1,0 +1,7 @@
+; FlexEngine asset metadata. Keep this file next to Ball.png and commit them together.
+[Meta version=1]
+Id = uid(b753637edb09ed69)
+Type = "Texture"
+
+[Import version=1]
+Filter = "PixelArt"

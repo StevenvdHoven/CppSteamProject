@@ -2,10 +2,13 @@
 #include "Editor/EditorContext.h"
 #include "Editor/TextureImporter.h"
 #include "Core/Graphics/SpriteRenderer.h"
+#include "Core/Scene/SceneSerializer.h"
+#include "Core/Serialization/TextValue.h"
 #include "Core/World/GameObject.h"
 #include "Core/World/Hierarchy.h"
 #include "Core/World/Transform.h"
 #include "Core/World/World.h"
+#include <unordered_map>
 
 namespace Flex
 {
@@ -68,6 +71,52 @@ namespace Flex
 		context.EditorScene.DestroyGameObject(entity);
 		context.MarkSceneChanged();
 		RecordUndo(context, "Delete " + name);
+	}
+
+	Entity SceneEditing::Duplicate(EditorContext& context, Entity entity)
+	{
+		Scene& scene = context.EditorScene;
+		World& world = scene.GetWorld();
+		const GameObjectInfo* info = world.GetComponent<GameObjectInfo>(entity);
+		if (!info) {
+			return {};
+		}
+		const std::string name = info->Name;
+
+		TextDocument document;
+		const Entity roots[] = { entity };
+		SceneSerializer::SaveGameObjects(scene, roots, document);
+
+		// Every copied object gets a new Uid; parents inside the copy follow their object.
+		std::unordered_map<std::string, std::string> newIds;
+		for (TextSection& section : document.Sections) {
+			if (section.Type == "GameObject") {
+				if (const std::string* id = section.GetValue("Id")) {
+					const std::string newId = TextValue::FormatUid(Uid::Generate());
+					newIds[*id] = newId;
+					section.SetValue("Id", newId);
+				}
+			}
+		}
+		for (TextSection& section : document.Sections) {
+			if (const std::string* parent = section.Type == "GameObject" ? section.GetValue("Parent") : nullptr) {
+				if (const auto found = newIds.find(*parent); found != newIds.end()) {
+					section.SetValue("Parent", found->second);
+				}
+			}
+		}
+
+		std::vector<std::string> warnings;
+		const std::vector<Entity> copies = SceneSerializer::LoadGameObjects(scene, document, warnings);
+		if (copies.empty()) {
+			return {};
+		}
+		const Entity copy = copies[0];
+		scene.SetParent(copy, Hierarchy::GetParent(world, entity), scene.GetSiblingIndex(entity) + 1);
+		context.CurrentSelection.SelectEntity(copy);
+		context.MarkSceneChanged();
+		RecordUndo(context, "Duplicate " + name);
+		return copy;
 	}
 
 	bool SceneEditing::Reparent(EditorContext& context, Entity child, Entity parent, int siblingIndex)

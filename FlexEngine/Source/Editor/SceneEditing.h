@@ -26,6 +26,9 @@ namespace Flex
 		// Deletes the GameObject and its children.
 		void Delete(EditorContext& context, Entity entity);
 
+		// Copies the GameObject and its children (new Uids) right after it, and selects the copy.
+		Entity Duplicate(EditorContext& context, Entity entity);
+
 		// Keeps the world position. siblingIndex -1 = last. False for a cycle or dead entities.
 		bool Reparent(EditorContext& context, Entity child, Entity parent, int siblingIndex = -1);
 

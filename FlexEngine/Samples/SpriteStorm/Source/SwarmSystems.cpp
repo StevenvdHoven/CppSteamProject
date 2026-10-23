@@ -55,7 +55,11 @@ namespace SpriteStorm
 					body.Velocity = random.OnUnitCircle() * random.Range(swarm.MinSpeed, swarm.MaxSpeed);
 					body.GravityScale = 0.0f;
 					body.Restitution = 1.0f;
+					body.Friction = 0.0f; // keep bouncing at the same speed
 					collider.Radius = swarm.ColliderRadius;
+					// Own layer, hitting only the default layer (the walls): sprites never test each other.
+					collider.Layer = 2u;
+					collider.Mask = DefaultCollisionLayer;
 
 					spin.Speed = random.Range(-swarm.MaxSpin, swarm.MaxSpin);
 				});

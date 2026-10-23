@@ -14,8 +14,8 @@ namespace Flex
 	class SpriteBatch;
 
 	// Runs a scene as a game: the frame loop shared by FlexRuntime and the editor's Play mode.
-	//  - Begin: Start systems
-	//  - Tick: fixed steps (FixedUpdate systems, then physics), then Update systems, then
+	//  - Begin: Start systems (and the active project's physics settings)
+	//  - Tick: fixed steps (FixedUpdate systems, then PhysicsWorld2D), then Update systems, then
 	//    world transforms; pending commands are applied after every system
 	//  - Render: the scene as its main Camera sees it
 	class FLEX_API GameInstance
@@ -44,7 +44,9 @@ namespace Flex
 
 		const Statistics& GetStatistics() const { return Stats; }
 
+		// Taken from the active project in Begin (defaults without a project).
 		PhysicsSettings Physics;
+		PhysicsWorld2D PhysicsWorld;
 
 	private:
 		void RunSystems(Scene& scene, const std::vector<SystemInfo>& systems, float deltaTime);

@@ -2,6 +2,7 @@
 #include "Core/Graphics/Camera.h"
 #include "Core/Graphics/Renderer.h"
 #include "Core/Graphics/SpriteBatch.h"
+#include "Core/Project.h"
 #include "Core/Scene/Scene.h"
 #include "Core/World/Transform.h"
 #include "Core/World/World.h"
@@ -33,6 +34,10 @@ namespace Flex
 		UpdateSystems = SystemRegistery::GetSystems(SystemPhase::Update);
 		Accumulator = 0.0f;
 		Stats = {};
+		if (const Project* project = Project::GetActive()) {
+			Physics = project->GetPhysicsSettings();
+		}
+		PhysicsWorld.Reset();
 
 		UpdateWorldTransforms(scene.GetWorld()); // Start systems see correct world positions
 		RunSystems(scene, SystemRegistery::GetSystems(SystemPhase::Start), 0.0f);
@@ -49,7 +54,7 @@ namespace Flex
 		Stats.FixedSteps = 0;
 		while (Accumulator >= step && Stats.FixedSteps < MaxFixedStepsPerTick) {
 			RunSystems(scene, FixedSystems, step);
-			Stats.Physics = StepPhysics(world, step, Physics);
+			Stats.Physics = PhysicsWorld.Step(world, step, Physics);
 			Accumulator -= step;
 			++Stats.FixedSteps;
 		}

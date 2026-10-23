@@ -17,7 +17,9 @@ namespace Flex
 	// The "Viewport" window: the edited scene drawn into a render target, with a grid.
 	//  - left click selects (sprites, or the cross of an empty GameObject); drag moves the selection
 	//  - right or middle drag pans, the wheel zooms around the mouse, F frames the selection
-	//  - drop a texture/sprite from Content to create a GameObject at that spot; Delete deletes
+	//  - drop a texture/sprite from Content to create a GameObject at that spot; Delete deletes,
+	//    Ctrl+D duplicates
+	//  - "Colliders" draws every collider's outline (also in the game view)
 	class ViewportWindow final : public EditorWindow
 	{
 	public:
@@ -33,6 +35,7 @@ namespace Flex
 		void DrawGrid(const Vector2& size, float pixelScale);
 		void HandleInput(const ImVec2& imageMin, const Vector2& size);
 		void DrawOverlay(ImDrawList* drawList, const ImVec2& imageMin, const Vector2& size);
+		void DrawColliders(ImDrawList* drawList, const ImVec2& imageMin, const Vector2& size, float pixelScale);
 		Entity Pick(const Vector2& screenPosition, const Vector2& size);
 		void FrameSelection();
 
@@ -51,5 +54,6 @@ namespace Flex
 		Vector2 MoveOffset;      // entity world position - mouse world position
 		Vector2 MoveStartMouse;
 		bool bMoving = false;
+		bool bShowColliders = true; // collider outlines, in the editor view and the game view
 	};
 }

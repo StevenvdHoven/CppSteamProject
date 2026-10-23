@@ -5,6 +5,7 @@
 #include "Core/Graphics/Camera.h"
 #include "Core/Graphics/Renderer.h"
 #include "Core/Graphics/SpriteRenderer.h"
+#include "Core/Physics/Physics2D.h"
 #include "Core/World/GameObject.h"
 #include "Core/World/Transform.h"
 
@@ -21,6 +22,7 @@ namespace Flex
 		constexpr float CrossSize = 6.0f;        // screen points, for GameObjects without a sprite
 		constexpr float MinZoom = 1.0f / 32.0f;
 		constexpr float MaxZoom = 32.0f;
+		constexpr uint32_t MaxDrawnColliders = 5000; // outlines are drawn through ImGui
 
 		ImVec2 ToImVec2(const Vector2& value) { return { value.x, value.y }; }
 	}
@@ -97,6 +99,9 @@ namespace Flex
 			ImGui::EndDragDropTarget();
 		}
 
+		if (bShowColliders) {
+			DrawColliders(drawList, imageMin, size, pixelScale);
+		}
 		if (!Context.bGameView) {
 			DrawOverlay(drawList, imageMin, size);
 
@@ -124,12 +129,17 @@ namespace Flex
 		if (ImGui::IsItemHovered()) {
 			ImGui::SetTooltip("Show what the main Camera sees");
 		}
+		ImGui::SameLine();
+		ImGui::Checkbox("Colliders", &bShowColliders);
+		if (ImGui::IsItemHovered()) {
+			ImGui::SetTooltip("Draw collider outlines: white = static, green = dynamic, grey = sleeping, blue = kinematic");
+		}
 		if (Context.bIsPlaying) {
 			const GameInstance::Statistics& stats = Context.Game.GetStatistics();
 			ImGui::SameLine();
 			const unsigned sprites = Context.bGameView ? stats.SpritesDrawn : static_cast<unsigned>(Items.size());
-			ImGui::TextDisabled("%.0f fps | tick %.2f ms | %u sprites | %u bodies", ImGui::GetIO().Framerate,
-				stats.TickMilliseconds, sprites, stats.Physics.DynamicBodies);
+			ImGui::TextDisabled("%.0f fps | tick %.2f ms | %u sprites | %u bodies (%u sleeping) | %u contacts", ImGui::GetIO().Framerate,
+				stats.TickMilliseconds, sprites, stats.Physics.DynamicBodies, stats.Physics.SleepingBodies, stats.Physics.Contacts);
 		}
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2.0f);
 	}
@@ -261,6 +271,9 @@ namespace Flex
 			if (selected.IsValid() && ImGui::IsKeyPressed(ImGuiKey_Delete)) {
 				SceneEditing::Delete(Context, selected);
 			}
+			if (selected.IsValid() && ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_D)) {
+				SceneEditing::Duplicate(Context, selected);
+			}
 			if (ImGui::IsKeyPressed(ImGuiKey_F)) {
 				FrameSelection();
 			}
@@ -343,6 +356,66 @@ namespace Flex
 			drawList->AddPolyline(corners, 4, IM_COL32(255, 170, 40, 255), ImDrawFlags_Closed, 2.0f);
 		}
 
+		drawList->PopClipRect();
+	}
+
+	void ViewportWindow::DrawColliders(ImDrawList* drawList, const ImVec2& imageMin, const Vector2& size, float pixelScale)
+	{
+		World& world = Context.EditorScene.GetWorld();
+		const Entity selected = Context.CurrentSelection.GetEntity();
+		const ImVec2 clipMax{ imageMin.x + size.x, imageMin.y + size.y };
+		drawList->PushClipRect(imageMin, clipMax, true);
+
+		// The game view draws in render-target pixels; the overlay is in screen points.
+		const Matrix2x3 gameView = Context.bGameView ? Context.Game.GetViewMatrix(Context.EditorScene, size * pixelScale) : Matrix2x3{};
+		auto toScreen = [&](const Vector2& worldPoint) {
+			const Vector2 screen = Context.bGameView ? gameView.TransformPoint(worldPoint) / pixelScale : Camera.WorldToScreen(worldPoint, size);
+			return ImVec2(imageMin.x + screen.x, imageMin.y + screen.y);
+		};
+		auto colorOf = [&](Entity entity) {
+			if (entity == selected) {
+				return IM_COL32(255, 170, 40, 255);
+			}
+			const RigidBody2D* body = world.GetComponent<RigidBody2D>(entity);
+			if (!body || body->Type == BodyType::Static) {
+				return IM_COL32(235, 235, 235, 200);
+			}
+			if (body->Type == BodyType::Kinematic) {
+				return IM_COL32(90, 170, 255, 220);
+			}
+			return body->bIsSleeping ? IM_COL32(140, 150, 140, 200) : IM_COL32(90, 230, 120, 230);
+		};
+
+		uint32_t drawn = 0;
+		uint32_t total = 0;
+		world.Each<const WorldTransform, const BoxCollider2D>([&](Entity entity, const WorldTransform& worldTransform, const BoxCollider2D& box) {
+			if (++total > MaxDrawnColliders) {
+				return;
+			}
+			Vector2 corners[4];
+			ColliderShape2D::FromBox(worldTransform.Matrix, box).GetCorners(corners);
+			const ImVec2 points[4] = { toScreen(corners[0]), toScreen(corners[1]), toScreen(corners[2]), toScreen(corners[3]) };
+			drawList->AddPolyline(points, 4, colorOf(entity), ImDrawFlags_Closed, 1.5f);
+			++drawn;
+		});
+		world.Each<const WorldTransform, const CircleCollider2D>([&](Entity entity, const WorldTransform& worldTransform, const CircleCollider2D& circle) {
+			if (world.HasComponent<BoxCollider2D>(entity) || ++total > MaxDrawnColliders) {
+				return; // with both, the physics uses the box
+			}
+			const ColliderShape2D shape = ColliderShape2D::FromCircle(worldTransform.Matrix, circle);
+			const ImVec2 center = toScreen(shape.Center);
+			const ImVec2 edge = toScreen(shape.Center + Vector2::FromAngle(shape.Rotation) * shape.Radius);
+			const float radius = std::sqrt((edge.x - center.x) * (edge.x - center.x) + (edge.y - center.y) * (edge.y - center.y));
+			const ImU32 color = colorOf(entity);
+			drawList->AddCircle(center, radius, color, 0, 1.5f);
+			drawList->AddLine(center, edge, color, 1.5f); // shows the rotation
+			++drawn;
+		});
+		if (total > drawn) {
+			char text[64];
+			std::snprintf(text, sizeof(text), "Colliders: %u of %u drawn", drawn, total);
+			drawList->AddText(ImVec2(imageMin.x + 8.0f, clipMax.y - ImGui::GetTextLineHeightWithSpacing() - 4.0f), IM_COL32(255, 200, 120, 220), text);
+		}
 		drawList->PopClipRect();
 	}
 

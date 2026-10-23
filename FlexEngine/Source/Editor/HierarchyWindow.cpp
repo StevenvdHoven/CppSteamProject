@@ -63,6 +63,8 @@ namespace Flex
 				PendingActions.push_back([this, selected]() { SceneEditing::Delete(Context, selected); });
 			} else if (ImGui::IsKeyPressed(ImGuiKey_F2)) {
 				StartRename(selected);
+			} else if (ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_D)) {
+				PendingActions.push_back([this, selected]() { SceneEditing::Duplicate(Context, selected); });
 			}
 		}
 
@@ -165,6 +167,9 @@ namespace Flex
 			PendingActions.push_back([this, entity]() { SceneEditing::Reparent(Context, entity, Entity{}); });
 		}
 		ImGui::Separator();
+		if (ImGui::MenuItem("Duplicate", "Ctrl+D")) {
+			PendingActions.push_back([this, entity]() { SceneEditing::Duplicate(Context, entity); });
+		}
 		if (ImGui::MenuItem("Delete", "Del")) {
 			PendingActions.push_back([this, entity]() { SceneEditing::Delete(Context, entity); });
 		}

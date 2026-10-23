@@ -2,3 +2,18 @@
 Name = "SpriteStorm"
 EngineVersion = "0.1.0"
 StartScene = uid(47b1274c057db6aa)
+
+[Physics version=1]
+Gravity.X = 0
+Gravity.Y = 980
+FixedTimeStep = 0.016666668
+Substeps = 8
+VelocityIterations = 2
+PositionIterations = 3
+; Always bounce: this sample has no gravity and no resting contacts.
+RestitutionThreshold = 0
+LinearSlop = 0.5
+AllowSleep = true
+TimeToSleep = 0.5
+SleepLinearSpeed = 4
+SleepAngularSpeed = 0.05

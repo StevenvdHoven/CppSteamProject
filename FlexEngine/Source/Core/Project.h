@@ -1,5 +1,6 @@
 #pragma once
 #include "Core/Core.h"
+#include "Core/Physics/Physics2D.h"
 #include "Core/Serialization/Archive.h"
 #include "Core/Serialization/TextDocument.h"
 #include <filesystem>
@@ -46,6 +47,10 @@ namespace Flex
 		Uid GetStartScene() const { return StartScene; }
 		void SetStartScene(Uid scene) { StartScene = scene; }
 
+		// Physics settings every game of this project runs with (the [Physics] section).
+		const PhysicsSettings& GetPhysicsSettings() const { return Physics; }
+		void SetPhysicsSettings(const PhysicsSettings& settings) { Physics = settings; }
+
 		const std::filesystem::path& GetProjectFile() const { return ProjectFile; }
 		std::filesystem::path GetRootDirectory() const { return ProjectFile.parent_path(); }
 		std::filesystem::path GetContentDirectory() const { return GetRootDirectory() / "Content"; }
@@ -54,13 +59,14 @@ namespace Flex
 	private:
 		Project() = default;
 
-		// Reads (Load) or writes (Save) the [Project] section.
+		// Reads (Load) or writes (Save) the [Project] and [Physics] sections.
 		void Serialize(ArchiveMode mode);
 
 	private:
 		std::string Name;
 		std::string EngineVersion;
 		Uid StartScene;
+		PhysicsSettings Physics;
 		std::filesystem::path ProjectFile;
 
 		// The whole .flexproj, so keys and sections this version doesn't know about

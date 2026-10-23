@@ -71,6 +71,23 @@ namespace Flex
 						}
 					}
 
+					ImGui::SeparatorText("Physics");
+					ImGui::TextDisabled("Used from the next Play.");
+					if (ImGui::BeginTable("PhysicsSettings", 2, ImGuiTableFlags_SizingStretchProp)) {
+						ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 150.0f);
+						ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+						InspectorArchive archive(Context);
+						PhysicsSettings physics = project->GetPhysicsSettings();
+						physics.Serialize(archive);
+						ImGui::EndTable();
+						if (archive.WasChanged()) {
+							project->SetPhysicsSettings(physics);
+						}
+						if (archive.WasEditFinished()) {
+							project->Save();
+						}
+					}
+
 					ImGui::Separator();
 					ImGui::Text("FlexEngine %s (%s)", Engine::GetVersion(), Engine::GetBuildConfigName());
 					ImGui::Text("%.1f FPS (%.3f ms)", ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);

@@ -1,0 +1,18 @@
+[Project version=2]
+Name = "PhysicsDemo"
+EngineVersion = "0.1.0"
+StartScene = uid(00a83e728280df9a)
+
+[Physics version=1]
+Gravity.X = 0
+Gravity.Y = 980
+FixedTimeStep = 0.016666668
+Substeps = 8
+VelocityIterations = 2
+PositionIterations = 3
+RestitutionThreshold = 60
+LinearSlop = 0.5
+AllowSleep = true
+TimeToSleep = 0.5
+SleepLinearSpeed = 4
+SleepAngularSpeed = 0.05

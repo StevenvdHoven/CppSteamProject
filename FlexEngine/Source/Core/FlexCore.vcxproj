@@ -69,6 +69,7 @@
 		<ClInclude Include="Math\Rect.h" />
 		<ClInclude Include="Math\Vector2.h" />
 		<ClInclude Include="Physics\Collision2D.h" />
+		<ClInclude Include="Physics\Contacts2D.h" />
 		<ClInclude Include="Physics\Physics2D.h" />
 		<ClInclude Include="Project.h" />
 		<ClInclude Include="Scene\Scene.h" />
@@ -102,6 +103,7 @@
 		<ClCompile Include="Graphics\Renderer.cpp" />
 		<ClCompile Include="Graphics\SpriteBatch.cpp" />
 		<ClCompile Include="Graphics\SpriteRenderSystem.cpp" />
+		<ClCompile Include="Physics\Contacts2D.cpp" />
 		<ClCompile Include="Physics\Physics2D.cpp" />
 		<ClCompile Include="Project.cpp" />
 		<ClCompile Include="Scene\Scene.cpp" />

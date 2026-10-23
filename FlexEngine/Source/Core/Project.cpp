@@ -11,6 +11,7 @@ namespace Flex
 	namespace
 	{
 		constexpr const char* PROJECTSECTION = "Project";
+		constexpr const char* PHYSICSSECTION = "Physics";
 
 		bool WriteGitIgnore(const std::filesystem::path& rootDirectory)
 		{
@@ -163,6 +164,15 @@ namespace Flex
 
 		for (const std::string& warning : archive.GetWarnings()) {
 			SDL_Log("%s: %s", PathToUtf8(ProjectFile).c_str(), warning.c_str());
+		}
+
+		// Older projects have no [Physics] section: they keep the defaults until saved.
+		if (mode == ArchiveMode::Save || Document.FindSection(PHYSICSSECTION)) {
+			TextArchive physicsArchive(Document.FindOrAddSection(PHYSICSSECTION), mode);
+			Physics.Serialize(physicsArchive);
+			for (const std::string& warning : physicsArchive.GetWarnings()) {
+				SDL_Log("%s: %s", PathToUtf8(ProjectFile).c_str(), warning.c_str());
+			}
 		}
 	}
 }
