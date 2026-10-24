@@ -46,6 +46,15 @@ namespace Flex::Steam
 		// the SteamUpdate system does it while a game runs.
 		static void Update();
 
+		// Whether Update starts Steam by itself (InitFromProject) the first time it runs. On by default;
+		// the editor turns it off for projects that don't use Steam, so pressing Play there signs no one in.
+		static void SetAutoInit(bool bAutoInit);
+
+		// Whether Shutdown runs by itself when the app quits (SDL_EVENT_QUIT on the thread that called
+		// Init), so a game leaves its lobby and closes its connections cleanly. On by default; the editor
+		// turns it off (it shuts Steam down itself, and a quit can still be cancelled there).
+		static void SetShutdownOnQuit(bool bShutdownOnQuit);
+
 		// Shipping builds: true when the game wasn't started by Steam and Steam is starting it again,
 		// so the game should quit at once. Call it before Init.
 		static bool RestartThroughSteamIfNeeded(uint32_t appId);

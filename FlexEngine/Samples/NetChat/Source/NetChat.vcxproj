@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup Label="ProjectConfigurations">
+		<ProjectConfiguration Include="Debug|x64">
+			<Configuration>Debug</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="Development|x64">
+			<Configuration>Development</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="Shipping|x64">
+			<Configuration>Shipping</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+	</ItemGroup>
+
+	<PropertyGroup Label="Globals">
+		<VCProjectVersion>18.0</VCProjectVersion>
+		<ProjectGuid>{0D01B898-9F17-4E13-86FF-7C028438D527}</ProjectGuid>
+		<RootNamespace>NetChat</RootNamespace>
+		<WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+	</PropertyGroup>
+
+	<!-- The game module of the NetChat sample project: NetChat.dll, built next to the
+	     engine's exes (Binaries/<Config>/), where the editor and FlexRuntime look for it. -->
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+	<Import Project="..\..\..\Build\FlexConfiguration.props" />
+	<PropertyGroup Label="Configuration">
+		<ConfigurationType>DynamicLibrary</ConfigurationType>
+	</PropertyGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+	<ImportGroup Label="PropertySheets">
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+		<Import Project="..\..\..\Build\FlexCommon.props" />
+	</ImportGroup>
+
+	<!-- SDL for the keyboard (the engine has no input API yet). -->
+	<ItemDefinitionGroup>
+		<Link>
+			<AdditionalDependencies>SDL3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+		</Link>
+	</ItemDefinitionGroup>
+
+	<!-- Every .h/.cpp in this folder, so scripts made with the editor's New Script are built too. -->
+	<ItemGroup>
+		<ClInclude Include="**\*.h" />
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="**\*.cpp" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\Source\Core\FlexCore.vcxproj">
+			<Project>{09E204DC-F3FB-49AB-8B40-00F95CE22909}</Project>
+		</ProjectReference>
+		<ProjectReference Include="..\..\..\Source\Plugins\Steam\Runtime\FlexSteam.vcxproj">
+			<Project>{63CABDE1-65D8-4DDC-B0FC-6008DC7E3A1E}</Project>
+		</ProjectReference>
+	</ItemGroup>
+
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

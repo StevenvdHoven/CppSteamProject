@@ -1,0 +1,80 @@
+[Scene version=1]
+
+[GameObject version=1]
+Name = "Camera"
+Id = uid(afd45867d0aec4ab)
+
+[Transform version=1]
+Position.X = 0
+Position.Y = 0
+Rotation = 0
+Scale.X = 1
+Scale.Y = 1
+
+[Camera version=1]
+ViewSize.X = 640
+ViewSize.Y = 360
+Background.R = 0.07
+Background.G = 0.08
+Background.B = 0.12
+Background.A = 1
+
+[GameObject version=1]
+Name = "MarkerLeft"
+Id = uid(8ab5015ff30b3013)
+
+[Transform version=1]
+Position.X = -200
+Position.Y = 0
+Rotation = 0
+Scale.X = 0.5
+Scale.Y = 0.5
+
+[SpriteRenderer version=1]
+Asset = uid(c044fae614798374)
+Tint.R = 0.3
+Tint.G = 0.32
+Tint.B = 0.36
+Tint.A = 1
+Order = 0
+
+[GameObject version=1]
+Name = "MarkerRight"
+Id = uid(d5311ce2d829b941)
+
+[Transform version=1]
+Position.X = 200
+Position.Y = 0
+Rotation = 0
+Scale.X = 0.5
+Scale.Y = 0.5
+
+[SpriteRenderer version=1]
+Asset = uid(c044fae614798374)
+Tint.R = 0.3
+Tint.G = 0.32
+Tint.B = 0.36
+Tint.A = 1
+Order = 0
+
+[GameObject version=1]
+Name = "Ship"
+Id = uid(269352f222262c25)
+
+[Transform version=1]
+Position.X = 0
+Position.Y = 0
+Rotation = 0
+Scale.X = 1
+Scale.Y = 0.6
+
+[ShipControl version=1]
+Speed = 220
+
+[SpriteRenderer version=1]
+Asset = uid(c044fae614798374)
+Tint.R = 0.95
+Tint.G = 0.55
+Tint.B = 0.2
+Tint.A = 1
+Order = 1

@@ -1,0 +1,9 @@
+[Project version=2]
+Name = "NetChat"
+EngineVersion = "0.1.0"
+StartScene = uid(f79af403f27236b9)
+
+[Steam version=1]
+Enabled = true
+; Steam app id; 480 = Spacewar (Valve's test app) until the game has its own
+AppId = 480

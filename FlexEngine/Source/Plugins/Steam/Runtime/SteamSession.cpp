@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <string>
+#include <thread>
 
 namespace Flex::Steam
 {
@@ -18,6 +19,9 @@ namespace Flex::Steam
 	{
 		bool bInitialized = false;
 		bool bInitAttempted = false;
+		bool bAutoInit = true;
+		bool bShutdownOnQuit = true;
+		std::thread::id InitThread;
 		std::string InitError;
 		uint32_t AppId = 0;
 
@@ -45,6 +49,14 @@ namespace Flex::Steam
 			return Session::DevelopmentAppId;
 		}
 
+		bool SDLCALL OnQuitEvent(void*, SDL_Event* event)
+		{
+			if (event->type == SDL_EVENT_QUIT && bShutdownOnQuit && std::this_thread::get_id() == InitThread) {
+				Session::Shutdown();
+			}
+			return true;
+		}
+
 		// Runs first in every frame of a game (the editor's Play mode included): Steam's callbacks, then the
 		// packets that arrived for the main thread.
 		void SteamUpdate(World& world, float)
@@ -70,6 +82,8 @@ namespace Flex::Steam
 				SDL_Log("Steam: signed in as %s (app %u).", SteamFriends()->GetPersonaName(), AppId);
 				Detail::LobbyStartup();
 				Detail::NetworkStartup();
+				InitThread = std::this_thread::get_id();
+				SDL_AddEventWatch(OnQuitEvent, nullptr);
 				Detail::JoinFromCommandLine();
 			} else {
 				InitError = message[0] ? message : "Steam could not be started.";
@@ -92,6 +106,7 @@ namespace Flex::Steam
 		if (!bInitialized) {
 			return;
 		}
+		SDL_RemoveEventWatch(OnQuitEvent, nullptr);
 		Detail::LobbyShutdown();
 		Detail::NetworkShutdown();
 		SteamAPI_Shutdown();
@@ -116,7 +131,7 @@ namespace Flex::Steam
 
 	void Session::Update()
 	{
-		if (!bInitAttempted) {
+		if (!bInitAttempted && bAutoInit) {
 			InitFromProject();
 		}
 		Detail::LobbyBeginUpdate();
@@ -124,6 +139,16 @@ namespace Flex::Steam
 			SteamAPI_RunCallbacks();
 			Detail::NetworkUpdate();
 		}
+	}
+
+	void Session::SetAutoInit(bool bEnabled)
+	{
+		bAutoInit = bEnabled;
+	}
+
+	void Session::SetShutdownOnQuit(bool bEnabled)
+	{
+		bShutdownOnQuit = bEnabled;
 	}
 
 	bool Session::RestartThroughSteamIfNeeded(uint32_t appId)

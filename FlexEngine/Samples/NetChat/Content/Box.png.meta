@@ -1,0 +1,7 @@
+; FlexEngine asset metadata. Keep this file next to Box.png and commit them together.
+[Meta version=1]
+Id = uid(c044fae614798374)
+Type = "Texture"
+
+[Import version=1]
+Filter = "PixelArt"
