@@ -11,7 +11,7 @@
 // The NetChat sample: the Steam plugin used the way a game uses it.
 //
 //   F1 create a lobby (you're the host)   F2 invite friends (Steam overlay)   F3 leave
-//   1 / 2 / 3 send a chat line             arrow keys steer the ship
+//   1 / 2 / 3 send a chat line             arrow keys, left stick or D-pad steer the ship
 //
 // The host is the source of truth: everyone sends their steering to the host (SteerInput), only the
 // host moves the ship, and the host sends its position to everyone else (ShipState, HostOnly).

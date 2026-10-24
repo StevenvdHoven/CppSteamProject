@@ -19,6 +19,7 @@
 #include "Core/Engine.h"
 #include "Core/Game/GameModule.h"
 #include "Core/Graphics/SpriteRenderer.h"
+#include "Core/Input/Input.h"
 #include "Core/World/GameObject.h"
 #include "Core/FileSystem.h"
 #include "Core/Graphics/Renderer.h"
@@ -332,10 +333,17 @@ namespace Flex
 
 		while (bIsRunning)
 		{
+			// The game's input: gamepads always (so player slots stay right), keyboard and mouse buttons only
+			// while playing with the Viewport focused (as of the last frame).
+			Input::BeginFrame();
+			const bool bGameInput = Context && Context->bGameHasInputFocus;
 			SDL_Event event;
 			while (SDL_PollEvent(&event))
 			{
 				ImGui_ImplSDL3_ProcessEvent(&event);
+				if (bGameInput || !Input::IsKeyboardOrMouseEvent(event)) {
+					Input::ProcessEvent(event);
+				}
 				if (event.type == SDL_EVENT_QUIT) {
 					RequestQuit();
 				}
@@ -662,6 +670,10 @@ namespace Flex
 			UpdateWorldTransforms(Context->EditorScene.GetWorld());
 		}
 
+		// The Viewport sets it again while it's focused during Play; losing it releases held keys.
+		const bool bHadGameInput = Context->bGameHasInputFocus;
+		Context->bGameHasInputFocus = false;
+
 		// By index: a window may open another one (e.g. a plugin's asset editor) while it draws.
 		for (size_t index = 0; index < Panels.size(); ++index) {
 			if (Panels[index]->IsOpen()) {
@@ -672,6 +684,9 @@ namespace Flex
 			if (AssetEditors[index]->IsOpen()) {
 				AssetEditors[index]->Draw();
 			}
+		}
+		if (bHadGameInput && !Context->bGameHasInputFocus) {
+			Input::ReleaseKeyboardMouse();
 		}
 		for (const std::function<void()>& draw : PluginDrawCallbacks) {
 			draw();
@@ -1143,6 +1158,8 @@ namespace Flex
 		SceneSerializer::Load(Context->EditorScene, PlaySnapshot, warnings, error);
 		Context->bIsPlaying = false;
 		Context->bGameView = false;
+		Context->bGameHasInputFocus = false;
+		Input::ReleaseKeyboardMouse();
 		Context->SceneRevision = PlayRevision;
 		if (!bAssetSelected) {
 			Context->CurrentSelection.SelectEntity(Context->EditorScene.FindByUid(PlaySelection));

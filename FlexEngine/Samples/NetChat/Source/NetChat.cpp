@@ -1,5 +1,6 @@
 #include "NetChat.h"
 #include "Core/Game/SystemRegistery.h"
+#include "Core/Input/Input.h"
 #include "Core/Math/MathUtils.h"
 #include "Core/World/GameObject.h"
 #include "Core/World/Transform.h"
@@ -30,22 +31,17 @@ namespace NetChat
 
 		const char* const CannedLines[] = { "Hello!", "Follow me!", "Good game!" };
 
-		// The arrow keys as -1/0/1 per axis (y down).
+		// Arrow keys, the left stick or the D-pad as -1/0/1 per axis (y down).
 		void ReadSteering(int8_t& x, int8_t& y)
 		{
-			const bool* keys = SDL_GetKeyboardState(nullptr);
-			x = static_cast<int8_t>((keys[SDL_SCANCODE_RIGHT] ? 1 : 0) - (keys[SDL_SCANCODE_LEFT] ? 1 : 0));
-			y = static_cast<int8_t>((keys[SDL_SCANCODE_DOWN] ? 1 : 0) - (keys[SDL_SCANCODE_UP] ? 1 : 0));
-		}
-
-		// True once per key press.
-		bool WasPressed(SDL_Scancode key)
-		{
-			static bool bWasDown[SDL_SCANCODE_COUNT] = {};
-			const bool bDown = SDL_GetKeyboardState(nullptr)[key];
-			const bool bPressed = bDown && !bWasDown[key];
-			bWasDown[key] = bDown;
-			return bPressed;
+			const Vector2 stick = Input::GetGamepadStick(0, false);
+			const auto direction = [](bool bNegative, bool bPositive, float axis) {
+				return static_cast<int8_t>(((bPositive || axis > 0.5f) ? 1 : 0) - ((bNegative || axis < -0.5f) ? 1 : 0));
+			};
+			x = direction(Input::IsKeyDown(SDL_SCANCODE_LEFT) || Input::IsGamepadButtonDown(0, SDL_GAMEPAD_BUTTON_DPAD_LEFT),
+				Input::IsKeyDown(SDL_SCANCODE_RIGHT) || Input::IsGamepadButtonDown(0, SDL_GAMEPAD_BUTTON_DPAD_RIGHT), stick.x);
+			y = direction(Input::IsKeyDown(SDL_SCANCODE_UP) || Input::IsGamepadButtonDown(0, SDL_GAMEPAD_BUTTON_DPAD_UP),
+				Input::IsKeyDown(SDL_SCANCODE_DOWN) || Input::IsGamepadButtonDown(0, SDL_GAMEPAD_BUTTON_DPAD_DOWN), stick.y);
 		}
 
 		// The host moves the ships (or anyone, when there's no lobby).
@@ -92,18 +88,18 @@ namespace NetChat
 	// Update: the keys for the lobby and the chat.
 	void HandleKeys(World&, float)
 	{
-		if (WasPressed(SDL_SCANCODE_F1) && !Lobby::IsInLobby()) {
+		if (Input::WasKeyPressed(SDL_SCANCODE_F1) && !Lobby::IsInLobby()) {
 			Lobby::Create(4);
 		}
-		if (WasPressed(SDL_SCANCODE_F2) && !Lobby::OpenInviteDialog()) {
+		if (Input::WasKeyPressed(SDL_SCANCODE_F2) && !Lobby::OpenInviteDialog()) {
 			SDL_Log("NetChat: only the host can invite (press F1 first).");
 		}
-		if (WasPressed(SDL_SCANCODE_F3)) {
+		if (Input::WasKeyPressed(SDL_SCANCODE_F3)) {
 			Lobby::Leave();
 		}
 		const SDL_Scancode chatKeys[] = { SDL_SCANCODE_1, SDL_SCANCODE_2, SDL_SCANCODE_3 };
 		for (int index = 0; index < 3; ++index) {
-			if (WasPressed(chatKeys[index]) && !Network::Send(ChatMessage{ CannedLines[index] }, Target::ToEveryone())) {
+			if (Input::WasKeyPressed(chatKeys[index]) && !Network::Send(ChatMessage{ CannedLines[index] }, Target::ToEveryone())) {
 				SDL_Log("NetChat: not in a lobby, nobody hears you.");
 			}
 		}

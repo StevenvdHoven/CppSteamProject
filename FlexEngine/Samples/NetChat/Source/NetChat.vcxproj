@@ -35,7 +35,7 @@
 		<Import Project="..\..\..\Build\FlexCommon.props" />
 	</ImportGroup>
 
-	<!-- SDL for the keyboard (the engine has no input API yet). -->
+	<!-- SDL for SDL_Log (the engine has no log API of its own yet). -->
 	<ItemDefinitionGroup>
 		<Link>
 			<AdditionalDependencies>SDL3.lib;%(AdditionalDependencies)</AdditionalDependencies>

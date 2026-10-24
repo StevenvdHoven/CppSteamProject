@@ -23,7 +23,7 @@ namespace Flex
 
 	// Bumped whenever the plugin API or a struct plugins use (EditorContext, EditorWindow, ...)
 	// changes in a way that needs plugins to be rebuilt. A plugin built for another version is skipped.
-	inline constexpr uint32_t EditorPluginApiVersion = 3;
+	inline constexpr uint32_t EditorPluginApiVersion = 4;
 
 	// What a plugin can add to the editor. Implemented by the editor; only valid during OnLoad
 	// and while the editor runs (plugins are never unloaded before the editor shuts down).

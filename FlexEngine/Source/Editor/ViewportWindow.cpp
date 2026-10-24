@@ -5,6 +5,7 @@
 #include "Core/Graphics/Camera.h"
 #include "Core/Graphics/Renderer.h"
 #include "Core/Graphics/SpriteRenderer.h"
+#include "Core/Input/Input.h"
 #include "Core/Physics/Physics2D.h"
 #include "Core/World/GameObject.h"
 #include "Core/World/Transform.h"
@@ -76,6 +77,11 @@ namespace Flex
 		EnsureRenderTarget(std::max(1, static_cast<int>(size.x * pixelScale)), std::max(1, static_cast<int>(size.y * pixelScale)));
 
 		const ImVec2 imageMin = ImGui::GetCursorScreenPos();
+		if (Context.bIsPlaying) {
+			// The game's keyboard and mouse: only while this window is focused and no text field is typed in.
+			Context.bGameHasInputFocus = ImGui::IsWindowFocused() && !ImGui::GetIO().WantTextInput;
+			Input::SetViewport(Rect(imageMin.x, imageMin.y, size.x, size.y), size * pixelScale);
+		}
 		RenderScene(size, pixelScale);
 
 		ImDrawList* drawList = ImGui::GetWindowDrawList();

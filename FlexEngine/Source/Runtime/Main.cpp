@@ -6,6 +6,7 @@
 #include "Core/Game/GameModule.h"
 #include "Core/Graphics/Renderer.h"
 #include "Core/Graphics/SpriteBatch.h"
+#include "Core/Input/Input.h"
 #include "Core/Project.h"
 #include "Core/Scene/Scene.h"
 #include "Core/Scene/SceneSerializer.h"
@@ -162,11 +163,16 @@ int main(int argc, char** argv)
 		bool bIsRunning = true;
 		while (bIsRunning)
 		{
+			Input::BeginFrame();
 			SDL_Event event;
 			while (SDL_PollEvent(&event))
 			{
+				Input::ProcessEvent(event);
 				if (event.type == SDL_EVENT_QUIT) {
 					bIsRunning = false;
+				}
+				if (event.type == SDL_EVENT_WINDOW_FOCUS_LOST) {
+					Input::ReleaseKeyboardMouse();
 				}
 			}
 
@@ -178,6 +184,11 @@ int main(int argc, char** argv)
 			int width = 0;
 			int height = 0;
 			SDL_GetCurrentRenderOutputSize(renderer, &width, &height);
+			int windowWidth = 0;
+			int windowHeight = 0;
+			SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+			Input::SetViewport(Rect(0.0f, 0.0f, static_cast<float>(windowWidth), static_cast<float>(windowHeight)),
+				Vector2(static_cast<float>(width), static_cast<float>(height)));
 			if (bHasGame) {
 				game.Tick(scene, static_cast<float>(frameSeconds));
 				game.Render(scene, batch, { static_cast<float>(width), static_cast<float>(height) });
