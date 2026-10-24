@@ -37,10 +37,13 @@
 	<ItemDefinitionGroup>
 		<ClCompile>
 			<PreprocessorDefinitions>FLEX_STEAM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+			<!-- Only FlexSteam's .cpp files see the Steamworks SDK; its public headers don't. -->
+			<AdditionalIncludeDirectories>$(FlexRoot)Dependencies\Steamworks\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 		</ClCompile>
 		<Link>
 			<SubSystem>Windows</SubSystem>
-			<AdditionalDependencies>SDL3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+			<AdditionalLibraryDirectories>$(FlexRoot)Dependencies\Steamworks\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+			<AdditionalDependencies>SDL3.lib;steam_api64.lib;Shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
 		</Link>
 	</ItemDefinitionGroup>
 
@@ -49,12 +52,25 @@
 		<ClInclude Include="PacketRegistery.h" />
 		<ClInclude Include="PacketStream.h" />
 		<ClInclude Include="SteamApi.h" />
+		<ClInclude Include="SteamInternal.h" />
+		<ClInclude Include="SteamLobby.h" />
 		<ClInclude Include="SteamNetwork.h" />
+		<ClInclude Include="SteamSdk.h" />
+		<ClInclude Include="SteamSession.h" />
 		<ClInclude Include="SteamTypes.h" />
 	</ItemGroup>
 	<ItemGroup>
 		<ClCompile Include="Packet.cpp" />
 		<ClCompile Include="PacketRegistery.cpp" />
+		<ClCompile Include="SteamLobby.cpp" />
+		<ClCompile Include="SteamSession.cpp" />
+	</ItemGroup>
+
+	<!-- steam_api64.dll has to sit next to every exe that loads FlexSteam.dll -->
+	<ItemGroup>
+		<CopyFileToFolders Include="$(FlexRoot)Dependencies\Steamworks\lib\x64\steam_api64.dll">
+			<DestinationFolders>$(OutDir)</DestinationFolders>
+		</CopyFileToFolders>
 	</ItemGroup>
 
 	<ItemGroup>
