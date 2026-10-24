@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlexPaint", "Source\Plugins
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlexCore", "Source\Core\FlexCore.vcxproj", "{09E204DC-F3FB-49AB-8B40-00F95CE22909}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlexSteam", "Source\Plugins\Steam\Runtime\FlexSteam.vcxproj", "{63CABDE1-65D8-4DDC-B0FC-6008DC7E3A1E}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FlexRuntime", "Source\Runtime\FlexRuntime.vcxproj", "{4E45C51C-2255-4FD4-9A24-04617B3FA3CD}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SpriteStorm", "Samples\SpriteStorm\Source\SpriteStorm.vcxproj", "{263B49F4-E252-4A3F-86A3-EC665365B694}"
@@ -63,6 +65,12 @@ Global
 		{99BAAC26-B20A-416D-9E04-FE63A91D5D54}.Development|x64.Build.0 = Development|x64
 		{99BAAC26-B20A-416D-9E04-FE63A91D5D54}.Shipping|x64.ActiveCfg = Shipping|x64
 		{99BAAC26-B20A-416D-9E04-FE63A91D5D54}.Shipping|x64.Build.0 = Shipping|x64
+		{63CABDE1-65D8-4DDC-B0FC-6008DC7E3A1E}.Debug|x64.ActiveCfg = Debug|x64
+		{63CABDE1-65D8-4DDC-B0FC-6008DC7E3A1E}.Debug|x64.Build.0 = Debug|x64
+		{63CABDE1-65D8-4DDC-B0FC-6008DC7E3A1E}.Development|x64.ActiveCfg = Development|x64
+		{63CABDE1-65D8-4DDC-B0FC-6008DC7E3A1E}.Development|x64.Build.0 = Development|x64
+		{63CABDE1-65D8-4DDC-B0FC-6008DC7E3A1E}.Shipping|x64.ActiveCfg = Shipping|x64
+		{63CABDE1-65D8-4DDC-B0FC-6008DC7E3A1E}.Shipping|x64.Build.0 = Shipping|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
