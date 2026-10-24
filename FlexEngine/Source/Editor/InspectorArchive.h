@@ -44,6 +44,10 @@ namespace Flex
 		bool WasEditStarted() const { return bEditStarted; }     // a widget became active this frame
 		bool WasEditFinished() const { return bEditFinished; }   // a widget finished an edit this frame
 
+		// For custom drawers (InspectorWindow::RegisterComponentDrawer) that change the component with
+		// their own widgets: counts as a finished edit (marks the scene changed, one undo step).
+		void MarkEdited() { bChanged = true; bEditFinished = true; }
+
 	private:
 		void BeginRow(const char* name);
 		void EndRow(bool bValueChanged);

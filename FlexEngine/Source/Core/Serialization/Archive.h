@@ -3,6 +3,7 @@
 #include "Core/Uid.h"
 #include "Core/Math/Color.h"
 #include "Core/Math/Vector2.h"
+#include <algorithm>
 #include <cstdint>
 #include <initializer_list>
 #include <string>
@@ -92,6 +93,36 @@ namespace Flex
 			Field("G", value.g);
 			Field("B", value.b);
 			Field("A", value.a);
+			EndObject();
+		}
+
+		// A list of structs that have their own void Serialize(Archive&), built on Field and BeginObject so
+		// every archive supports it:
+		//     Bindings.Count = 2
+		//     Bindings.0.Action = "Jump"
+		//     Bindings.1.Action = "Move"
+		// Loading resizes the vector (at most MaxArrayCount elements, so a corrupt count can't eat memory).
+		static constexpr uint32_t MaxArrayCount = 65536;
+
+		template<typename T>
+		void ArrayField(const char* name, std::vector<T>& values)
+		{
+			BeginObject(name);
+			uint32_t count = static_cast<uint32_t>(values.size());
+			Field("Count", count);
+			if (IsLoading()) {
+				if (count > MaxArrayCount) {
+					AddWarning(std::string(name) + ": " + std::to_string(count) + " elements is too many; only " + std::to_string(MaxArrayCount) + " are read.");
+					count = MaxArrayCount;
+				}
+				values.resize(count);
+			}
+			for (uint32_t index = 0; index < static_cast<uint32_t>(values.size()); ++index) {
+				const std::string element = std::to_string(index);
+				BeginObject(element.c_str());
+				values[index].Serialize(*this);
+				EndObject();
+			}
 			EndObject();
 		}
 

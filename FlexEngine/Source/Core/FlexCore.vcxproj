@@ -62,7 +62,9 @@
 		<ClInclude Include="Graphics\SpriteRenderer.h" />
 		<ClInclude Include="Graphics\SpriteRenderSystem.h" />
 		<ClInclude Include="Input\Input.h" />
+		<ClInclude Include="Input\InputHandlerRegistery.h" />
 		<ClInclude Include="Input\InputMap.h" />
+		<ClInclude Include="Input\InputReceiver.h" />
 		<ClInclude Include="Math\Color.h" />
 		<ClInclude Include="Math\Math.h" />
 		<ClInclude Include="Math\MathUtils.h" />
@@ -106,7 +108,9 @@
 		<ClCompile Include="Graphics\SpriteBatch.cpp" />
 		<ClCompile Include="Graphics\SpriteRenderSystem.cpp" />
 		<ClCompile Include="Input\Input.cpp" />
+		<ClCompile Include="Input\InputHandlerRegistery.cpp" />
 		<ClCompile Include="Input\InputMap.cpp" />
+		<ClCompile Include="Input\InputReceiver.cpp" />
 		<ClCompile Include="Physics\Contacts2D.cpp" />
 		<ClCompile Include="Physics\Physics2D.cpp" />
 		<ClCompile Include="Project.cpp" />

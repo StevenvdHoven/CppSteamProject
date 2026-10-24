@@ -7,6 +7,7 @@
 #include "Editor/EntitiesWindow.h"
 #include "Editor/HierarchyWindow.h"
 #include "Editor/InputMapEditor.h"
+#include "Editor/InputReceiverInspector.h"
 #include "Editor/InspectorArchive.h"
 #include "Editor/InspectorWindow.h"
 #include "Editor/OutputWindow.h"
@@ -186,6 +187,7 @@ namespace Flex
 		Panels.push_back(std::make_unique<ViewportWindow>(*Context));
 		Panels.push_back(std::make_unique<EntitiesWindow>(*Context));
 		Panels.push_back(std::make_unique<InspectorWindow>(*Context));
+		RegisterInputReceiverInspector();
 		Panels.push_back(std::make_unique<ProjectWindow>(*Context));
 		Panels.push_back(std::make_unique<PluginsWindow>(Plugins));
 		Panels.push_back(std::make_unique<OutputWindow>(*Context));

@@ -1,4 +1,5 @@
 #pragma once
+#include "Editor/EditorCore.h"
 #include "Editor/EditorWindow.h"
 #include "Core/Assets/Texture.h"
 #include "Core/Uid.h"
@@ -9,6 +10,7 @@
 
 namespace Flex
 {
+	class InspectorArchive;
 	struct AssetInfo;
 	struct EditorContext;
 
@@ -20,6 +22,13 @@ namespace Flex
 		explicit InspectorWindow(EditorContext& context);
 
 		void Draw() override;
+
+		// Draws a component type its own way instead of field by field from Serialize. It runs inside the
+		// Inspector's two-column table (label, value) with the component's InspectorArchive, so it can use
+		// archive.Field(...) for ordinary rows, add its own rows, and call archive.MarkEdited() after
+		// changing the component with its own widgets.
+		using ComponentDrawer = void (*)(InspectorArchive& archive, void* component);
+		FLEX_EDITOR_API static void RegisterComponentDrawer(const std::string& componentName, ComponentDrawer drawer);
 
 	private:
 		void DrawAsset(Uid assetId);

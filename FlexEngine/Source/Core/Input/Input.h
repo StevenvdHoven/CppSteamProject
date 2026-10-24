@@ -16,6 +16,8 @@ union SDL_Event;
 namespace Flex
 {
 	class InputMap;
+	class World;
+	struct Entity;
 	struct InputActionState;
 
 	// Raw input: keyboard, mouse and gamepads, straight from SDL (main thread only). Quick to use in
@@ -92,5 +94,7 @@ namespace Flex
 		// An action of an input map for one player ("Move", "Jump"): its value and Pressed/Released this
 		// frame. An empty state for an unknown action.
 		static const InputActionState& GetAction(const InputMap& map, std::string_view action, uint32_t player = 0);
+		// The same through an entity's InputReceiver (its map and player); an empty state without one.
+		static const InputActionState& GetAction(World& world, Entity entity, std::string_view action);
 	};
 }

@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
+#include <unordered_map>
 
 namespace Flex
 {
@@ -133,6 +134,20 @@ namespace Flex
 		}
 	}
 
+	namespace
+	{
+		std::unordered_map<std::string, InspectorWindow::ComponentDrawer>& ComponentDrawers()
+		{
+			static std::unordered_map<std::string, InspectorWindow::ComponentDrawer> drawers;
+			return drawers;
+		}
+	}
+
+	void InspectorWindow::RegisterComponentDrawer(const std::string& componentName, ComponentDrawer drawer)
+	{
+		ComponentDrawers()[componentName] = drawer;
+	}
+
 	void InspectorWindow::DrawComponents(Entity entity)
 	{
 		World& world = Context.EditorScene.GetWorld();
@@ -164,7 +179,12 @@ namespace Flex
 				ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 90.0f);
 				ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
 				InspectorArchive archive(Context);
-				type->Serialize(world.GetComponentById(entity, type->Id), archive);
+				void* component = world.GetComponentById(entity, type->Id);
+				if (const auto drawer = ComponentDrawers().find(type->Name); drawer != ComponentDrawers().end()) {
+					drawer->second(archive, component);
+				} else {
+					type->Serialize(component, archive);
+				}
 				ImGui::EndTable();
 
 				if (archive.WasChanged()) {

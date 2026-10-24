@@ -3,6 +3,7 @@
 #include "Core/FileSystem.h"
 #include "Core/Project.h"
 #include "Core/Game/SystemRegistery.h"
+#include "Core/Input/InputHandlerRegistery.h"
 #include "Core/World/ComponentRegistery.h"
 #include <SDL3/SDL.h>
 #include <Windows.h>
@@ -110,6 +111,9 @@ namespace Flex
 		});
 		outSystems = SystemRegistery::Remove([](const SystemInfo& system) {
 			return IsInLoadedModule(reinterpret_cast<const void*>(system.Function));
+		});
+		InputHandlerRegistery::Remove([](const InputHandlerInfo& handler) {
+			return IsInLoadedModule(reinterpret_cast<const void*>(handler.Function));
 		});
 		SDL_UnloadObject(LoadedModule);
 		LoadedModule = nullptr;

@@ -62,6 +62,7 @@
 		<ClInclude Include="FileDialog.h" />
 		<ClInclude Include="HierarchyWindow.h" />
 		<ClInclude Include="InputMapEditor.h" />
+		<ClInclude Include="InputReceiverInspector.h" />
 		<ClInclude Include="InspectorArchive.h" />
 		<ClInclude Include="InspectorWindow.h" />
 		<ClInclude Include="OutputLog.h" />
@@ -91,6 +92,7 @@
 		<ClCompile Include="FileDialog.cpp" />
 		<ClCompile Include="HierarchyWindow.cpp" />
 		<ClCompile Include="InputMapEditor.cpp" />
+		<ClCompile Include="InputReceiverInspector.cpp" />
 		<ClCompile Include="InspectorArchive.cpp" />
 		<ClCompile Include="InspectorWindow.cpp" />
 		<ClCompile Include="OutputLog.cpp" />
