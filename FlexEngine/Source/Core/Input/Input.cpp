@@ -1,4 +1,5 @@
 #include "Core/Input/Input.h"
+#include "Core/Input/InputMap.h"
 
 #include <SDL3/SDL.h>
 
@@ -66,6 +67,7 @@ namespace Flex
 			Vector2 ViewportPixels;
 			GamepadSlot Slots[Input::MaxPlayers];
 			float DeadZone = Input::DefaultDeadZone;
+			uint64_t Frame = 1;
 		};
 		InputData Data;
 
@@ -144,6 +146,7 @@ namespace Flex
 
 	void Input::BeginFrame()
 	{
+		Data.Frame++;
 		Data.Keys.ClearEdges();
 		Data.MouseButtons.ClearEdges();
 		for (GamepadSlot& slot : Data.Slots) {
@@ -194,6 +197,16 @@ namespace Flex
 		default:
 			break;
 		}
+	}
+
+	void Input::Update()
+	{
+		InputMap::UpdateAll(Data.Frame);
+	}
+
+	uint64_t Input::GetFrame()
+	{
+		return Data.Frame;
 	}
 
 	bool Input::IsKeyboardOrMouseEvent(const SDL_Event& event)
@@ -307,6 +320,12 @@ namespace Flex
 		return raw * (scaled / length);
 	}
 
+	float Input::GetGamepadAxisRaw(uint32_t player, SDL_GamepadAxis axis)
+	{
+		const GamepadSlot* slot = GetSlot(player);
+		return slot && axis >= 0 && axis < SDL_GAMEPAD_AXIS_COUNT ? slot->Axes[axis] : 0.0f;
+	}
+
 	void Input::SetDeadZone(float deadZone)
 	{
 		Data.DeadZone = std::clamp(deadZone, 0.0f, 0.95f);
@@ -341,5 +360,10 @@ namespace Flex
 		}
 		std::swap(*current, Data.Slots[player]);
 		return true;
+	}
+
+	const InputActionState& Input::GetAction(const InputMap& map, std::string_view action, uint32_t player)
+	{
+		return map.GetState(action, player);
 	}
 }

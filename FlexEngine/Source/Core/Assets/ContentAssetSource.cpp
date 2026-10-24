@@ -89,6 +89,9 @@ namespace Flex
 			}
 			return Sprite::Create(std::move(texture), entry.Definition);
 		}
+		if (AssetManager::HasFileLoader(entry.Type)) {
+			return AssetManager::LoadFromFile(entry.Type, entry.File, outError);
+		}
 		outError = "Assets of type '" + entry.Type + "' can't be loaded by the runtime yet.";
 		return nullptr;
 	}

@@ -6,6 +6,7 @@
 #include "Editor/EditorWindow.h"
 #include "Editor/EntitiesWindow.h"
 #include "Editor/HierarchyWindow.h"
+#include "Editor/InputMapEditor.h"
 #include "Editor/InspectorArchive.h"
 #include "Editor/InspectorWindow.h"
 #include "Editor/OutputWindow.h"
@@ -20,6 +21,7 @@
 #include "Core/Game/GameModule.h"
 #include "Core/Graphics/SpriteRenderer.h"
 #include "Core/Input/Input.h"
+#include "Core/Input/InputMap.h"
 #include "Core/World/GameObject.h"
 #include "Core/FileSystem.h"
 #include "Core/Graphics/Renderer.h"
@@ -141,6 +143,7 @@ namespace Flex
 
 			TextureImporter::Register(Assets);
 			Assets.RegisterType(SceneAssetType, { SceneSerializer::FileExtension });
+			Assets.RegisterType(InputMap::TypeName, { InputMap::FileExtension });
 			Assets.SetOwnerCacheFile(project->GetSavedDirectory() / "AssetOwners.cache");
 			AssetSourceForEditor = std::make_unique<EditorAssetSource>(Assets);
 			AssetManager::SetSource(AssetSourceForEditor.get());
@@ -197,6 +200,13 @@ namespace Flex
 			const Uid spriteId = asset.Id;
 			OpenAssetEditor(textureId, spriteId, [this, textureId, spriteId]() { return std::make_unique<TextureEditor>(*Context, textureId, spriteId); });
 		};
+		AssetOpeners[InputMap::TypeName] = [this](const AssetInfo& asset) {
+			const Uid inputMapId = asset.Id;
+			OpenAssetEditor(inputMapId, {}, [this, inputMapId]() { return std::make_unique<InputMapEditor>(*Context, inputMapId); });
+		};
+		AddContentCreateItem("Input Map...", [](const std::filesystem::path& folder) { InputMapEditor::OpenNewInputMapDialog(folder); });
+		AddMenuItem("Assets", "New Input Map...", "", [this]() { InputMapEditor::OpenNewInputMapDialog(Assets.GetContentDirectory()); }, {});
+		AddDrawCallback([this]() { InputMapEditor::DrawNewInputMapDialog(*Context); });
 		// A scene opens in the Hierarchy/Viewport (after asking to save the current one).
 		AssetOpeners[SceneAssetType] = [this](const AssetInfo& asset) {
 			const std::filesystem::path sceneFile = Assets.GetSourcePath(asset);
@@ -344,6 +354,9 @@ namespace Flex
 				if (bGameInput || !Input::IsKeyboardOrMouseEvent(event)) {
 					Input::ProcessEvent(event);
 				}
+				if (event.type == SDL_EVENT_WINDOW_FOCUS_LOST) {
+					Input::ReleaseKeyboardMouse();
+				}
 				if (event.type == SDL_EVENT_QUIT) {
 					RequestQuit();
 				}
@@ -351,6 +364,8 @@ namespace Flex
 					RequestQuit();
 				}
 			}
+
+			Input::Update();
 
 			if (SDL_GetWindowFlags(Window) & SDL_WINDOW_MINIMIZED) {
 				SDL_Delay(10);
@@ -627,10 +642,12 @@ namespace Flex
 				OpenScene(StartupScene);
 			}
 		}
-		if (ImGui::Shortcut(ImGuiKey_F5, ImGuiInputFlags_RouteGlobal)) {
+		// While an Input Map editor listens for an input to bind, the editor's own shortcuts are off.
+		const bool bShortcuts = !InputMapEditor::IsListening();
+		if (bShortcuts && ImGui::Shortcut(ImGuiKey_F5, ImGuiInputFlags_RouteGlobal)) {
 			Context->TogglePlay();
 		}
-		if (ImGui::Shortcut(ImGuiKey_F7, ImGuiInputFlags_RouteGlobal)) {
+		if (bShortcuts && ImGui::Shortcut(ImGuiKey_F7, ImGuiInputFlags_RouteGlobal)) {
 			RecompileScripts();
 		}
 		bool bBuildSucceeded = false;
@@ -644,7 +661,7 @@ namespace Flex
 			}
 		}
 		// While playing, saving and undo are off: Stop discards the changes anyway.
-		if (!Context->bIsPlaying) {
+		if (!Context->bIsPlaying && bShortcuts) {
 			if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_S, ImGuiInputFlags_RouteGlobal)) {
 				SaveScene();
 			}

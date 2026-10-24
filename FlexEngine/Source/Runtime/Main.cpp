@@ -175,6 +175,7 @@ int main(int argc, char** argv)
 					Input::ReleaseKeyboardMouse();
 				}
 			}
+			Input::Update();
 
 			const uint64_t frameStart = SDL_GetPerformanceCounter();
 			const double frameSeconds = ToMilliseconds(frameStart - previous) / 1000.0;

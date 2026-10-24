@@ -8,6 +8,13 @@ namespace Flex
 {
 	namespace
 	{
+		// Function-local: loaders register during static init of other files.
+		std::unordered_map<std::string, AssetManager::FileLoader>& FileLoaders()
+		{
+			static std::unordered_map<std::string, AssetManager::FileLoader> loaders;
+			return loaders;
+		}
+
 		// Recursive: loading one asset may load others (a sprite loads its texture).
 		std::recursive_mutex Lock;
 		AssetSource* Source = nullptr;
@@ -99,5 +106,25 @@ namespace Flex
 		LoadedAssets.clear();
 		FailedAssets.clear();
 		Source = nullptr;
+	}
+
+	void AssetManager::RegisterFileLoader(const std::string& typeName, FileLoader loader)
+	{
+		FileLoaders()[typeName] = loader;
+	}
+
+	bool AssetManager::HasFileLoader(const std::string& typeName)
+	{
+		return FileLoaders().contains(typeName);
+	}
+
+	std::shared_ptr<Asset> AssetManager::LoadFromFile(const std::string& typeName, const std::filesystem::path& file, std::string& outError)
+	{
+		const auto found = FileLoaders().find(typeName);
+		if (found == FileLoaders().end()) {
+			outError = "No loader for asset type '" + typeName + "'.";
+			return nullptr;
+		}
+		return found->second(file, outError);
 	}
 }

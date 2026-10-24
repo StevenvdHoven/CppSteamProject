@@ -9,11 +9,15 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 
 union SDL_Event;
 
 namespace Flex
 {
+	class InputMap;
+	struct InputActionState;
+
 	// Raw input: keyboard, mouse and gamepads, straight from SDL (main thread only). Quick to use in
 	// game code while prototyping:
 	//
@@ -26,7 +30,10 @@ namespace Flex
 	// Player slots: gamepads get slots 0, 1, 2, ... in the order they connect, and a freed slot goes to
 	// the next gamepad that connects. Player 0 also owns the keyboard and the mouse.
 	//
-	// The frame loop feeds it: BeginFrame before polling SDL events, then ProcessEvent for each event.
+	// Mapped input (actions from an InputMap asset, any device, per player): GetAction below.
+	//
+	// The frame loop feeds it: BeginFrame before polling SDL events, ProcessEvent for each event, then
+	// Update (evaluates the input maps in use).
 	// FlexRuntime feeds everything; the editor feeds keyboard and mouse only while playing with the
 	// Viewport focused (so keys typed into editor fields never reach the game).
 	class FLEX_API Input
@@ -38,6 +45,8 @@ namespace Flex
 		// ---- Feeding (the frame loop) -----------------------------------------------------------
 		static void BeginFrame();                       // clears last frame's presses, releases, mouse delta and wheel
 		static void ProcessEvent(const SDL_Event& event);
+		static void Update();                           // after the events: every input map in use evaluates its actions
+		static uint64_t GetFrame();                     // counts BeginFrame calls
 		static bool IsKeyboardOrMouseEvent(const SDL_Event& event); // keys, mouse buttons and wheel (not motion)
 		static void ReleaseKeyboardMouse();             // focus lost: everything held is released (Released edges)
 		// Where the game is drawn, in window coordinates, and its size in pixels: mouse positions are
@@ -69,6 +78,7 @@ namespace Flex
 		static float GetGamepadAxis(uint32_t player, SDL_GamepadAxis axis);
 		// A whole stick with a round dead zone (better for movement than two separate axes).
 		static Vector2 GetGamepadStick(uint32_t player, bool bRightStick);
+		static float GetGamepadAxisRaw(uint32_t player, SDL_GamepadAxis axis); // no dead zone
 		static void SetDeadZone(float deadZone);
 		static float GetDeadZone();
 		// Strength 0-1 per motor. False when the gamepad can't rumble.
@@ -77,5 +87,10 @@ namespace Flex
 		// Which gamepad a player has (0 = none), and moving a gamepad to another player (the two swap).
 		static SDL_JoystickID GetPlayerGamepad(uint32_t player);
 		static bool SetPlayerGamepad(uint32_t player, SDL_JoystickID gamepad);
+
+		// ---- Mapped input ------------------------------------------------------------------------
+		// An action of an input map for one player ("Move", "Jump"): its value and Pressed/Released this
+		// frame. An empty state for an unknown action.
+		static const InputActionState& GetAction(const InputMap& map, std::string_view action, uint32_t player = 0);
 	};
 }

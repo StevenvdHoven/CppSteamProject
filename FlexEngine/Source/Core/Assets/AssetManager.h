@@ -1,5 +1,6 @@
 #pragma once
 #include "Core/Assets/Asset.h"
+#include <filesystem>
 #include <memory>
 #include <string>
 #include <vector>
@@ -51,5 +52,15 @@ namespace Flex
 
 		// Drops all bookkeeping. Assets that are still held elsewhere stay alive until released.
 		static void Shutdown();
+
+		// Asset types that are loaded straight from their file (no import step), the same way in the editor
+		// and in games: both asset sources fall back to these for types they don't handle themselves.
+		// Register in the module that defines the type (e.g. at static init); engine code only, the loader
+		// must stay loaded for the whole run.
+		using FileLoader = std::shared_ptr<Asset> (*)(const std::filesystem::path& file, std::string& outError);
+		static void RegisterFileLoader(const std::string& typeName, FileLoader loader);
+		static bool HasFileLoader(const std::string& typeName);
+		// nullptr with outError when the type has no loader or loading failed.
+		static std::shared_ptr<Asset> LoadFromFile(const std::string& typeName, const std::filesystem::path& file, std::string& outError);
 	};
 }

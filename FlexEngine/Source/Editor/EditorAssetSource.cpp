@@ -1,6 +1,7 @@
 #include "Editor/EditorAssetSource.h"
 #include "Editor/AssetDatabase.h"
 #include "Editor/TextureImporter.h"
+#include "Core/Assets/AssetManager.h"
 
 namespace Flex
 {
@@ -21,6 +22,9 @@ namespace Flex
 			return TextureImporter::ImportSprite(Database, *asset, outError);
 		}
 
+		if (AssetManager::HasFileLoader(asset->Type)) {
+			return AssetManager::LoadFromFile(asset->Type, Database.GetSourcePath(*asset), outError);
+		}
 		outError = "No importer for asset type '" + asset->Type + "'.";
 		return nullptr;
 	}

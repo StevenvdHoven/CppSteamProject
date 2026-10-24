@@ -59,7 +59,7 @@ namespace Flex
 		GameInstance Game;
 		bool bIsPlaying = false;
 		bool bGameView = false;               // Viewport shows what the main camera sees
-		bool bGameHasInputFocus = false;      // playing with the Viewport focused: keyboard and mouse go to the game (set by the Viewport every frame)
+		bool bGameHasInputFocus = false;      // keyboard and mouse go to Input: playing with the Viewport focused, or an Input Map editor focused (set by those windows every frame)
 		std::function<void()> TogglePlay;     // set by EditorApp
 		std::string GameModuleStatus;         // shown in the Project window
 
