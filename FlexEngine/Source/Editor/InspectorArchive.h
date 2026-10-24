@@ -1,4 +1,5 @@
 #pragma once
+#include "Editor/EditorCore.h"
 #include "Core/Serialization/Archive.h"
 #include <initializer_list>
 #include <string>
@@ -14,7 +15,7 @@ namespace Flex
 	//
 	// Use inside a 2-column table (label | widget). Until FLEX_PROPERTY metadata exists,
 	// float fields named "Rotation" are shown in degrees (stored in radians).
-	class InspectorArchive final : public Archive
+	class FLEX_EDITOR_API InspectorArchive final : public Archive
 	{
 	public:
 		explicit InspectorArchive(EditorContext& context);

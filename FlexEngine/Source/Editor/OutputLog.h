@@ -1,4 +1,5 @@
 #pragma once
+#include "Editor/EditorCore.h"
 #include <cstdint>
 #include <functional>
 #include <mutex>
@@ -9,7 +10,7 @@ namespace Flex
 {
 	// Lines for the Output window: build output (MSBuild) and everything the engine logs with
 	// SDL_Log. Thread-safe: background jobs add lines while the window draws them.
-	class OutputLog
+	class FLEX_EDITOR_API OutputLog
 	{
 	public:
 		enum class Level : uint8_t

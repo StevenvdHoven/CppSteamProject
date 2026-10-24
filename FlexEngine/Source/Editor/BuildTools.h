@@ -1,4 +1,5 @@
 #pragma once
+#include "Editor/EditorCore.h"
 #include <atomic>
 #include <filesystem>
 #include <functional>
@@ -12,18 +13,18 @@ namespace Flex
 	namespace BuildTools
 	{
 		// The engine folder (FlexEngine/), found from the running exe in Binaries/<Config>/.
-		std::filesystem::path GetEngineRoot();
+		FLEX_EDITOR_API std::filesystem::path GetEngineRoot();
 
 		// MSBuild.exe of the newest Visual Studio, found with vswhere (cached). Empty if none.
-		std::filesystem::path FindMSBuild(std::string& outError);
+		FLEX_EDITOR_API std::filesystem::path FindMSBuild(std::string& outError);
 
 		// Runs a program and waits for it. Every output line (stdout and stderr) goes to onLine.
 		// Returns the exit code, or -1 when it couldn't start.
-		int RunProcess(const std::vector<std::string>& arguments, const std::function<void(const std::string&)>& onLine);
+		FLEX_EDITOR_API int RunProcess(const std::vector<std::string>& arguments, const std::function<void(const std::string&)>& onLine);
 	}
 
 	// One piece of work on a background thread (a build). The editor polls it every frame.
-	class BackgroundJob
+	class FLEX_EDITOR_API BackgroundJob
 	{
 	public:
 		~BackgroundJob();

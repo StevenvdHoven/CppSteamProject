@@ -1,4 +1,5 @@
 #pragma once
+#include "Editor/EditorCore.h"
 #include "Core/Uid.h"
 #include <filesystem>
 #include <functional>
@@ -9,6 +10,12 @@
 namespace Flex
 {
 	class TextDocument;
+
+	enum class AssetTypeFlags : uint8_t
+	{
+		None = 0,
+		EditorOnly = 1 << 0, // source files only the editor uses (e.g. layered paintings): never copied into builds
+	};
 
 	struct AssetInfo
 	{
@@ -51,7 +58,7 @@ namespace Flex
 	// new ids. The database remembers which file owned which id at the last refresh
 	// (in memory and in an optional cache file), so the original keeps its ids even when
 	// the copy's path sorts first. Without any history, the first path alphabetically wins.
-	class AssetDatabase
+	class FLEX_EDITOR_API AssetDatabase
 	{
 	public:
 		static constexpr const char* MetaExtension = ".meta";
@@ -61,7 +68,7 @@ namespace Flex
 		using MetaInitializer = std::function<void(TextDocument& meta)>;
 
 		// extensions like ".png" (case-insensitive).
-		void RegisterType(const std::string& typeName, const std::vector<std::string>& extensions, MetaInitializer initializeMeta = {});
+		void RegisterType(const std::string& typeName, const std::vector<std::string>& extensions, MetaInitializer initializeMeta = {}, AssetTypeFlags flags = AssetTypeFlags::None);
 
 		// Every [sectionType] section in the .meta of a parentType asset becomes a sub-asset
 		// of type subAssetType. The section must hold "Id" and "Name" fields.
@@ -82,6 +89,10 @@ namespace Flex
 
 		const std::string* GetTypeForExtension(const std::filesystem::path& extension) const;
 
+		// Lower-case extensions (".flexpaint") of the EditorOnly types: Build Project skips these files and their .meta.
+		const std::vector<std::string>& GetEditorOnlyExtensions() const { return EditorOnlyExtensions; }
+		bool IsEditorOnly(const AssetInfo& asset) const;
+
 		const std::filesystem::path& GetContentDirectory() const { return ContentDirectory; }
 		std::filesystem::path GetSourcePath(const AssetInfo& asset) const { return ContentDirectory / asset.Path; }
 
@@ -96,6 +107,8 @@ namespace Flex
 		std::filesystem::path ContentDirectory;
 		std::unordered_map<std::string, std::string> ExtensionToType;
 		std::unordered_map<std::string, MetaInitializer> MetaInitializers;
+		std::vector<std::string> EditorOnlyExtensions;
+		std::vector<std::string> EditorOnlyTypes;
 
 		struct SubAssetType
 		{

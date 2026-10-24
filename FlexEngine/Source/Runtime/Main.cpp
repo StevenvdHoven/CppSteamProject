@@ -186,6 +186,7 @@ int main(int argc, char** argv)
 				SDL_RenderClear(renderer);
 			}
 			SDL_RenderPresent(renderer);
+			Renderer::EndFrame();
 			const double frameMilliseconds = ToMilliseconds(SDL_GetPerformanceCounter() - frameStart);
 
 			const GameInstance::Statistics& stats = game.GetStatistics();

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Settings for an editor plugin (a DLL the editor loads from Binaries/<Config>/Plugins/).
+	Imported AFTER FlexCommon.props. The plugin links FlexEditorCore (the editor + Dear ImGui) and FlexCore;
+	build those first (a project in FlexEngine.sln uses ProjectReferences for the order).
+	Plugins are editor code: not built in Shipping (Editor/EditorCore.h has an #error guard).
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<OutDir>$(FlexRoot)Binaries\$(Configuration)\Plugins\</OutDir>
+		<LocalDebuggerCommand>$(FlexRoot)Binaries\$(Configuration)\FlexEditor.exe</LocalDebuggerCommand>
+		<LocalDebuggerWorkingDirectory>$(FlexRoot)Binaries\$(Configuration)\</LocalDebuggerWorkingDirectory>
+	</PropertyGroup>
+
+	<ItemDefinitionGroup>
+		<ClCompile>
+			<PreprocessorDefinitions>FLEX_EDITOR=1;IMGUI_API=__declspec(dllimport);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+			<AdditionalIncludeDirectories>$(FlexRoot)Dependencies\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+		</ClCompile>
+		<Link>
+			<AdditionalLibraryDirectories>$(FlexRoot)Binaries\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+			<AdditionalDependencies>FlexEditorCore.lib;FlexCore.lib;SDL3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+		</Link>
+	</ItemDefinitionGroup>
+</Project>

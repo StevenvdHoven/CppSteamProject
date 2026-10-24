@@ -3,6 +3,7 @@
 
 struct SDL_Window;
 struct SDL_Renderer;
+struct SDL_Texture;
 
 namespace Flex
 {
@@ -25,9 +26,14 @@ namespace Flex
 		// Number of GPU textures currently alive (debug/statistics).
 		static int GetLiveTextureCount();
 
+		// Call after SDL_RenderPresent: frees the GPU textures replaced during the frame
+		// (Texture::UpdatePixels with a new size), which this frame's draw commands could still use.
+		static void EndFrame();
+
 	private:
 		friend class Texture;
 		static void OnTextureCreated();
 		static void OnTextureDestroyed();
+		static void DestroyAfterFrame(SDL_Texture* handle);
 	};
 }

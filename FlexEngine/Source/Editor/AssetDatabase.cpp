@@ -59,14 +59,26 @@ namespace Flex
 		constexpr size_t NOSUB = static_cast<size_t>(-1);
 	}
 
-	void AssetDatabase::RegisterType(const std::string& typeName, const std::vector<std::string>& extensions, MetaInitializer initializeMeta)
+	void AssetDatabase::RegisterType(const std::string& typeName, const std::vector<std::string>& extensions, MetaInitializer initializeMeta, AssetTypeFlags flags)
 	{
+		const bool bEditorOnly = (static_cast<uint8_t>(flags) & static_cast<uint8_t>(AssetTypeFlags::EditorOnly)) != 0;
 		for (const std::string& extension : extensions) {
 			ExtensionToType[ToLowerAscii(extension)] = typeName;
+			if (bEditorOnly) {
+				EditorOnlyExtensions.push_back(ToLowerAscii(extension));
+			}
+		}
+		if (bEditorOnly) {
+			EditorOnlyTypes.push_back(typeName);
 		}
 		if (initializeMeta) {
 			MetaInitializers[typeName] = std::move(initializeMeta);
 		}
+	}
+
+	bool AssetDatabase::IsEditorOnly(const AssetInfo& asset) const
+	{
+		return std::find(EditorOnlyTypes.begin(), EditorOnlyTypes.end(), asset.Type) != EditorOnlyTypes.end();
 	}
 
 	void AssetDatabase::RegisterSubAssetType(const std::string& parentType, const std::string& sectionType, const std::string& subAssetType)

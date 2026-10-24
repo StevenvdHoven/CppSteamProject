@@ -1,6 +1,7 @@
 #pragma once
 #include "Editor/AssetDatabase.h"
 #include "Editor/EditorCore.h"
+#include "Editor/ProjectBuilder.h"
 #include "Core/Uid.h"
 
 #include <cstdint>
@@ -16,12 +17,13 @@ namespace Flex
 {
 	class AssetEditor;
 	class EditorWindow;
+	class Project;
 	class Texture;
 	struct EditorContext;
 
 	// Bumped whenever the plugin API or a struct plugins use (EditorContext, EditorWindow, ...)
 	// changes in a way that needs plugins to be rebuilt. A plugin built for another version is skipped.
-	inline constexpr uint32_t EditorPluginApiVersion = 2;
+	inline constexpr uint32_t EditorPluginApiVersion = 3;
 
 	// What a plugin can add to the editor. Implemented by the editor; only valid during OnLoad
 	// and while the editor runs (plugins are never unloaded before the editor shuts down).
@@ -60,6 +62,10 @@ namespace Flex
 
 		// Called every frame after the windows are drawn (for the plugin's own popups and dialogs).
 		virtual void AddDrawCallback(std::function<void()> draw) = 0;
+
+		// Extra files for File > Build Project (e.g. the plugin's runtime DLLs). Called on the main thread when
+		// a build starts, with its configuration ("Development" / "Shipping"); return none to add nothing.
+		virtual void AddBuildFiles(std::function<std::vector<BuildFile>(const Project& project, const std::string& configuration)> files) = 0;
 	};
 
 	// One per plugin DLL (Binaries/<Config>/Plugins/*.dll), created with FLEX_EDITOR_PLUGIN.

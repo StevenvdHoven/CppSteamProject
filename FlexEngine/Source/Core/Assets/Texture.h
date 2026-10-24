@@ -46,6 +46,11 @@ namespace Flex
 		// e.g. for generated images. Needs Renderer::Init first.
 		static std::shared_ptr<Texture> CreateFromPixels(int width, int height, const uint8_t* rgbaPixels, TextureFilter filter, std::string& outError);
 
+		// Replaces the image of this (already loaded) texture with width * height RGBA pixels, in place:
+		// every sprite and renderer holding it shows the new image at once. The size may change
+		// (then sprites keep their pixel rects). Keeps the filter. Used by the editor after an asset is rewritten.
+		bool UpdatePixels(int width, int height, const uint8_t* rgbaPixels, std::string& outError);
+
 		static constexpr const char* TypeName = "Texture";
 		const char* GetTypeName() const override { return TypeName; }
 		size_t GetMemorySize() const override;

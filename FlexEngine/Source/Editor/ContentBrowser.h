@@ -35,6 +35,7 @@ namespace Flex
 		void DrawToolbar();
 		void DrawFolderTree(size_t folderIndex);
 		void DrawTiles();
+		void DrawFolderContextMenu();
 		void DrawScriptsNode();
 		void DrawScriptTiles();
 		void DrawTile(const AssetInfo& asset, float tileSize, bool bIsSubAsset);

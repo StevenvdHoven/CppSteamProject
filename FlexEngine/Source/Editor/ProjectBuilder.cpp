@@ -5,6 +5,7 @@
 #include "Core/FileSystem.h"
 #include "Core/Project.h"
 
+#include <algorithm>
 #include <fstream>
 
 namespace Flex
@@ -23,6 +24,47 @@ namespace Flex
 			if (error) {
 				log.Add(OutputLog::Level::Error, "Could not copy " + PathToUtf8(from) + ": " + error.message());
 				return false;
+			}
+			return true;
+		}
+
+		std::string LowerExtension(const std::filesystem::path& file)
+		{
+			std::string extension = PathToUtf8(file.extension());
+			std::transform(extension.begin(), extension.end(), extension.begin(), [](char c) { return c >= 'A' && c <= 'Z' ? static_cast<char>(c - 'A' + 'a') : c; });
+			return extension;
+		}
+
+		// Copies Content/ file by file, leaving out editor-only assets (e.g. paintings) and their .meta.
+		bool CopyContent(const std::filesystem::path& from, const std::filesystem::path& to, const std::vector<std::string>& skippedExtensions, OutputLog& log)
+		{
+			const auto isSkipped = [&skippedExtensions](const std::filesystem::path& file) {
+				std::string extension = LowerExtension(file);
+				if (extension == ".meta") {
+					extension = LowerExtension(file.stem()); // Hero.flexpaint.meta -> .flexpaint
+				}
+				return std::find(skippedExtensions.begin(), skippedExtensions.end(), extension) != skippedExtensions.end();
+			};
+
+			std::error_code error;
+			std::filesystem::create_directories(to, error);
+			int skipped = 0;
+			for (auto entry = std::filesystem::recursive_directory_iterator(from, error); !error && entry != std::filesystem::recursive_directory_iterator(); entry.increment(error)) {
+				const std::filesystem::path target = to / std::filesystem::relative(entry->path(), from, error);
+				if (entry->is_directory(error)) {
+					std::filesystem::create_directories(target, error);
+				} else if (isSkipped(entry->path())) {
+					++skipped;
+				} else if (!CopyFile(entry->path(), target, log)) {
+					return false;
+				}
+			}
+			if (error) {
+				log.Add(OutputLog::Level::Error, "Could not copy Content/: " + error.message());
+				return false;
+			}
+			if (skipped > 0) {
+				log.Add(OutputLog::Level::Info, "Left out " + std::to_string(skipped) + " editor-only file(s) (e.g. paintings and their .meta).");
 			}
 			return true;
 		}
@@ -66,7 +108,8 @@ namespace Flex
 		return true;
 	}
 
-	bool ProjectBuilder::Build(const Project& project, const std::string& configuration, const std::filesystem::path& outputDirectory, OutputLog& log)
+	bool ProjectBuilder::Build(const Project& project, const std::string& configuration, const std::filesystem::path& outputDirectory,
+		const std::vector<std::string>& skippedExtensions, const std::vector<BuildFile>& extraFiles, OutputLog& log)
 	{
 		const std::string& name = project.GetName();
 		log.Add(OutputLog::Level::Info, "Building " + name + " (" + configuration + ") into " + PathToUtf8(outputDirectory / Utf8ToPath(name)) + "...");
@@ -126,9 +169,24 @@ namespace Flex
 			bCopied = CopyFile(moduleFile, target / moduleFile.filename(), log);
 		}
 		if (bCopied) {
-			std::filesystem::copy(project.GetContentDirectory(), target / "Content", std::filesystem::copy_options::recursive, fileError);
-			if (fileError) {
-				log.Add(OutputLog::Level::Error, "Could not copy Content/: " + fileError.message());
+			bCopied = CopyContent(project.GetContentDirectory(), target / "Content", skippedExtensions, log);
+		}
+		// 4. Files from editor plugins, only inside the build folder.
+		for (const BuildFile& file : extraFiles) {
+			if (!bCopied) {
+				break;
+			}
+			const std::filesystem::path relative = file.Target.lexically_normal();
+			if (relative.empty() || relative.is_absolute() || relative.has_root_name() || *relative.begin() == "..") {
+				log.Add(OutputLog::Level::Error, "A plugin's build file has an invalid target: " + PathToUtf8(file.Target));
+				bCopied = false;
+				break;
+			}
+			std::filesystem::create_directories((target / relative).parent_path(), fileError);
+			if (!file.Source.empty()) {
+				bCopied = CopyFile(file.Source, target / relative, log);
+			} else if (!(std::ofstream(target / relative, std::ios::binary) << file.Text)) {
+				log.Add(OutputLog::Level::Error, "Could not write " + PathToUtf8(target / relative));
 				bCopied = false;
 			}
 		}

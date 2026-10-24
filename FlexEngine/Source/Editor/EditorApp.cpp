@@ -965,8 +965,14 @@ namespace Flex
 				}
 				OutputLog& log = Context->Output;
 				const std::vector<std::string> skippedExtensions = Assets.GetEditorOnlyExtensions();
-				BuildJob.Start([project, configuration, outputDirectory, skippedExtensions, &log]() {
-					return ProjectBuilder::Build(*project, configuration, outputDirectory, skippedExtensions, log);
+				std::vector<BuildFile> extraFiles;
+				for (const auto& files : PluginBuildFiles) {
+					for (BuildFile& file : files(*project, configuration)) {
+						extraFiles.push_back(std::move(file));
+					}
+				}
+				BuildJob.Start([project, configuration, outputDirectory, skippedExtensions, extraFiles, &log]() {
+					return ProjectBuilder::Build(*project, configuration, outputDirectory, skippedExtensions, extraFiles, log);
 				});
 				ImGui::CloseCurrentPopup();
 			}
@@ -1217,6 +1223,11 @@ namespace Flex
 	void EditorApp::AddDrawCallback(std::function<void()> draw)
 	{
 		PluginDrawCallbacks.push_back(std::move(draw));
+	}
+
+	void EditorApp::AddBuildFiles(std::function<std::vector<BuildFile>(const Project& project, const std::string& configuration)> files)
+	{
+		PluginBuildFiles.push_back(std::move(files));
 	}
 
 	void EditorApp::RefreshAssets()

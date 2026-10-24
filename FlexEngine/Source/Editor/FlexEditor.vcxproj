@@ -23,6 +23,7 @@
 		<WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
 	</PropertyGroup>
 
+	<!-- FlexEditor.exe: only starts the editor in FlexEditorCore.dll (RunEditor). -->
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
 	<Import Project="..\..\Build\FlexConfiguration.props" />
 	<PropertyGroup Label="Configuration">
@@ -37,7 +38,6 @@
 	<ItemDefinitionGroup>
 		<ClCompile>
 			<PreprocessorDefinitions>FLEX_EDITOR=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-			<AdditionalIncludeDirectories>$(FlexRoot)Dependencies\imgui;$(FlexRoot)Dependencies\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 		</ClCompile>
 		<Link>
 			<SubSystem>Console</SubSystem>
@@ -46,95 +46,15 @@
 	</ItemDefinitionGroup>
 
 	<ItemGroup>
-		<ClInclude Include="AssetDatabase.h" />
-		<ClInclude Include="BuildTools.h" />
-		<ClInclude Include="ContentBrowser.h" />
-		<ClInclude Include="EditorApp.h" />
-		<ClInclude Include="EditorAssetSource.h" />
-		<ClInclude Include="EditorContext.h" />
-		<ClInclude Include="EditorPreferences.h" />
-		<ClInclude Include="EditorWindow.h" />
-		<ClInclude Include="EntitiesWindow.h" />
-		<ClInclude Include="FileDialog.h" />
-		<ClInclude Include="HierarchyWindow.h" />
-		<ClInclude Include="InspectorArchive.h" />
-		<ClInclude Include="InspectorWindow.h" />
-		<ClInclude Include="OutputLog.h" />
-		<ClInclude Include="OutputWindow.h" />
-		<ClInclude Include="ProjectBrowser.h" />
-		<ClInclude Include="ProjectBuilder.h" />
-		<ClInclude Include="ProjectScripts.h" />
-		<ClInclude Include="SceneEditing.h" />
-		<ClInclude Include="SceneUndo.h" />
-		<ClInclude Include="Selection.h" />
-		<ClInclude Include="SpriteSlicer.h" />
-		<ClInclude Include="TextureEditor.h" />
-		<ClInclude Include="TextureImporter.h" />
-		<ClInclude Include="ThumbnailCache.h" />
-		<ClInclude Include="ViewportWindow.h" />
-	</ItemGroup>
-	<ItemGroup>
-		<ClCompile Include="AssetDatabase.cpp" />
-		<ClCompile Include="BuildTools.cpp" />
-		<ClCompile Include="ContentBrowser.cpp" />
-		<ClCompile Include="EditorApp.cpp" />
-		<ClCompile Include="EditorAssetSource.cpp" />
-		<ClCompile Include="EditorPreferences.cpp" />
-		<ClCompile Include="EntitiesWindow.cpp" />
-		<ClCompile Include="FileDialog.cpp" />
-		<ClCompile Include="HierarchyWindow.cpp" />
-		<ClCompile Include="InspectorArchive.cpp" />
-		<ClCompile Include="InspectorWindow.cpp" />
-		<ClCompile Include="OutputLog.cpp" />
-		<ClCompile Include="OutputWindow.cpp" />
 		<ClCompile Include="Main.cpp" />
-		<ClCompile Include="ProjectBrowser.cpp" />
-		<ClCompile Include="ProjectBuilder.cpp" />
-		<ClCompile Include="ProjectScripts.cpp" />
-		<ClCompile Include="SceneEditing.cpp" />
-		<ClCompile Include="SceneUndo.cpp" />
-		<ClCompile Include="SpriteSlicer.cpp" />
-		<ClCompile Include="TextureEditor.cpp" />
-		<ClCompile Include="TextureImporter.cpp" />
-		<ClCompile Include="ThumbnailCache.cpp" />
-		<ClCompile Include="ViewportWindow.cpp" />
-	</ItemGroup>
-
-	<!-- Dear ImGui (docking) + SDL3 backends. Third-party code: warnings off. -->
-	<ItemGroup>
-		<ClInclude Include="$(FlexRoot)Dependencies\imgui\imconfig.h" />
-		<ClInclude Include="$(FlexRoot)Dependencies\imgui\imgui.h" />
-		<ClInclude Include="$(FlexRoot)Dependencies\imgui\imgui_internal.h" />
-		<ClInclude Include="$(FlexRoot)Dependencies\imgui\backends\imgui_impl_sdl3.h" />
-		<ClInclude Include="$(FlexRoot)Dependencies\imgui\backends\imgui_impl_sdlrenderer3.h" />
-	</ItemGroup>
-	<ItemGroup>
-		<ClCompile Include="$(FlexRoot)Dependencies\imgui\imgui.cpp">
-			<WarningLevel>TurnOffAllWarnings</WarningLevel>
-		</ClCompile>
-		<ClCompile Include="$(FlexRoot)Dependencies\imgui\imgui_demo.cpp">
-			<WarningLevel>TurnOffAllWarnings</WarningLevel>
-		</ClCompile>
-		<ClCompile Include="$(FlexRoot)Dependencies\imgui\imgui_draw.cpp">
-			<WarningLevel>TurnOffAllWarnings</WarningLevel>
-		</ClCompile>
-		<ClCompile Include="$(FlexRoot)Dependencies\imgui\imgui_tables.cpp">
-			<WarningLevel>TurnOffAllWarnings</WarningLevel>
-		</ClCompile>
-		<ClCompile Include="$(FlexRoot)Dependencies\imgui\imgui_widgets.cpp">
-			<WarningLevel>TurnOffAllWarnings</WarningLevel>
-		</ClCompile>
-		<ClCompile Include="$(FlexRoot)Dependencies\imgui\backends\imgui_impl_sdl3.cpp">
-			<WarningLevel>TurnOffAllWarnings</WarningLevel>
-		</ClCompile>
-		<ClCompile Include="$(FlexRoot)Dependencies\imgui\backends\imgui_impl_sdlrenderer3.cpp">
-			<WarningLevel>TurnOffAllWarnings</WarningLevel>
-		</ClCompile>
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Core\FlexCore.vcxproj">
 			<Project>{09E204DC-F3FB-49AB-8B40-00F95CE22909}</Project>
+		</ProjectReference>
+		<ProjectReference Include="FlexEditorCore.vcxproj">
+			<Project>{8A4AF817-6CAD-42FA-A025-314B16617063}</Project>
 		</ProjectReference>
 	</ItemGroup>
 

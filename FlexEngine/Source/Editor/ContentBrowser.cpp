@@ -104,6 +104,7 @@ namespace Flex
 					DrawScriptTiles();
 				} else {
 					DrawTiles();
+					DrawFolderContextMenu();
 				}
 			}
 			ImGui::EndChild();
@@ -111,6 +112,27 @@ namespace Flex
 		}
 
 		EndWindow();
+	}
+
+	// Right-click on the empty area of the tiles: Create (items from plugins) and Show in Explorer.
+	void ContentBrowser::DrawFolderContextMenu()
+	{
+		if (!ImGui::BeginPopupContextWindow("ContentFolderMenu", ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
+			return;
+		}
+		const std::filesystem::path folder = Context.Assets.GetContentDirectory() / Utf8ToPath(CurrentFolder);
+		if (ImGui::BeginMenu("Create", !Context.ContentCreateItems.empty())) {
+			for (const ContentCreateItem& item : Context.ContentCreateItems) {
+				if (ImGui::MenuItem(item.Label.c_str())) {
+					item.Create(folder);
+				}
+			}
+			ImGui::EndMenu();
+		}
+		if (ImGui::MenuItem("Show in Explorer")) {
+			SDL_OpenURL(("file:///" + PathToGenericUtf8(folder)).c_str());
+		}
+		ImGui::EndPopup();
 	}
 
 	void ContentBrowser::DrawToolbar()

@@ -1,4 +1,5 @@
 #pragma once
+#include "Editor/EditorCore.h"
 #include <SDL3/SDL_dialog.h>
 #include <filesystem>
 #include <mutex>
@@ -11,7 +12,7 @@ namespace Flex
 	// with PollResult() once per frame.
 	//
 	// The object must stay alive while a dialog is open.
-	class FileDialog
+	class FLEX_EDITOR_API FileDialog
 	{
 	public:
 		FileDialog() = default;

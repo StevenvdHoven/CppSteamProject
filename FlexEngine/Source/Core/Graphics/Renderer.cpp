@@ -1,5 +1,6 @@
 #include "Core/Graphics/Renderer.h"
 #include <SDL3/SDL.h>
+#include <vector>
 
 namespace Flex
 {
@@ -7,6 +8,7 @@ namespace Flex
 	{
 		SDL_Renderer* SDLRenderer = nullptr;
 		int LiveTextureCount = 0;
+		std::vector<SDL_Texture*> TexturesToDestroy; // replaced during this frame
 	}
 
 	bool Renderer::Init(SDL_Window* window)
@@ -34,6 +36,7 @@ namespace Flex
 			return;
 		}
 
+		EndFrame();
 		if (LiveTextureCount > 0) {
 			// SDL frees them together with the renderer; the Texture objects notice and won't double-free.
 			SDL_Log("Renderer::Shutdown: %d texture(s) still alive. Release assets before shutting down the renderer.", LiveTextureCount);
@@ -66,5 +69,18 @@ namespace Flex
 	void Renderer::OnTextureDestroyed()
 	{
 		--LiveTextureCount;
+	}
+
+	void Renderer::DestroyAfterFrame(SDL_Texture* handle)
+	{
+		TexturesToDestroy.push_back(handle);
+	}
+
+	void Renderer::EndFrame()
+	{
+		for (SDL_Texture* handle : TexturesToDestroy) {
+			SDL_DestroyTexture(handle);
+		}
+		TexturesToDestroy.clear();
 	}
 }

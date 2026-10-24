@@ -130,6 +130,52 @@ namespace Flex
 		return texture;
 	}
 
+	bool Texture::UpdatePixels(int width, int height, const uint8_t* rgbaPixels, std::string& outError)
+	{
+		if (!Renderer::IsInitialised()) {
+			outError = "Renderer is not initialised.";
+			return false;
+		}
+		if (width <= 0 || height <= 0 || !rgbaPixels) {
+			outError = "Invalid texture size.";
+			return false;
+		}
+
+		// Same size and format: upload into the existing GPU texture.
+		if (Handle && width == Width && height == Height && Handle->format == SDL_PIXELFORMAT_RGBA32) {
+			if (!SDL_UpdateTexture(Handle, nullptr, rgbaPixels, width * 4)) {
+				outError = std::string("Could not upload texture pixels: ") + SDL_GetError();
+				return false;
+			}
+			return true;
+		}
+
+		// Another size or pixel format: a new GPU texture. The old one may still be used by this
+		// frame's draw commands (e.g. an editor thumbnail), so the renderer frees it after the frame.
+		SDL_Texture* handle = SDL_CreateTexture(Renderer::GetSDLRenderer(), SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STATIC, width, height);
+		if (!handle) {
+			outError = std::string("Could not create GPU texture: ") + SDL_GetError();
+			return false;
+		}
+		if (!SDL_UpdateTexture(handle, nullptr, rgbaPixels, width * 4)) {
+			outError = std::string("Could not upload texture pixels: ") + SDL_GetError();
+			SDL_DestroyTexture(handle);
+			return false;
+		}
+		SDL_SetTextureBlendMode(handle, SDL_BLENDMODE_BLEND);
+
+		if (Handle) {
+			Renderer::DestroyAfterFrame(Handle);
+		} else {
+			Renderer::OnTextureCreated();
+		}
+		Handle = handle;
+		Width = width;
+		Height = height;
+		SetFilter(Filter);
+		return true;
+	}
+
 	size_t Texture::GetMemorySize() const
 	{
 		return static_cast<size_t>(Width) * static_cast<size_t>(Height) * 4;

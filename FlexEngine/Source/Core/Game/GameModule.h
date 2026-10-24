@@ -1,6 +1,8 @@
 #pragma once
 #include "Core/Core.h"
+#include <cstdint>
 #include <filesystem>
+#include <functional>
 #include <string>
 
 namespace Flex
@@ -28,5 +30,22 @@ namespace Flex
 
 		static bool IsLoaded();
 		static const std::filesystem::path& GetLoadedFile();
+
+		// Is this address (a function, a vtable) inside the loaded module's DLL?
+		static bool IsInLoadedModule(const void* address);
+
+		// Lets other modules (engine plugins that keep the game's types, like network packets) follow
+		// the game module being swapped by hot reload. BeforeUnload runs in Unload while the old module
+		// is still loaded: drop everything that points into its code. AfterLoad runs once a module has
+		// loaded and its types have registered. A listener added while a module is loaded isn't told
+		// about it (check IsLoaded). Both may be empty.
+		struct Listener
+		{
+			std::function<void()> BeforeUnload;
+			std::function<void()> AfterLoad;
+		};
+		// Returns an id for RemoveListener (never 0).
+		static uint32_t AddListener(Listener listener);
+		static void RemoveListener(uint32_t id);
 	};
 }

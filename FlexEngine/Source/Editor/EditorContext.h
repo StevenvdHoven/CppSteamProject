@@ -11,12 +11,20 @@
 #include <filesystem>
 #include <functional>
 #include <string>
+#include <vector>
 
 namespace Flex
 {
 	// Drag-and-drop payload types (ImGui payload type names are limited to 32 characters).
 	inline constexpr const char* AssetPayloadType = "FLEX_ASSET";   // payload: Uid
 	inline constexpr const char* EntityPayloadType = "FLEX_ENTITY"; // payload: Entity (a GameObject in EditorScene)
+
+	// An item of the Content window's right-click "Create" menu (added by plugins).
+	struct ContentCreateItem
+	{
+		std::string Label;
+		std::function<void(const std::filesystem::path& folder)> Create; // folder: absolute path of the shown folder
+	};
 
 	// Shared state and services for the editor windows of one project.
 	// Owned by EditorApp; windows keep a reference.
@@ -66,5 +74,7 @@ namespace Flex
 		std::function<void()> RefreshAssets;    // rescans Content/
 		std::function<void()> NewScript;        // opens the New Script dialog
 		std::function<void()> RecompileScripts; // builds the game module
+
+		std::vector<ContentCreateItem> ContentCreateItems; // Content window: right-click > Create
 	};
 }

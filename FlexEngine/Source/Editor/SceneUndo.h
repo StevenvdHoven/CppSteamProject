@@ -1,4 +1,5 @@
 #pragma once
+#include "Editor/EditorCore.h"
 #include "Core/Assets/Asset.h"
 #include "Core/Serialization/TextDocument.h"
 #include "Core/Uid.h"
@@ -17,7 +18,7 @@ namespace Flex
 	// which is fine for editor scenes (finer-grained commands can replace it later).
 	//
 	// GameObjects are found again by Uid, so Entity handles from before an undo/redo are stale.
-	class SceneUndo
+	class FLEX_EDITOR_API SceneUndo
 	{
 	public:
 		static constexpr size_t MaxStates = 100;

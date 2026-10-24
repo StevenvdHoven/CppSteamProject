@@ -51,6 +51,10 @@ namespace Flex
 		const PhysicsSettings& GetPhysicsSettings() const { return Physics; }
 		void SetPhysicsSettings(const PhysicsSettings& settings) { Physics = settings; }
 
+		// The whole project file. Other systems keep their own sections in it (e.g. the editor's
+		// [EditorPlugins]); Save() writes them back unchanged.
+		TextDocument& GetDocument() { return Document; }
+
 		const std::filesystem::path& GetProjectFile() const { return ProjectFile; }
 		std::filesystem::path GetRootDirectory() const { return ProjectFile.parent_path(); }
 		std::filesystem::path GetContentDirectory() const { return GetRootDirectory() / "Content"; }

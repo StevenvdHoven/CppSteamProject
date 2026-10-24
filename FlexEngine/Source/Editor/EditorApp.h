@@ -64,6 +64,7 @@ namespace Flex
 		void AddContentCreateItem(const std::string& label, std::function<void(const std::filesystem::path& folder)> create) override;
 		void RegisterThumbnail(const std::string& typeName, std::function<std::shared_ptr<Texture>(const AssetInfo&)> makeThumbnail) override;
 		void AddDrawCallback(std::function<void()> draw) override;
+		void AddBuildFiles(std::function<std::vector<BuildFile>(const Project& project, const std::string& configuration)> files) override;
 
 	private:
 		bool CreateWindowAndImGui(const std::string& title, int width, int height, const std::filesystem::path& imguiIniFile);
@@ -135,6 +136,7 @@ namespace Flex
 		};
 		std::vector<PluginMenuItem> PluginMenuItems;
 		std::vector<std::function<void()>> PluginDrawCallbacks;
+		std::vector<std::function<std::vector<BuildFile>(const Project&, const std::string&)>> PluginBuildFiles;
 
 		bool bResetLayoutRequested = false;
 		int FrontTabsCountdown = 0; // after a default layout: frames until Inspector/Content come to the front

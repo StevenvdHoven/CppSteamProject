@@ -19,11 +19,11 @@ namespace Flex
 		}
 	}
 
-	void SystemRegistery::Register(SystemPhase phase, const char* name, SystemFunction function)
+	void SystemRegistery::Register(SystemPhase phase, const char* name, SystemFunction function, int order)
 	{
 		RegisteryData& data = GetData();
 		std::scoped_lock lock{ data.Mutex };
-		data.Systems.push_back({ name, phase, function });
+		data.Systems.push_back({ name, phase, function, order });
 	}
 
 	size_t SystemRegistery::Remove(const std::function<bool(const SystemInfo&)>& predicate)
@@ -45,7 +45,9 @@ namespace Flex
 				systems.push_back(system);
 			}
 		}
-		std::sort(systems.begin(), systems.end(), [](const SystemInfo& a, const SystemInfo& b) { return a.Name < b.Name; });
+		std::sort(systems.begin(), systems.end(), [](const SystemInfo& a, const SystemInfo& b) {
+			return a.Order != b.Order ? a.Order < b.Order : a.Name < b.Name;
+		});
 		return systems;
 	}
 }

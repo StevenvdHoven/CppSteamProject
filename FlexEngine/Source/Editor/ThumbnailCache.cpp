@@ -51,6 +51,16 @@ namespace Flex
 				width = static_cast<float>(rect.Width);
 				height = static_cast<float>(rect.Height);
 			}
+		} else if (const auto provider = Providers.find(asset->Type); provider != Providers.end()) {
+			auto [entry, bInserted] = Provided.try_emplace(assetId);
+			if (bInserted) {
+				entry->second = provider->second(*asset);
+			}
+			texture = entry->second.get();
+			if (texture) {
+				width = static_cast<float>(texture->GetWidth());
+				height = static_cast<float>(texture->GetHeight());
+			}
 		}
 
 		if (!texture || width <= 0.0f || height <= 0.0f) {
@@ -69,5 +79,18 @@ namespace Flex
 	{
 		Sprites.clear();
 		Textures.clear();
+		Provided.clear();
+	}
+
+	void ThumbnailCache::Invalidate(Uid assetId)
+	{
+		Sprites.erase(assetId);
+		Textures.erase(assetId);
+		Provided.erase(assetId);
+	}
+
+	void ThumbnailCache::SetProvider(const std::string& typeName, ThumbnailProvider provider)
+	{
+		Providers[typeName] = std::move(provider);
 	}
 }
