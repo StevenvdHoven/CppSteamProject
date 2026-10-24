@@ -1,4 +1,5 @@
 #include "Plugins/Steam/Runtime/SteamSession.h"
+#include "Plugins/Steam/Runtime/Network.h"
 #include "Plugins/Steam/Runtime/SteamInternal.h"
 #include "Core/Game/SystemRegistery.h"
 #include "Core/Project.h"
@@ -44,10 +45,12 @@ namespace Flex::Steam
 			return Session::DevelopmentAppId;
 		}
 
-		// Runs first in every frame of a game (the editor's Play mode included).
-		void SteamUpdate(World&, float)
+		// Runs first in every frame of a game (the editor's Play mode included): Steam's callbacks, then the
+		// packets that arrived for the main thread.
+		void SteamUpdate(World& world, float)
 		{
 			Session::Update();
+			Network::DispatchMainThread(&world);
 		}
 	}
 	FLEX_REGISTER_SYSTEM_ORDER(Update, SteamUpdate, -1000)
@@ -66,6 +69,7 @@ namespace Flex::Steam
 				AppId = SteamUtils()->GetAppID();
 				SDL_Log("Steam: signed in as %s (app %u).", SteamFriends()->GetPersonaName(), AppId);
 				Detail::LobbyStartup();
+				Detail::NetworkStartup();
 				Detail::JoinFromCommandLine();
 			} else {
 				InitError = message[0] ? message : "Steam could not be started.";
@@ -89,6 +93,7 @@ namespace Flex::Steam
 			return;
 		}
 		Detail::LobbyShutdown();
+		Detail::NetworkShutdown();
 		SteamAPI_Shutdown();
 		bInitialized = false;
 		SDL_Log("Steam: shut down.");
@@ -117,6 +122,7 @@ namespace Flex::Steam
 		Detail::LobbyBeginUpdate();
 		if (bInitialized) {
 			SteamAPI_RunCallbacks();
+			Detail::NetworkUpdate();
 		}
 	}
 

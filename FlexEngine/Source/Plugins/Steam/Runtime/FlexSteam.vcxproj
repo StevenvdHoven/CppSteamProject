@@ -43,11 +43,12 @@
 		<Link>
 			<SubSystem>Windows</SubSystem>
 			<AdditionalLibraryDirectories>$(FlexRoot)Dependencies\Steamworks\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-			<AdditionalDependencies>SDL3.lib;steam_api64.lib;Shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+			<AdditionalDependencies>SDL3.lib;steam_api64.lib;Shell32.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
 		</Link>
 	</ItemDefinitionGroup>
 
 	<ItemGroup>
+		<ClInclude Include="Network.h" />
 		<ClInclude Include="Packet.h" />
 		<ClInclude Include="PacketRegistery.h" />
 		<ClInclude Include="PacketStream.h" />
@@ -60,6 +61,7 @@
 		<ClInclude Include="SteamTypes.h" />
 	</ItemGroup>
 	<ItemGroup>
+		<ClCompile Include="Network.cpp" />
 		<ClCompile Include="Packet.cpp" />
 		<ClCompile Include="PacketRegistery.cpp" />
 		<ClCompile Include="SteamLobby.cpp" />

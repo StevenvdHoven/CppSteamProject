@@ -52,8 +52,8 @@ namespace Flex::Steam
 	// a client with another build is refused (EnterFailed) instead of receiving packets it can't read.
 	//
 	// Kicks travel as a lobby chat message from the host (only the host's are obeyed) and bans are kept
-	// in the lobby's data, so a banned user who joins again is sent away. The network connection is
-	// closed and refused as well once the network thread exists (next patch).
+	// in the lobby's data, so a banned user who joins again is sent away. The host also closes the
+	// user's network connection and only accepts connections from members who aren't banned.
 	class FLEX_STEAM_API Lobby
 	{
 	public:

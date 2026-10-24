@@ -127,6 +127,7 @@ namespace Flex::Steam
 		// Out of the lobby without a Left event (kicked, host left, refused).
 		void LeaveQuietly()
 		{
+			Detail::NetworkStop();
 			if (State.Id.IsValid()) {
 				SteamMatchmaking()->LeaveLobby(State.Id);
 				SteamFriends()->ClearRichPresence();
@@ -231,6 +232,7 @@ namespace Flex::Steam
 					}
 				}
 			}
+			Detail::NetworkStart(State.Host == LocalUser(), ToSteamId(LocalUser()), ToSteamId(State.Host));
 			AddEvent(LobbyEventType::Entered, ToSteamId(State.Host));
 		}
 
@@ -266,6 +268,9 @@ namespace Flex::Steam
 				State.RemovedBy.erase(removed);
 			}
 			std::erase(State.MemberOrder, user.ConvertToUint64());
+			if (AmHost()) {
+				Detail::NetworkDisconnect(ToSteamId(user), "left the lobby");
+			}
 			AddEvent(LobbyEventType::MemberLeft, ToSteamId(user), how);
 		}
 
@@ -445,6 +450,7 @@ namespace Flex::Steam
 			State.RemovedBy[user.Value] = bBan ? "banned" : "kicked";
 			SendKick(target, bBan);
 		}
+		Detail::NetworkDisconnect(user, bBan ? "banned" : "kicked");
 		return true;
 	}
 
